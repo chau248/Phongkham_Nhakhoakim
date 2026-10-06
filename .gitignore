@@ -1,0 +1,22 @@
+# Build
+target/
+bin/
+*.class
+
+# IDE
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+.vscode/
+nbproject/private/
+
+# Cau hinh rieng tung may (chua mat khau CSDL) - KHONG commit
+**/config/database.properties
+
+# He thong / tam
+*.log
+~$*
+.DS_Store
+Thumbs.db
