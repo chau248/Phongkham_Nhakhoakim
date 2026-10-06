@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8">
+<title>MH06 - Lịch làm việc</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: 'Times New Roman', Georgia, serif; background:#fff; margin:0; color:#000; }
+.page { max-width:640px; margin:30px auto; padding:0 16px; }
+.mock-frame { border:2px solid #000; padding:22px 26px; position:relative; }
+.mock-title { font-weight:bold; text-align:center; font-size:16px; margin-bottom:18px; letter-spacing:.5px; }
+.f-row { display:flex; align-items:center; margin-bottom:6px; }
+.f-label { width:150px; flex-shrink:0; font-size:14px; }
+.f-input { flex:1; border:1px solid #000; height:24px; background:#fff; position:relative; }
+.f-select .f-arrow { position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:11px; }
+.f-caption { font-size:14px; margin:10px 0 4px; }
+.f-table { border-collapse:collapse; width:100%; margin-bottom:10px; }
+.f-table td { border:1px solid #000; height:20px; font-size:12px; color:#666; text-align:center; }
+.f-alert { border:1px solid #000; padding:6px 10px; font-size:12px; margin:8px 0; }
+.f-text { font-size:14px; margin-bottom:6px; }
+.f-tab { display:inline-block; border:1px solid #000; border-bottom:none; padding:3px 14px; font-size:12px; margin-right:2px; position:relative; top:1px; background:#fff; }
+.f-btnrow { text-align:center; margin-top:14px; }
+.f-btn { display:inline-block; border:1px solid #000; padding:6px 22px; font-size:14px; color:#000; text-decoration:none; background:#fff; }
+.f-btn:hover { background:#000; color:#fff; }
+.f-inert { color:#999; border-color:#999; }
+.f-menurow { display:flex; gap:8px; margin:4px 0 10px; flex-wrap:wrap; }
+.f-menu-btn { border:1px solid #000; padding:5px 14px; font-size:13px; color:#000; text-decoration:none; background:#fff; }
+.f-menu-btn:hover { background:#000; color:#fff; }
+.mock-caption-line { text-align:center; font-size:12px; color:#444; margin-top:8px; font-style:italic; }
+.mock-nav { text-align:center; font-size:11px; color:#888; margin-top:4px; }
+.mock-nav a { color:#666; }
+
+
+.f-section { font-weight:bold; font-size:13px; margin:14px 0 6px; border-bottom:1px solid #000; padding-bottom:2px; }
+.f-note { font-size:11px; color:#555; font-style:italic; margin:4px 0 8px; }
+.f-alert { border:1px solid #000; background:#f6f6f6; padding:6px 10px; font-size:12px; margin:8px 0; }
+.f-btnrow { text-align:center; margin:12px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.teeth-row { display:flex; gap:3px; margin-bottom:4px; justify-content:center; }
+.tooth { border:1px solid #000; width:26px; height:26px; font-size:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.tooth:hover { background:#eee; }
+</style>
+</head><body>
+<div class="page">
+  <div class="mock-frame">
+    <div class="mock-title">LỊCH LÀM VIỆC</div>
+    <div class='f-row'><span class='f-label'>Xem theo (Hôm nay / Tuần / Tháng)</span><span class='f-input f-select'><span class='f-arrow'>▽</span></span></div><div class='f-caption'>Danh sách lịch phân công</div><table class='f-table'><tr><td>Giờ</td><td>Bệnh nhân</td><td>Dịch vụ</td><td>Phòng</td><td>Trạng thái</td></tr><tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr><tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr></table><div class='f-note'>* Nếu không có lịch trong khoảng thời gian đã chọn, hệ thống hiển thị &quot;Không có lịch&quot;</div><div class='f-note'>* Với Y tá: bảng có thêm cột Nha sĩ phụ trách. Bấm vào 1 dòng để xem MH07.</div><div class='f-btnrow'><a class='f-btn' href='MH07.html'>Xem chi tiết 1 lịch hẹn</a></div>
+  </div>
+  <div class="mock-caption-line">MH06: màn hình lịch làm việc (Nha sĩ/Y tá) — UC002</div>
+  <div class="mock-nav"><a href='MH02.html'>Trang chủ Nha sĩ</a> &nbsp;·&nbsp; <a href='MH03.html'>Trang chủ Y tá</a> &nbsp;·&nbsp; <a href='MH02.html'>Quay lại</a> &nbsp;·&nbsp; <a href='MH07.html'>Chọn 1 lịch hẹn</a> &nbsp;·&nbsp; <a href='MH03.html'>Quay lại</a> &nbsp;·&nbsp; <a href='MH07.html'>Chọn 1 ca</a> &nbsp;·&nbsp; <a href='MH14.html'>Chuẩn bị cho ca</a></div>
+</div>
+</body></html>
