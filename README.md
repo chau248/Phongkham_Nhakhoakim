@@ -1,13 +1,12 @@
 # Phongkham_Nhakhoakim
-
-Chuong trinh quan ly he thong phong kham nha khoa Kim - Mon Phat trien ung dung - Nhom 09.
-
-## Thanh vien
-- Nguyen Chi Hau (Nhom truong) - Y ta, Nha si
-- Nguyen Tran Tri Tam - Nhan vien quan ly
-- Nguyen Phi Truong - Le tan
-
-## Quy uoc
-- Khong commit truc tiep len main
-- Moi nguoi lam tren 1 branch feature/...
-- Merge vao develop sau khi hoan thanh va da kiem tra
+Chương trình quản lý hệ thống phòng khám nha khoa Kim - Môn Phát triển ứng dụng - Nhóm 09
+## Thành viên nhóm 9
+| Thành viên | Actor phân công    |
+| :---:   | :---: |
+| Nguyễn Chí Hậu (nhóm trưởng) | Y tá, nha sĩ |
+| Nguyễn Trần Trí Tâm | Nhân viên quản lý |
+| Đặng Phi Trường | Lễ tân |
+## Quy ước
+- Không commit trực tiếp lên main
+- Mỗi người làm trên 1 branch feature/...
+- Merge vào develop sau khi hoàn thành và đã kiểm tra
