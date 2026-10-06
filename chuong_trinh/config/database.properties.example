@@ -1,0 +1,7 @@
+# Sao chep file nay thanh database.properties (cung thu muc) roi dien thong tin may cua ban.
+# File database.properties da nam trong .gitignore, KHONG commit.
+db.host=localhost
+db.port=1433
+db.name=NhaKhoaKim
+db.user=nhakhoa
+db.password=DOI_MAT_KHAU_CUA_BAN
