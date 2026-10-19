@@ -1,13 +1,31 @@
 # Phongkham_Nhakhoakim
 
-Chuong trinh quan ly he thong phong kham nha khoa Kim - Mon Phat trien ung dung - Nhom 09.
+Chương trình quản lý hệ thống phòng khám nha khoa Kim - Môn Phát triển ứng dụng - Nhóm 09.
 
-## Thanh vien
-- Nguyen Chi Hau (Nhom truong) - Y ta, Nha si
-- Nguyen Tran Tri Tam - Nhan vien quan ly
-- Nguyen Phi Truong - Le tan
+Viết bằng **Java Swing** + **SQL Server** (JDBC thuần), làm trên Eclipse.
 
-## Quy uoc
-- Khong commit truc tiep len main
-- Moi nguoi lam tren 1 branch feature/...
-- Merge vao develop sau khi hoan thanh va da kiem tra
+## Thành viên
+- Nguyễn Chí Hậu (Nhóm trưởng): menu Bệnh nhân, menu Lượt khám
+- Nguyễn Phi Trường: menu Hóa đơn, menu Lịch hẹn
+- Nguyễn Trần Trí Tâm: menu Dịch vụ, Nhân viên, Tài khoản
+
+## Cấu trúc
+
+```
+chuong_trinh/                dự án Eclipse (Maven)
+  src/nhakhoakim/
+    MainApp.java             chạy chương trình
+    entity/                  dữ liệu (mỗi bảng một lớp)
+    dao/                     SQL (…DAO) và nghiệp vụ (…Service)
+    ui/                      giao diện Swing (mỗi chức năng một màn hình)
+  csdl/                      script SQL tạo bảng và dữ liệu mẫu
+  config/                    cấu hình kết nối CSDL
+tai_lieu/                    hướng dẫn, quy định, kế hoạch, thiết kế, mockup
+```
+
+Cách cài đặt và chạy: xem `tai_lieu/huong_dan/HUONG_DAN_CAI_DAT.md`.
+
+## Quy ước
+- Không commit trực tiếp lên main
+- Mỗi người làm trên 1 branch feature/...
+- Merge vào develop sau khi hoàn thành và đã kiểm tra

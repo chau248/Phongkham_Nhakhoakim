@@ -14,12 +14,7 @@
     </properties>
 
     <dependencies>
-        <!-- Giao dien JavaFX 17 (chay duoc voi Eclipse 2021-09 va Java 11 tro len) -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>17.0.12</version>
-        </dependency>
+        <!-- Giao dien dung Java Swing (co san trong JDK, khong can them thu vien) -->
 
         <!-- Ket noi SQL Server bang JDBC thuan -->
         <dependency>

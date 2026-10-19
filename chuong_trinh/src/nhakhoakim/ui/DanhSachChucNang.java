@@ -1,11 +1,11 @@
-package nhakhoakim;
+package nhakhoakim.ui;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// Danh sách chức năng của chương trình (24 chức năng lõi), xếp theo từng đối tượng.
+// Danh sách chức năng của chương trình (26 chức năng), xếp theo từng đối tượng.
 // Mỗi nhóm là một menu; thêm hoặc đổi chức năng chỉ cần sửa ở đây.
 public class DanhSachChucNang {
 
@@ -14,18 +14,19 @@ public class DanhSachChucNang {
         List<ChucNang> ds = new ArrayList<>();
 
         // Bệnh nhân: tìm, tạo/sửa hồ sơ, xem bệnh án, tiền sử - dị ứng, liệu trình đang điều trị
-        ds.add(new ChucNang("Bệnh nhân", "Tìm kiếm bệnh nhân", "BenhNhan, HoSoBenhAn", "Nha sĩ, Lễ tân", "Trường", "Tìm theo mã, họ tên, số điện thoại"));
-        ds.add(new ChucNang("Bệnh nhân", "Thêm / cập nhật hồ sơ bệnh nhân", "BenhNhan, HoSoBenhAn", "Y tá, Lễ tân", "Trường", "Tạo mới và sửa; Y tá khai báo y tế/dị ứng ban đầu"));
+        ds.add(new ChucNang("Bệnh nhân", "Tìm kiếm bệnh nhân", "BenhNhan, HoSoBenhAn", "Nha sĩ, Lễ tân", "Hậu", "Tìm theo mã, họ tên, số điện thoại"));
+        ds.add(new ChucNang("Bệnh nhân", "Thêm / cập nhật hồ sơ bệnh nhân", "BenhNhan, HoSoBenhAn", "Y tá, Lễ tân", "Hậu", "Tạo mới và sửa; Y tá khai báo y tế/dị ứng ban đầu"));
         ds.add(new ChucNang("Bệnh nhân", "Xem hồ sơ bệnh án", "BenhNhan, HoSoBenhAn", "Nha sĩ", "Hậu", "Cảnh báo dị ứng hiển thị nổi bật; lịch sử khám"));
         ds.add(new ChucNang("Bệnh nhân", "Cập nhật tiền sử & dị ứng", "HoSoBenhAn", "Nha sĩ, Y tá", "Hậu", "Thay đổi phải ghi nhật ký hệ thống"));
         ds.add(new ChucNang("Bệnh nhân", "Xem liệu trình đang thực hiện", "LieuTrinh", "Nha sĩ", "Hậu", "Hiển thị trong hồ sơ bệnh án"));
+        ds.add(new ChucNang("Bệnh nhân", "Dòng thời gian điều trị", "BenhNhan, LuotKham, LieuTrinh, RangDieuTri", "Nha sĩ, Y tá", "Hậu", "Gom đăng ký, liệu trình, lượt khám (răng, dịch vụ, đơn thuốc) và hẹn tái khám thành trục thời gian; tóm tắt lần khám gần nhất"));
 
         // Lịch hẹn: xem, đặt, dời/hủy, xác nhận; riêng lịch làm việc là của Nha sĩ và Y tá
         ds.add(new ChucNang("Lịch hẹn", "Xem lịch hẹn", "LichHen", "Lễ tân", "Trường", "Theo ngày/tuần, thấy khung giờ trống"));
         ds.add(new ChucNang("Lịch hẹn", "Đặt lịch hẹn", "LichHen", "Lễ tân", "Trường", "Kiểm tra trùng lịch và thời gian dịch vụ"));
         ds.add(new ChucNang("Lịch hẹn", "Dời / hủy lịch hẹn", "LichHen", "Lễ tân", "Trường", "Hủy phải có lý do"));
         ds.add(new ChucNang("Lịch hẹn", "Xác nhận lịch hẹn", "LichHen", "Lễ tân", "Trường", "Từ Chờ xác nhận sang Đã xác nhận, kể cả lịch tái khám do Nha sĩ tạo"));
-        ds.add(new ChucNang("Lịch hẹn", "Xem lịch làm việc", "LichHen", "Nha sĩ, Y tá", "Hậu", "Chỉ xem; Nha sĩ thấy ca khám, Y tá thấy ca hỗ trợ"));
+        ds.add(new ChucNang("Lịch hẹn", "Xem lịch làm việc", "LichHen", "Nha sĩ, Y tá", "Trường", "Chỉ xem; Nha sĩ thấy ca khám, Y tá thấy ca hỗ trợ"));
 
         // Lượt khám: khám, sơ đồ răng, kê đơn, tái khám; Y tá chuẩn bị dụng cụ cho ca khám
         ds.add(new ChucNang("Lượt khám", "Khám & ghi nhận điều trị", "LuotKham", "Nha sĩ", "Hậu", "Lý do khám, chẩn đoán, hướng điều trị, dịch vụ thực hiện"));
@@ -33,6 +34,7 @@ public class DanhSachChucNang {
         ds.add(new ChucNang("Lượt khám", "Kê đơn thuốc", "LuotKham", "Nha sĩ", "Hậu", "Không cho kê thuốc trùng cảnh báo dị ứng"));
         ds.add(new ChucNang("Lượt khám", "Chỉ định tái khám", "LuotKham, LichHen", "Nha sĩ", "Hậu", "Tạo lịch hẹn trạng thái Chờ xác nhận"));
         ds.add(new ChucNang("Lượt khám", "Chuẩn bị dụng cụ theo dịch vụ", "DungCu", "Y tá", "Hậu", "Xác nhận chuẩn bị theo loại dịch vụ của ca khám"));
+        ds.add(new ChucNang("Lượt khám", "Gợi ý điều trị & ước tính chi phí", "LuotKham, RangDieuTri, DichVu", "Nha sĩ", "Hậu", "Gợi ý dịch vụ từ tình trạng răng và lịch sử khám; tạm tính chi phí lượt khám gồm VAT 8%"));
 
         // Hóa đơn: từ lượt khám đã hoàn tất đến thanh toán
         ds.add(new ChucNang("Hóa đơn", "Danh sách chờ thanh toán", "HoaDon", "Lễ tân", "Trường", "Các lượt khám đã hoàn tất, chưa lập hóa đơn"));

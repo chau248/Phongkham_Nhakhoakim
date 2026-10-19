@@ -4,7 +4,7 @@
    - Chạy trong SSMS bằng tài khoản quản trị (Windows Authentication).
    - Chạy lại nhiều lần được: chỉ tạo khi chưa có.
    - Tên cột trùng tên thuộc tính trong package nhakhoakim.entity.
-   - Người sở hữu từng bảng: xem sheet "Entity và CSDL" trong tai_lieu/KeHoach_PhanCong_Code.xlsx
+   - Người sở hữu từng bảng: xem sheet "Entity và CSDL" trong tai_lieu/ke_hoach/KeHoach_PhanCong_Code.xlsx
    - Mật khẩu tài khoản lưu dạng chữ thường (không băm) vì đây là bài tập môn học.
    ===================================================================== */
 USE master;
@@ -240,8 +240,9 @@ IF OBJECT_ID(N'dbo.RangDieuTri', N'U') IS NULL
 CREATE TABLE dbo.RangDieuTri (
     maBanGhi    NVARCHAR(10)  NOT NULL PRIMARY KEY,
     maLuotKham  NVARCHAR(10)  NOT NULL REFERENCES dbo.LuotKham(maLuotKham) ON DELETE CASCADE,
-    soFDI       INT           NOT NULL CHECK (soFDI BETWEEN 11 AND 18 OR soFDI BETWEEN 21 AND 28
-                                              OR soFDI BETWEEN 31 AND 38 OR soFDI BETWEEN 41 AND 48),
+    soFDI       INT           NOT NULL CONSTRAINT CK_RangDieuTri_soFDI
+        CHECK (soFDI BETWEEN 11 AND 18 OR soFDI BETWEEN 21 AND 28 OR soFDI BETWEEN 31 AND 38 OR soFDI BETWEEN 41 AND 48
+            OR soFDI BETWEEN 51 AND 55 OR soFDI BETWEEN 61 AND 65 OR soFDI BETWEEN 71 AND 75 OR soFDI BETWEEN 81 AND 85),
     matRang     NVARCHAR(10)  NULL CHECK (matRang IN (N'Gần', N'Xa', N'Nhai', N'Ngoài', N'Trong')),
     trangThai   NVARCHAR(30)  NOT NULL DEFAULT N'Bình thường'
         CHECK (trangThai IN (N'Bình thường', N'Sâu', N'Đã trám', N'Bọc sứ', N'Đã nhổ', N'Implant', N'Cầu răng')),
@@ -252,6 +253,20 @@ CREATE TABLE dbo.RangDieuTri (
     mauHienThi  NVARCHAR(20)  NULL,
     ghiChu      NVARCHAR(255) NULL
 );
+GO
+/* Trong một lượt khám, cùng răng + cùng mặt răng + cùng dịch vụ chỉ có một bản ghi (NULL được coi là bằng nhau).
+   Nếu dữ liệu cũ đang trùng thì không tạo index mà báo, cần gộp dữ liệu trước rồi chạy lại. */
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UX_RangDieuTri_Luot_Rang_Mat_DichVu' AND object_id = OBJECT_ID(N'dbo.RangDieuTri'))
+BEGIN
+    IF EXISTS (SELECT 1 FROM dbo.RangDieuTri GROUP BY maLuotKham, soFDI, matRang, maDichVu HAVING COUNT(*) > 1)
+    BEGIN
+        PRINT N'Chưa tạo UX_RangDieuTri_Luot_Rang_Mat_DichVu vì dữ liệu RangDieuTri đang có bản ghi trùng (cùng lượt khám, răng, mặt răng, dịch vụ).';
+    END
+    ELSE
+    BEGIN
+        CREATE UNIQUE INDEX UX_RangDieuTri_Luot_Rang_Mat_DichVu ON dbo.RangDieuTri(maLuotKham, soFDI, matRang, maDichVu);
+    END
+END
 GO
 
 /* Dịch vụ không gắn với răng cụ thể trong một lượt khám (khám tổng quát, lấy cao răng...).

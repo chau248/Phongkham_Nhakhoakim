@@ -1,4 +1,4 @@
-package nhakhoakim;
+package nhakhoakim.ui;
 
 // Một chức năng của chương trình (một mục trong menu)
 public class ChucNang {

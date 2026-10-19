@@ -105,11 +105,28 @@ public class RangDieuTri {
         this.ghiChu = ghiChu;
     }
 
-    // Kiểm tra số FDI có hợp lệ không
+    // Kiểm tra số FDI có hợp lệ không: răng vĩnh viễn 11-18, 21-28, 31-38, 41-48 hoặc răng sữa 51-55, 61-65, 71-75, 81-85
     public static boolean kiemTraSoFDI(int so) {
+        return laRangVinhVien(so) || laRangSua(so);
+    }
+
+    // Răng vĩnh viễn: hàng 1 đến 4, răng số 1 đến 8
+    public static boolean laRangVinhVien(int so) {
         int hang = so / 10;
         int rang = so % 10;
         return hang >= 1 && hang <= 4 && rang >= 1 && rang <= 8;
+    }
+
+    // Răng sữa: hàng 5 đến 8, răng số 1 đến 5 (trẻ có tối đa 20 răng sữa)
+    public static boolean laRangSua(int so) {
+        int hang = so / 10;
+        int rang = so % 10;
+        return hang >= 5 && hang <= 8 && rang >= 1 && rang <= 5;
+    }
+
+    // Răng khôn (số 8 của răng vĩnh viễn)
+    public static boolean laRangKhon(int so) {
+        return laRangVinhVien(so) && so % 10 == 8;
     }
 
 }
