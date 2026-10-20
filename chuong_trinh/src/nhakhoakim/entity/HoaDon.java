@@ -80,6 +80,11 @@ public class HoaDon {
         setTongTienTruocThue(tongTienTruocThue);
         setPhanTramGiamGia(phanTramGiamGia);
     }
+    public HoaDon(String ma, String bn, LocalDateTime ngayLap){
+        setMaHoaDon(ma);
+        setMaBenhNhan(bn);
+        setNgayLap(ngayLap);
+    }
     public HoaDon() {
         setMaHoaDon("none");
         setChiTiet(new ChiTietHoaDon());

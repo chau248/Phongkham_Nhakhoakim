@@ -13,6 +13,30 @@ import java.util.ArrayList;
 import java.util.List;
 public class LichHenDAO {
     public HoSoBenhAnDAO hoSoBenhAnDAO = new HoSoBenhAnDAO();
+    public HoSoBenhAn suaThongTinBenhNhan(LichHen lh, String ht, String gt, LocalDate ns, String sdt, String dc, String email, String cccd, String nguoiLH, String sdtNguoiLH) {
+        String maHoSo = lh.getMaHoSo();
+        String sql = "UPDATE dbo.HoSoBenhAn SET hoTen = ?, ngaySinh = ?, gioiTinh = ?, sdt = ?, diaChi = ?, email = ?, soCCCD = ?, nguoiLienHeKhanCap = ?, sdtNguoiLienHe = ? WHERE maHoSo = ?";
+        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, ht);
+            ps.setObject(2, ns);
+            ps.setString(3, gt);
+            ps.setString(4, sdt);
+            ps.setString(5, dc);
+            ps.setString(6, email);
+            ps.setString(7, cccd);
+            ps.setString(8, nguoiLH);
+            ps.setString(9, sdtNguoiLH);
+            ps.setString(10, maHoSo);
+            int n = ps.executeUpdate();
+            if (n != 1) {
+                throw new LoiCSDL("Không cập nhật được thông tin bệnh nhân", new SQLException());
+            }
+            return hoSoBenhAnDAO.timTheoMa(maHoSo);
+        } catch (SQLException e) {
+            throw new LoiCSDL("Không cập nhật được thông tin bệnh nhân: " + e.getMessage(), e);
+        }
+        
+    }
     public HoSoBenhAn themHoSoBenhAnVaoLichHen(HoSoBenhAn hs,LichHen lh) {
         String maHoSo = "HS" + lh.getMaLichHen().substring(2); // tạo mã hồ sơ từ mã lịch hẹn
         String sql="UPDATE dbo.LichHen SET maHoSo = ? WHERE maLichHen = ?";
@@ -89,12 +113,12 @@ public class LichHenDAO {
         lh.setThoiLuongDuKien(rs.getInt("thoiLuongDuKien"));
         lh.setMaHoSo(rs.getString("maHoSo"));
         lh.setHinhThucDat(rs.getString("hinhThucDat"));
-        lh.setTrangThaiNhacHen(rs.getString("trangThaiNhacHen"));
+        lh.setDaNhacHen(rs.getBoolean("daNhacHen"));
         return lh;
     }
     // Thêm lịch hẹn; trả về đối tượng LichHen vừa thêm (có mã lịch hẹn); nếu lỗi thì ném lỗi LoiCSDL
-    private LichHen themLichHen(LichHen lh) {
-        String sql = "INSERT INTO dbo.LichHen (maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen, trangThai, phong, thoiLuongDuKien, maHoSo, hinhThucDat, trangThaiNhacHen) "
+    public LichHen themLichHen(LichHen lh) {
+        String sql = "INSERT INTO dbo.LichHen (maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen, trangThai, phong, thoiLuongDuKien, maHoSo, hinhThucDat, daNhacHen) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, lh.getMaLichHen());
@@ -108,7 +132,7 @@ public class LichHenDAO {
             ps.setInt(9, lh.getThoiLuongDuKien());
             ps.setString(10, lh.getMaHoSo());
             ps.setString(11, lh.getHinhThucDat());
-            ps.setString(12, lh.getTrangThaiNhacHen());
+            ps.setBoolean(12, lh.isDaNhacHen());
             int n = ps.executeUpdate();
             if (n != 1) {
                 throw new LoiCSDL("Không thêm được lịch hẹn", new SQLException());

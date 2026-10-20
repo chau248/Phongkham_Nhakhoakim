@@ -19,7 +19,7 @@ public class LichHen {
     private int thoiLuongDuKien; // thời lượng dự kiến (phút)
     private String maHoSo; // mã hồ sơ bệnh án (có thể null nếu chưa có hồ sơ)
     private String hinhThucDat; // hình thức đặt: trực tiếp, online
-    private String trangThaiNhacHen; // trạng thái nhắc hẹn: chưa nhắc, đã nhắc, không nhắc (bệnh nhân không muốn nhận nhắc hẹn)
+    private boolean daNhacHen; // trạng thái nhắc hẹn: chưa nhắc, đã nhắc, không nhắc (bệnh nhân không muốn nhận nhắc hẹn)
     private String lyDoHuy; // lý do hủy (có thể null nếu chưa hủy)
     
     public String getMaLichHen() {
@@ -95,7 +95,7 @@ public class LichHen {
     }
 
     public LichHen(String maLichHen, String maBN, String maNhanVien, String maDichVu, LocalDate ngayHen,
-            LocalTime gioHen, String hinhThucDat, String trangThaiNhacHen, String phong, int thoiLuongDuKien) {
+            LocalTime gioHen, String hinhThucDat, boolean daNhacHen, String phong, int thoiLuongDuKien) {
         setMaLichHen(maLichHen);
         setGioHen(gioHen);
         setMaBN(maBN);
@@ -107,7 +107,7 @@ public class LichHen {
         setTrangThai("Chưa hoàn thành");
         setMaHoSo(null);
         setHinhThucDat(hinhThucDat);
-        setTrangThaiNhacHen(trangThaiNhacHen);
+        setDaNhacHen(daNhacHen);
         setLyDoHuy(null);
     }
     public LichHen() {
@@ -120,7 +120,10 @@ public class LichHen {
         setPhong("");
         setTrangThai("Chưa hoàn thành");
         setThoiLuongDuKien(0);
-        // TODO Auto-generated constructor stub
+        setMaHoSo(null);
+        setHinhThucDat("");
+        setDaNhacHen(false);
+        setLyDoHuy(null);
     }
     @Override
     public String toString() {
@@ -145,12 +148,12 @@ public class LichHen {
         this.hinhThucDat = hinhThucDat;
     }
 
-    public String getTrangThaiNhacHen() {
-        return trangThaiNhacHen;
+    public boolean isDaNhacHen() {
+        return daNhacHen;
     }
 
-    public void setTrangThaiNhacHen(String trangThaiNhacHen) {
-        this.trangThaiNhacHen = trangThaiNhacHen;
+    public void setDaNhacHen(boolean daNhacHen) {
+        this.daNhacHen = daNhacHen;
     }
 
     public String getLyDoHuy() {
