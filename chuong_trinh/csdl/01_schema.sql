@@ -179,7 +179,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_LichHen_BenhNhan')
     CREATE INDEX IX_LichHen_BenhNhan ON dbo.LichHen(maBN);
 GO
 
-/* ---------- Hậu: HoSoBenhAn, LieuTrinh, LuotKham, RangDieuTri, DungCu, DichVuDungCu ---------- */
+/* ---------- Hậu: HoSoBenhAn, LieuTrinh, LuotKham, RangDieuTri, LuotKhamDichVu ---------- */
 IF OBJECT_ID(N'dbo.HoSoBenhAn', N'U') IS NULL
 CREATE TABLE dbo.HoSoBenhAn (
     maHoSo          NVARCHAR(10)  NOT NULL PRIMARY KEY,
@@ -279,53 +279,4 @@ CREATE TABLE dbo.LuotKhamDichVu (
     soLuong    INT           NOT NULL DEFAULT 1 CHECK (soLuong > 0),
     ghiChu     NVARCHAR(255) NULL
 );
-GO
-
-IF OBJECT_ID(N'dbo.DungCu', N'U') IS NULL
-CREATE TABLE dbo.DungCu (
-    maDungCu           NVARCHAR(10)  NOT NULL PRIMARY KEY,
-    tenDungCu          NVARCHAR(150) NOT NULL,
-    loaiDichVu         NVARCHAR(50)  NULL,
-    trangThaiVoTrung   NVARCHAR(20)  NOT NULL DEFAULT N'Chờ xử lý'
-        CHECK (trangThaiVoTrung IN (N'Đã tiệt trùng', N'Chờ xử lý', N'Đang sử dụng')),
-    ngayTietTrungCuoi  DATETIME2     NULL,
-    phong              NVARCHAR(20)  NULL
-);
-GO
-
-IF OBJECT_ID(N'dbo.DichVuDungCu', N'U') IS NULL
-CREATE TABLE dbo.DichVuDungCu (
-    maDichVu NVARCHAR(10) NOT NULL REFERENCES dbo.DichVu(maDichVu),
-    maDungCu NVARCHAR(10) NOT NULL REFERENCES dbo.DungCu(maDungCu),
-    soLuong  INT          NOT NULL DEFAULT 1 CHECK (soLuong > 0),
-    PRIMARY KEY (maDichVu, maDungCu)
-);
-GO
-
-/* ---------- Nâng cấp CSDL tạo từ bản cũ (chạy lại an toàn) ---------- */
-IF COL_LENGTH(N'dbo.LuotKham', N'maLichHen') IS NULL
-    ALTER TABLE dbo.LuotKham ADD maLichHen NVARCHAR(10) NULL REFERENCES dbo.LichHen(maLichHen);
-GO
-IF COL_LENGTH(N'dbo.TaiKhoan', N'matKhauHash') IS NOT NULL AND COL_LENGTH(N'dbo.TaiKhoan', N'matKhau') IS NULL
-    EXEC sp_rename N'dbo.TaiKhoan.matKhauHash', N'matKhau', N'COLUMN';
-GO
-
--- Bảng RangDieuTri cũ chỉ cho răng vĩnh viễn: bỏ CHECK cũ của soFDI (chưa có số 51) rồi thêm CHECK mới có răng sữa
-DECLARE @tenCu SYSNAME;
-DECLARE @sql NVARCHAR(400);
-SELECT TOP 1 @tenCu = cc.name
-FROM sys.check_constraints cc
-WHERE cc.parent_object_id = OBJECT_ID(N'dbo.RangDieuTri') AND cc.definition LIKE N'%soFDI%' AND cc.definition NOT LIKE N'%(51)%';
-IF @tenCu IS NOT NULL
-BEGIN
-    SET @sql = N'ALTER TABLE dbo.RangDieuTri DROP CONSTRAINT ' + QUOTENAME(@tenCu);
-    EXEC sp_executesql @sql;
-END
-IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE parent_object_id = OBJECT_ID(N'dbo.RangDieuTri') AND definition LIKE N'%soFDI%')
-    ALTER TABLE dbo.RangDieuTri ADD CONSTRAINT CK_RangDieuTri_soFDI
-        CHECK (soFDI BETWEEN 11 AND 18 OR soFDI BETWEEN 21 AND 28 OR soFDI BETWEEN 31 AND 38 OR soFDI BETWEEN 41 AND 48
-            OR soFDI BETWEEN 51 AND 55 OR soFDI BETWEEN 61 AND 65 OR soFDI BETWEEN 71 AND 75 OR soFDI BETWEEN 81 AND 85);
-GO
-
-PRINT N'Hoàn tất tạo CSDL NhaKhoaKim.';
 GO

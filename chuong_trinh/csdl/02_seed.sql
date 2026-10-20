@@ -1,12 +1,4 @@
-﻿/* =====================================================================
-   Phòng khám Nha khoa Kim - Nhóm 09
-   02_seed.sql: dữ liệu mẫu dùng chung để cả nhóm có cùng dữ liệu khi code và test
-   - Chạy SAU 01_schema.sql. Chạy lại không bị trùng (có kiểm tra tồn tại).
-   - Mỗi bảng chính có khoảng 10 - 12 dòng. Toàn bộ tên, số điện thoại là dữ liệu giả.
-   - Ngày giờ của lịch hẹn, ca trực, lượt khám tính theo ngày chạy script (hôm nay, hôm qua, tuần trước...).
-   - Tài khoản mẫu có mật khẩu chữ thường 123456 (không băm), chỉ dùng để thử trên máy mình.
-   - Ai cần thêm dữ liệu mẫu: sửa file này trong Pull Request riêng.
-   ===================================================================== */
+﻿
 USE NhaKhoaKim;
 GO
 SET QUOTED_IDENTIFIER ON;
@@ -15,7 +7,7 @@ GO
 
 /* ---------- Bộ đếm mã: đặt bằng số bản ghi mẫu bên dưới (chỉ tăng, không bao giờ giảm) ---------- */
 MERGE dbo.BoDemMa AS t
-USING (VALUES ('NV', 12), ('DV', 12), ('BN', 12), ('HS', 12), ('LH', 12), ('CA', 12), ('DC', 12), ('TK', 12),
+USING (VALUES ('NV', 12), ('DV', 12), ('BN', 12), ('HS', 12), ('LH', 12), ('CA', 12), ('TK', 12),
               ('LT', 5), ('LK', 12), ('BG', 11), ('HD', 10), ('CT', 12)) AS s(tienTo, giaTri)
 ON t.tienTo = s.tienTo
 WHEN NOT MATCHED THEN INSERT (tienTo, giaTriHienTai) VALUES (s.tienTo, s.giaTri)
@@ -160,36 +152,6 @@ SELECT v.maLichHen, v.maBN, v.maNhanVien, v.maDichVu, DATEADD(DAY, v.lech, CAST(
     (N'LH000012', N'BN000001', N'NV000002', N'DV000003', -3, '16:00', N'Đã hủy',       N'Phòng 1', N'Điện thoại', N'Bệnh nhân bận việc đột xuất')
 ) AS v(maLichHen, maBN, maNhanVien, maDichVu, lech, gioHen, trangThai, phong, hinhThucDat, lyDoHuy)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.LichHen l WHERE l.maLichHen = v.maLichHen);
-GO
-
-/* ---------- Dụng cụ và dụng cụ cần cho dịch vụ ---------- */
-INSERT INTO dbo.DungCu (maDungCu, tenDungCu, loaiDichVu, trangThaiVoTrung, phong)
-SELECT v.* FROM (VALUES
-    (N'DC000001', N'Bộ khám cơ bản (gương, thám châm, kẹp)',   N'Khám',      N'Đã tiệt trùng', N'Phòng 1'),
-    (N'DC000002', N'Máy lấy cao răng siêu âm',                  N'Vệ sinh',   N'Đã tiệt trùng', N'Phòng 1'),
-    (N'DC000003', N'Bộ nhổ răng (kìm, bẩy)',                    N'Nhổ răng',  N'Chờ xử lý',     N'Phòng 2'),
-    (N'DC000004', N'Bộ cấy ghép Implant',                       N'Implant',   N'Đã tiệt trùng', N'Phòng 1'),
-    (N'DC000005', N'Bộ trám răng (cây trám, đèn quang trùng hợp)', N'Trám',   N'Đã tiệt trùng', N'Phòng 2'),
-    (N'DC000006', N'Bộ nội nha (trâm tay, máy đo chiều dài ống tủy)', N'Nội nha', N'Đã tiệt trùng', N'Phòng 1'),
-    (N'DC000007', N'Máy tẩy trắng răng đèn LED',                N'Thẩm mỹ',   N'Đã tiệt trùng', N'Phòng 3'),
-    (N'DC000008', N'Bộ khí cụ chỉnh nha (kìm bẻ dây, kìm cắt)', N'Chỉnh nha', N'Đang sử dụng', N'Phòng 2'),
-    (N'DC000009', N'Bộ lấy dấu hàm',                            N'Phục hình', N'Đã tiệt trùng', N'Phòng 3'),
-    (N'DC000010', N'Bộ phẫu thuật răng khôn',                   N'Nhổ răng',  N'Chờ xử lý',     N'Phòng 3'),
-    (N'DC000011', N'Máy chụp X-quang cầm tay',                  N'Chẩn đoán', N'Đã tiệt trùng', N'Phòng 3'),
-    (N'DC000012', N'Bộ khám nhi khoa',                          N'Khám',      N'Đã tiệt trùng', N'Phòng 2')
-) AS v(maDungCu, tenDungCu, loaiDichVu, trangThaiVoTrung, phong)
-WHERE NOT EXISTS (SELECT 1 FROM dbo.DungCu d WHERE d.maDungCu = v.maDungCu);
-GO
-
-INSERT INTO dbo.DichVuDungCu (maDichVu, maDungCu, soLuong)
-SELECT v.* FROM (VALUES
-    (N'DV000001', N'DC000001', 1), (N'DV000002', N'DC000001', 1), (N'DV000002', N'DC000002', 1),
-    (N'DV000004', N'DC000003', 1), (N'DV000008', N'DC000004', 1), (N'DV000003', N'DC000005', 1),
-    (N'DV000005', N'DC000006', 1), (N'DV000006', N'DC000007', 1), (N'DV000007', N'DC000008', 1),
-    (N'DV000009', N'DC000009', 1), (N'DV000010', N'DC000009', 1), (N'DV000011', N'DC000011', 1),
-    (N'DV000012', N'DC000010', 1)
-) AS v(maDichVu, maDungCu, soLuong)
-WHERE NOT EXISTS (SELECT 1 FROM dbo.DichVuDungCu x WHERE x.maDichVu = v.maDichVu AND x.maDungCu = v.maDungCu);
 GO
 
 /* ---------- Liệu trình: LT000001 của BN000002 đang cấy Implant (3 buổi); các liệu trình khác cho dịch vụ nhiều buổi ---------- */

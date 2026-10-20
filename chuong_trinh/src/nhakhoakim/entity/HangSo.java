@@ -10,7 +10,7 @@ public class HangSo {
     public static final String VAI_TRO_LE_TAN = "Lễ tân";
     public static final String VAI_TRO_QUAN_LY = "Quản lý";
 
-    // Trạng thái của bệnh nhân, hồ sơ, lượt khám, răng, dụng cụ, liệu trình
+    // Trạng thái của bệnh nhân, hồ sơ, lượt khám, răng, liệu trình
     public static final String DANG_DIEU_TRI = "Đang điều trị";
     public static final String NGUNG_THEO_DOI = "Ngừng theo dõi";
     public static final String HO_SO_DANG_MO = "Đang mở";
@@ -25,8 +25,6 @@ public class HangSo {
     public static final String RANG_DA_NHO = "Đã nhổ";
     public static final String RANG_IMPLANT = "Implant";
     public static final String RANG_CAU_RANG = "Cầu răng";
-    public static final String DA_TIET_TRUNG = "Đã tiệt trùng";
-    public static final String DANG_SU_DUNG = "Đang sử dụng";
     public static final String LIEU_TRINH_DANG_THUC_HIEN = "Đang thực hiện";
 
     // Loại dịch vụ (cột DichVu.loaiDichVu) mà chương trình cần so sánh khi cảnh báo và gợi ý

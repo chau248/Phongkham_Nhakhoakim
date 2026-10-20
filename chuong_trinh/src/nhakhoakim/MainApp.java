@@ -35,7 +35,6 @@ import javax.swing.UIManager;
 import nhakhoakim.ui.ChucNang;
 import nhakhoakim.ui.DanhSachChucNang;
 import nhakhoakim.ui.ManHinhChiDinhTaiKham;
-import nhakhoakim.ui.ManHinhChuanBiDungCu;
 import nhakhoakim.ui.ManHinhDongThoiGian;
 import nhakhoakim.ui.ManHinhGoiYDieuTri;
 import nhakhoakim.ui.ManHinhHoSoBenhAn;
@@ -245,7 +244,6 @@ public class MainApp {
         manHinh.put("Kê đơn thuốc", ManHinhKhamDieuTri::new);
         manHinh.put("Sơ đồ răng điều trị", ManHinhSoDoRang::new);
         manHinh.put("Chỉ định tái khám", ManHinhChiDinhTaiKham::new);
-        manHinh.put("Chuẩn bị dụng cụ theo dịch vụ", ManHinhChuanBiDungCu::new);
         manHinh.put("Dòng thời gian điều trị", ManHinhDongThoiGian::new);
         manHinh.put("Gợi ý điều trị & ước tính chi phí", ManHinhGoiYDieuTri::new);
 

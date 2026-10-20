@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// Danh sách chức năng của chương trình (26 chức năng), xếp theo từng đối tượng.
+// Danh sách chức năng của chương trình (25 chức năng), xếp theo từng đối tượng.
 // Mỗi nhóm là một menu; thêm hoặc đổi chức năng chỉ cần sửa ở đây.
 public class DanhSachChucNang {
 
@@ -28,12 +28,11 @@ public class DanhSachChucNang {
         ds.add(new ChucNang("Lịch hẹn", "Xác nhận lịch hẹn", "LichHen", "Lễ tân", "Trường", "Từ Chờ xác nhận sang Đã xác nhận, kể cả lịch tái khám do Nha sĩ tạo"));
         ds.add(new ChucNang("Lịch hẹn", "Xem lịch làm việc", "LichHen", "Nha sĩ, Y tá", "Trường", "Chỉ xem; Nha sĩ thấy ca khám, Y tá thấy ca hỗ trợ"));
 
-        // Lượt khám: khám, sơ đồ răng, kê đơn, tái khám; Y tá chuẩn bị dụng cụ cho ca khám
+        // Lượt khám: khám, sơ đồ răng, kê đơn, tái khám
         ds.add(new ChucNang("Lượt khám", "Khám & ghi nhận điều trị", "LuotKham", "Nha sĩ", "Hậu", "Lý do khám, chẩn đoán, hướng điều trị, dịch vụ thực hiện"));
         ds.add(new ChucNang("Lượt khám", "Sơ đồ răng điều trị", "RangDieuTri", "Nha sĩ", "Hậu", "32 răng theo FDI; răng đã nhổ chỉ chọn dịch vụ implant/cầu răng"));
         ds.add(new ChucNang("Lượt khám", "Kê đơn thuốc", "LuotKham", "Nha sĩ", "Hậu", "Không cho kê thuốc trùng cảnh báo dị ứng"));
         ds.add(new ChucNang("Lượt khám", "Chỉ định tái khám", "LuotKham, LichHen", "Nha sĩ", "Hậu", "Tạo lịch hẹn trạng thái Chờ xác nhận"));
-        ds.add(new ChucNang("Lượt khám", "Chuẩn bị dụng cụ theo dịch vụ", "DungCu", "Y tá", "Hậu", "Xác nhận chuẩn bị theo loại dịch vụ của ca khám"));
         ds.add(new ChucNang("Lượt khám", "Gợi ý điều trị & ước tính chi phí", "LuotKham, RangDieuTri, DichVu", "Nha sĩ", "Hậu", "Gợi ý dịch vụ từ tình trạng răng và lịch sử khám; tạm tính chi phí lượt khám gồm VAT 8%"));
 
         // Hóa đơn: từ lượt khám đã hoàn tất đến thanh toán

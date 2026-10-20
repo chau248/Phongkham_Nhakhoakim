@@ -9,7 +9,6 @@ Các quy tắc để chức năng của 3 người khớp nhau và đúng logic 
 | Lịch hẹn | Chờ xác nhận -> Đã xác nhận -> Hoàn thành / Không đến | Chờ xác nhận và Đã xác nhận có thể -> Đã hủy (bắt buộc lý do). Hoàn thành, Không đến, Đã hủy là trạng thái cuối, không sửa. |
 | Lượt khám | Đang khám -> Hoàn thành | Đang khám có thể -> Đã hủy. Hoàn thành thì khóa: không sửa chẩn đoán, đơn thuốc, sơ đồ răng, dịch vụ. |
 | Hóa đơn | Chưa thanh toán -> Đã thanh toán | Chưa thanh toán có thể -> Đã hủy. Đã thanh toán thì khóa, không sửa, không hủy. |
-| Dụng cụ | Chờ xử lý -> Đã tiệt trùng -> Đang sử dụng -> Chờ xử lý | Chỉ dụng cụ Đã tiệt trùng mới được chuyển sang Đang sử dụng. |
 | Tài khoản | Hoạt động -> Bị khóa -> Hoạt động | Khóa tự động sau 5 lần đăng nhập sai liên tiếp; chỉ Quản lý mở khóa. |
 
 ## 2. Chuỗi phụ thuộc giữa các chức năng
@@ -19,7 +18,6 @@ Các quy tắc để chức năng của 3 người khớp nhau và đúng logic 
 3. Bắt đầu khám  ->  Sơ đồ răng, Kê đơn, Dịch vụ thực hiện  ->  Hoàn tất khám (phải có chẩn đoán)  ->  Lịch hẹn chuyển Hoàn thành
 4. Chỉ định tái khám (trong lúc khám)  ->  tạo lịch hẹn Chờ xác nhận  ->  Lễ tân xác nhận
 5. Hoàn tất khám  ->  Danh sách chờ thanh toán  ->  Lập hóa đơn (gắn hóa đơn vào lượt khám)  ->  Thanh toán và in
-6. Y tá chuẩn bị dụng cụ theo dịch vụ của ca khám  ->  Nha sĩ khám (dụng cụ phải Đã tiệt trùng trước khi Đang sử dụng)
 
 ## 3. Ràng buộc chung
 
@@ -55,7 +53,7 @@ Các quy tắc để chức năng của 3 người khớp nhau và đúng logic 
 | BN-15 | Cập nhật tiền sử & dị ứng | Hậu | Lễ tân không được sửa thông tin y tế (tiền sử, dị ứng, bệnh nền, thuốc đang dùng). | Service |
 | BN-16 | Cập nhật tiền sử & dị ứng | Hậu | Dị ứng một thuốc thì chặn cả các thuốc cùng nhóm (Penicillin chặn Amoxicillin, Augmentin; Aspirin chặn Ibuprofen, Diclofenac; Cephalosporin; Sulfa). | Entity |
 | BN-17 | Thêm / cập nhật hồ sơ bệnh nhân | Hậu | Ngày sinh bắt buộc (để biết bệnh nhân có phải trẻ em, kiểm tra trùng người và giới hạn tuổi của dịch vụ). | Service |
-| BN-18 | Tìm kiếm bệnh nhân | Hậu | Ngừng theo dõi hoặc mở lại điều trị một bệnh nhân: chỉ Lễ tân hoặc Quản lý; không ngừng khi còn lượt khám đang dở; có ghi nhật ký; tìm kiếm có ô "gồm cả bệnh nhân ngừng theo dõi" để mở lại. Bệnh nhân Ngừng theo dõi không khám được (LK-15). | Service + Màn hình |
+| BN-18 | Tìm kiếm bệnh nhân | Hậu | Ngừng theo dõi hoặc mở lại điều trị một bệnh nhân: chỉ Lễ tân hoặc Quản lý; không ngừng khi còn lượt khám đang dở; có ghi nhật ký; tìm kiếm có ô "gồm cả bệnh nhân ngừng theo dõi" để mở lại. Bệnh nhân Ngừng theo dõi không khám được (LK-13). | Service + Màn hình |
 | BN-19 | Xem hồ sơ bệnh án | Hậu | Đóng hoặc mở lại hồ sơ bệnh án: chỉ Quản lý; không đóng khi còn lượt khám đang dở; có ghi nhật ký. Hồ sơ Đã đóng chỉ xem (BN-07). | Service + Màn hình |
 | BN-20 | Cập nhật tiền sử & dị ứng | Hậu | Dị ứng ghi "Không", "Không có", "Chưa có"... không phải là một tác nhân: bị bỏ khi chuẩn hóa, không hiện cảnh báo đỏ và không chặn thuốc. Chữ phủ định đứng trước bệnh nền ("Không tim mạch") thì không sinh cảnh báo thủ thuật. | Entity + Service |
 | BN-21 | Cập nhật tiền sử & dị ứng | Hậu | Hai người cùng sửa hồ sơ y tế: chỉ trường mình thực sự đổi mới được ghi, trường khác giữ giá trị hiện có; nếu cùng sửa một trường thành hai giá trị khác nhau thì báo xung đột để xem lại hồ sơ, không ghi đè mất dữ liệu. | Service |
@@ -90,18 +88,16 @@ Các quy tắc để chức năng của 3 người khớp nhau và đúng logic 
 | LK-09 | Sơ đồ răng điều trị | Hậu | Dịch vụ chọn phải đang hoạt động; vật liệu không được trùng cảnh báo dị ứng. | Service |
 | LK-10 | Chỉ định tái khám | Hậu | Ngày tái khám phải sau ngày khám và sau hôm nay; mỗi lượt khám có tối đa một lịch tái khám; đặt nhầm thì hủy lịch tái khám để đặt lại. | Service |
 | LK-11 | Chỉ định tái khám | Hậu | Tái khám tạo lịch hẹn Chờ xác nhận (gọi Trường) và đi qua đủ ràng buộc đặt lịch LH-02, LH-03; nếu tạo lịch lỗi thì không lưu ngày tái khám. | Service |
-| LK-12 | Chuẩn bị dụng cụ theo dịch vụ | Hậu | Chỉ Y tá thao tác; dụng cụ lấy theo dịch vụ của ca khám; dụng cụ chưa Đã tiệt trùng thì không chuyển được sang Đang sử dụng và báo rõ dụng cụ nào. | Service |
-| LK-13 | Chuẩn bị dụng cụ theo dịch vụ | Hậu | Dụng cụ đang Đang sử dụng cho ca khác thì không cấp cho ca này. | Service |
-| LK-14 | Khám & ghi nhận điều trị | Hậu | Hủy lượt khám: chỉ nha sĩ phụ trách, bắt buộc nhập lý do (ít nhất 5 ký tự), chỉ hủy được khi chưa ghi dịch vụ hay răng nào; lượt khám thành Đã hủy, lịch hẹn (nếu có) trở lại Đã xác nhận để khám lại, lịch tái khám đã đặt (nếu có) cũng bị hủy. | Service |
-| LK-15 | Khám & ghi nhận điều trị | Hậu | Không bắt đầu khám cho bệnh nhân đã Ngừng theo dõi; lượt khám mở qua ngày hiện cảnh báo yêu cầu hoàn tất hoặc hủy. | Service + Màn hình |
-| LK-16 | Khám & ghi nhận điều trị / Sơ đồ răng | Hậu | Cảnh báo (hỏi xác nhận, không chặn) khi chọn thủ thuật xâm lấn (Nhổ răng, Nội nha, Implant) cho bệnh nhân dùng thuốc chống đông hoặc có bệnh nền tiểu đường, tim mạch, huyết áp, rối loạn đông máu; Implant cho dưới 18 tuổi; thẩm mỹ cho dưới 16 tuổi. | Service + Màn hình |
-| LK-17 | Khám & ghi nhận điều trị | Hậu | Số lượng mỗi dịch vụ không gắn răng từ 1 đến 10. | Service |
-| LK-18 | Chỉ định tái khám | Hậu | Chỉ hẹn tái khám trong vòng 180 ngày kể từ ngày khám. | Service |
-| LK-19 | Sơ đồ răng điều trị | Hậu | Gỡ bản ghi răng ghi nhầm khỏi lượt khám đang khám: chỉ nha sĩ phụ trách, bản ghi phải thuộc đúng lượt khám; bản ghi gỡ không còn tính tiền. | Service |
-| LK-20 | Khám & ghi nhận điều trị | Hậu | Khám vãng lai mà bệnh nhân có lịch hẹn Đã xác nhận trong hôm nay thì lịch đó được gắn vào lượt khám và chuyển Hoàn thành khi khám xong (ưu tiên lịch của chính nha sĩ này). | Service |
-| LK-21 | Khám & ghi nhận điều trị | Hậu | Tổng số lượng của một dịch vụ không gắn răng trong một lượt khám tối đa 10 (cộng dồn các lần thêm). | Service |
-| LK-22 | Khám & ghi nhận điều trị | Hậu | Dịch vụ gắn răng tính theo (răng, dịch vụ): trám nhiều mặt của cùng một răng chỉ tính một lần trên hóa đơn. | Service |
-| LK-23 | Khám & ghi nhận điều trị | Hậu | Chỉ được bắt đầu khám dưới tên của chính người đang đăng nhập. | Service |
+| LK-12 | Khám & ghi nhận điều trị | Hậu | Hủy lượt khám: chỉ nha sĩ phụ trách, bắt buộc nhập lý do (ít nhất 5 ký tự), chỉ hủy được khi chưa ghi dịch vụ hay răng nào; lượt khám thành Đã hủy, lịch hẹn (nếu có) trở lại Đã xác nhận để khám lại, lịch tái khám đã đặt (nếu có) cũng bị hủy. | Service |
+| LK-13 | Khám & ghi nhận điều trị | Hậu | Không bắt đầu khám cho bệnh nhân đã Ngừng theo dõi; lượt khám mở qua ngày hiện cảnh báo yêu cầu hoàn tất hoặc hủy. | Service + Màn hình |
+| LK-14 | Khám & ghi nhận điều trị / Sơ đồ răng | Hậu | Cảnh báo (hỏi xác nhận, không chặn) khi chọn thủ thuật xâm lấn (Nhổ răng, Nội nha, Implant) cho bệnh nhân dùng thuốc chống đông hoặc có bệnh nền tiểu đường, tim mạch, huyết áp, rối loạn đông máu; Implant cho dưới 18 tuổi; thẩm mỹ cho dưới 16 tuổi. | Service + Màn hình |
+| LK-15 | Khám & ghi nhận điều trị | Hậu | Số lượng mỗi dịch vụ không gắn răng từ 1 đến 10. | Service |
+| LK-16 | Chỉ định tái khám | Hậu | Chỉ hẹn tái khám trong vòng 180 ngày kể từ ngày khám. | Service |
+| LK-17 | Sơ đồ răng điều trị | Hậu | Gỡ bản ghi răng ghi nhầm khỏi lượt khám đang khám: chỉ nha sĩ phụ trách, bản ghi phải thuộc đúng lượt khám; bản ghi gỡ không còn tính tiền. | Service |
+| LK-18 | Khám & ghi nhận điều trị | Hậu | Khám vãng lai mà bệnh nhân có lịch hẹn Đã xác nhận trong hôm nay thì lịch đó được gắn vào lượt khám và chuyển Hoàn thành khi khám xong (ưu tiên lịch của chính nha sĩ này). | Service |
+| LK-19 | Khám & ghi nhận điều trị | Hậu | Tổng số lượng của một dịch vụ không gắn răng trong một lượt khám tối đa 10 (cộng dồn các lần thêm). | Service |
+| LK-20 | Khám & ghi nhận điều trị | Hậu | Dịch vụ gắn răng tính theo (răng, dịch vụ): trám nhiều mặt của cùng một răng chỉ tính một lần trên hóa đơn. | Service |
+| LK-21 | Khám & ghi nhận điều trị | Hậu | Chỉ được bắt đầu khám dưới tên của chính người đang đăng nhập. | Service |
 
 ### Hóa đơn
 

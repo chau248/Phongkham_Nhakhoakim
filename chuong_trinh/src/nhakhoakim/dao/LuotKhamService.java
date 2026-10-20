@@ -20,7 +20,7 @@ import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.RangDieuTri;
 
 // Nghiệp vụ lượt khám: bắt đầu khám, ghi nội dung, kê đơn, chọn dịch vụ, hoàn tất, tái khám và trao đổi với hóa đơn
-// Ràng buộc LK-01 đến LK-23 trong tai_lieu/quy_dinh/RANG_BUOC_NGHIEP_VU.md
+// Ràng buộc LK-01 đến LK-21 trong tai_lieu/quy_dinh/RANG_BUOC_NGHIEP_VU.md
 public class LuotKhamService {
 
     private static final int TOI_DA_SO_LUONG = 10;     // số lượng tối đa của một dịch vụ không gắn răng
