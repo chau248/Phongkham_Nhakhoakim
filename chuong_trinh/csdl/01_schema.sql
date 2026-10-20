@@ -137,7 +137,8 @@ CREATE TABLE dbo.HoaDon (
         CHECK (hinhThucThanhToan IN (N'Tiền mặt', N'Chuyển khoản', N'Thẻ', N'Ví điện tử')),
     trangThaiThanhToan NVARCHAR(20)  NOT NULL DEFAULT N'Chưa thanh toán'
         CHECK (trangThaiThanhToan IN (N'Chưa thanh toán', N'Đã thanh toán', N'Đã hủy')),
-    ghiChu             NVARCHAR(255) NULL
+    ghiChu             NVARCHAR(255) NULL,
+    ngayThanhToan       DATETIME2     NULL
 );
 GO
 
