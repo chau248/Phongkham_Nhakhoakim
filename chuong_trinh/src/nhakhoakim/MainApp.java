@@ -139,7 +139,6 @@ public class MainApp {
         taoNoiDung();
         cuaSo = new JFrame("Quản lý phòng khám Nha khoa Kim");
         cuaSo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        cuaSo.setJMenuBar(thanhMenu);
         cuaSo.setContentPane(noiDungChinh);
         cuaSo.setSize(1200, 760);
         cuaSo.setLocationRelativeTo(null);
@@ -152,7 +151,10 @@ public class MainApp {
         dangKyManHinh();
         taoMenu();
         noiDungChinh.setBackground(TienIch.MAU_NEN);
-        noiDungChinh.add(taoTieuDe(), BorderLayout.NORTH);
+        JPanel phanDau = new JPanel(new BorderLayout()); // tiêu đề xanh, bên dưới là thanh menu
+        phanDau.add(taoTieuDe(), BorderLayout.NORTH);
+        phanDau.add(thanhMenu, BorderLayout.SOUTH);
+        noiDungChinh.add(phanDau, BorderLayout.NORTH);
         vungGiua.setBackground(TienIch.MAU_NEN);
         noiDungChinh.add(vungGiua, BorderLayout.CENTER);
         hienTrangChu();
@@ -192,9 +194,13 @@ public class MainApp {
     // Thanh menu: mỗi nhóm đối tượng là một menu, mỗi chức năng là một mục
     private void taoMenu() {
         thanhMenu.removeAll();
+        thanhMenu.setBackground(Color.WHITE);
+        thanhMenu.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, TienIch.MAU_VIEN), BorderFactory.createEmptyBorder(2, 18, 2, 18)));
         for (Map.Entry<String, List<ChucNang>> nhom : DanhSachChucNang.layTheoNhom().entrySet()) {
             JMenu menu = new JMenu(nhom.getKey());
-            menu.setFont(TienIch.FONT);
+            menu.setFont(TienIch.FONT.deriveFont(Font.BOLD, 14f));
+            menu.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
             for (ChucNang cn : nhom.getValue()) {
                 JMenuItem muc = new JMenuItem(cn.getTen());
                 muc.setFont(TienIch.FONT);

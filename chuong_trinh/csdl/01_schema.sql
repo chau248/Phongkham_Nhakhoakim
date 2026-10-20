@@ -1,12 +1,3 @@
-﻿/* =====================================================================
-   Phòng khám Nha khoa Kim - Nhóm 09
-   01_schema.sql: tạo CSDL NhaKhoaKim và toàn bộ bảng (SQL Server)
-   - Chạy trong SSMS bằng tài khoản quản trị (Windows Authentication).
-   - Chạy lại nhiều lần được: chỉ tạo khi chưa có.
-   - Tên cột trùng tên thuộc tính trong package nhakhoakim.entity.
-   - Người sở hữu từng bảng: xem sheet "Entity và CSDL" trong tai_lieu/ke_hoach/KeHoach_PhanCong_Code.xlsx
-   - Mật khẩu tài khoản lưu dạng chữ thường (không băm) vì đây là bài tập môn học.
-   ===================================================================== */
 USE master;
 GO
 IF DB_ID(N'NhaKhoaKim') IS NULL
