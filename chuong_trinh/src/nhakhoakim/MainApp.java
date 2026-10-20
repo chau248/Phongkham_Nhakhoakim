@@ -211,29 +211,11 @@ public class MainApp {
         }
     }
 
-    // Trang chủ: mỗi đối tượng là một thẻ, trong thẻ liệt kê các chức năng
+    // Trang chủ: chỉ có một dòng gợi ý, các chức năng chọn ở thanh menu phía trên
     void hienTrangChu() {
         lichSuManHinh.clear();
-        JPanel luoi = new JPanel(new GridLayout(0, 4, 16, 16));
-        luoi.setOpaque(false);
-        for (Map.Entry<String, List<ChucNang>> nhom : DanhSachChucNang.layTheoNhom().entrySet()) {
-            JPanel the = new JPanel(new GridLayout(0, 1, 0, 2));
-            the.setBackground(Color.WHITE);
-            the.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(TienIch.MAU_VIEN),
-                    BorderFactory.createEmptyBorder(14, 16, 14, 16)));
-            JLabel lblNhom = new JLabel(nhom.getKey());
-            lblNhom.setFont(TienIch.FONT.deriveFont(Font.BOLD, 16f));
-            lblNhom.setForeground(TienIch.MAU_DAM);
-            the.add(lblNhom);
-            for (ChucNang cn : nhom.getValue()) {
-                JButton lnk = TienIch.lienKet(cn.getTen());
-                lnk.addActionListener(e -> hienChucNang(cn));
-                the.add(lnk);
-            }
-            luoi.add(the);
-        }
         JPanel trang = new JPanel();
-        TienIch.xepManHinh(trang, TienIch.tieuDe("Chọn chức năng cần dùng"), luoi);
+        TienIch.xepManHinh(trang, TienIch.doanChu("Chọn một mục trên thanh menu để bắt đầu.", TienIch.MAU_XAM));
         datGiua(trang);
     }
 
