@@ -5,27 +5,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import nhakhoakim.entity.ChiTietHoaDon;
 import nhakhoakim.entity.HoaDon;
 import nhakhoakim.entity.LuotKham;
 public class HoaDonDAO {
     HoSoBenhAnDAO hoSoBenhAnDAO = new HoSoBenhAnDAO();
-    public void taoHoaDon(LuotKham lk){
-        if (lk.getTrangThai()=="Hoàn thành") {
+    public HoaDon taoHoaDon(LuotKham lk){ 
             String maBN=hoSoBenhAnDAO.timTheoMa(lk.getMaHoSo()).getMaBN();
             String sql="insert into dbo.HoaDon(maHoaDon,maBN,ngayLap) values(?,?,?)";
+            String maHoaDon = "HD" + lk.getMaLichHen().substring(2); // tạo mã hóa đơn từ mã lịch hẹn
             try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-                ps.setString(1, lk.getMaHoaDon());
+                ps.setString(1, maHoaDon);
                 ps.setString(2, maBN);
                 ps.setObject(3, lk.getGioKetThuc());
                 int n = ps.executeUpdate();
                 if (n != 1) {
                     throw new LoiCSDL("Không thêm được hóa đơn", new SQLException());
                 }
+                return new HoaDon(maHoaDon, maBN, lk.getGioKetThuc());
             } catch (SQLException e) {
                 throw new LoiCSDL("Không thêm được hóa đơn: " + e.getMessage(), e);
             }
-        }
     }
     // Xác định thanh toán cho hóa đơn (cập nhật hinhThucThanhToan, ghiChu, maNhanVien, tongTien, trangThai)
     public HoaDon xacDinhThanhToan(String maHoaDon, String hinhThucThanhToan, String ghiChu, String maNhanVien, java.math.BigDecimal tongTien, java.math.BigDecimal tienGiamGia, java.math.BigDecimal tongTienTruocThue, java.math.BigDecimal phanTramGiamGia, String trangThai) {
@@ -44,35 +43,28 @@ public class HoaDonDAO {
         } catch (SQLException e) {
             throw new LoiCSDL("Không cập nhật được hóa đơn: " + e.getMessage(), e);
         }
-        return layDanhSachHoaDon(maHoaDon).get(0);
+        return timHoaDon(maHoaDon);
     }
     // Thêm hóa đơn và chi tiết hóa đơn trong cùng một transaction (BN-04): một trong hai lỗi thì hủy cả hai
-    public ChiTietHoaDon taoChiTietHoaDon(String maHoaDon, int soLuong, int soFDIRang, String maDichVu, String ghiChu, String maChiTiet, java.math.BigDecimal donGia,
-            java.math.BigDecimal giamGia) {
-        String sql = "INSERT INTO dbo.ChiTietHoaDon (maHoaDon, soLuong, soFDIRang, maDichVu, ghiChu, maChiTiet, donGia, giamGia) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public HoaDon timHoaDon(String maHoaDon) {
+        String sql = "SELECT * FROM dbo.HoaDon WHERE maHoaDon = ?";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, maHoaDon);
-            ps.setInt(2, soLuong);
-            ps.setInt(3, soFDIRang);
-            ps.setString(4, maDichVu);
-            ps.setString(5, ghiChu);
-            ps.setString(6, maChiTiet);
-            ps.setBigDecimal(7, donGia);
-            ps.setBigDecimal(8, giamGia);
-            int n = ps.executeUpdate();
-            if (n != 1) {
-                throw new LoiCSDL("Không thêm được chi tiết hóa đơn", new SQLException());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return docHoaDon(rs);
+                } else {
+                    return null;
+                }
             }
         } catch (SQLException e) {
-            throw new LoiCSDL("Không thêm được chi tiết hóa đơn: " + e.getMessage(), e);
+            throw new LoiCSDL("Không đọc được hóa đơn: " + e.getMessage(), e);
         }
-        return new ChiTietHoaDon(maHoaDon, soLuong, soFDIRang, maDichVu, ghiChu, maChiTiet, donGia, giamGia);
     }
-    private List<HoaDon> layDanhSachHoaDon(String maBN) {
+    List<HoaDon> layDanhSachHoaDon() {
         List<HoaDon> ds = new ArrayList<>();
-        String sql = "SELECT * FROM dbo.HoaDon WHERE maBN = ?";
+        String sql = "SELECT * FROM dbo.HoaDon";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, maBN);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ds.add(docHoaDon(rs));
@@ -93,31 +85,5 @@ public class HoaDonDAO {
         hd.setGhiChu(rs.getString("ghiChu"));
         return hd;
     }
-    private List<ChiTietHoaDon> layDanhSachChiTietHoaDon(String maHoaDon) {
-        List<ChiTietHoaDon> ds = new ArrayList<>();
-        String sql = "SELECT * FROM dbo.ChiTietHoaDon WHERE maHoaDon = ?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, maHoaDon);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ds.add(docChiTiet(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được chi tiết hóa đơn: " + e.getMessage(), e);
-        }
-        return ds;
-    }
-    private ChiTietHoaDon docChiTiet(ResultSet rs) throws SQLException {
-        ChiTietHoaDon ct = new ChiTietHoaDon();
-        ct.setMaHoaDon(rs.getString("maHoaDon"));
-        ct.setMaDichVu(rs.getString("maDichVu"));
-        ct.setSoLuong(rs.getInt("soLuong"));
-        ct.setDonGia(rs.getBigDecimal("donGia"));
-        ct.setGiamGia(rs.getBigDecimal("giamGia"));
-        ct.setGhiChu(rs.getString("ghiChu"));
-        ct.setMaChiTiet(rs.getString("maChiTiet"));
-        ct.setSoFDIRang(rs.getInt("soFDIRang"));
-        return ct;
-    }
+    
 }
