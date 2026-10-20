@@ -211,6 +211,7 @@ CREATE TABLE dbo.LuotKham (
     maNhanVienPhuTrach NVARCHAR(10)  NOT NULL REFERENCES dbo.NhanVien(maNV),
     maLieuTrinh        NVARCHAR(10)  NULL REFERENCES dbo.LieuTrinh(maLieuTrinh),
     maHoaDon           NVARCHAR(10)  NULL REFERENCES dbo.HoaDon(maHoaDon),
+    maLichHen          NVARCHAR(10)  NULL REFERENCES dbo.LichHen(maLichHen),
     gioBatDau          DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
     gioKetThuc         DATETIME2     NULL,
     lyDoKham           NVARCHAR(255) NULL,
