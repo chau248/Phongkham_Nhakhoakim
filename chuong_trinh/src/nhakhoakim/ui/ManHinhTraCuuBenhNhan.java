@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -12,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 import nhakhoakim.dao.BenhNhanService;
+import nhakhoakim.dao.NhaSiPhuTrachService;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HangSo;
@@ -23,10 +25,11 @@ import nhakhoakim.entity.NhanVien;
 public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
 
     private BenhNhanService benhNhanService = new BenhNhanService();
+    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
 
     private JTextField txtTuKhoa = TienIch.oNhap(28);              // từ khóa tìm kiếm
-    private JTable tblBenhNhan = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Ngày sinh", "Giới tính", "Số điện thoại", "Địa chỉ", "Trạng thái"},
-            new int[] {90, 200, 100, 80, 120, 240, 110}, "Không có bệnh nhân nào."); // kết quả
+    private JTable tblBenhNhan = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Ngày sinh", "Giới tính", "Số điện thoại", "Địa chỉ", "Nha sĩ khám gần nhất", "Trạng thái"},
+            new int[] {90, 180, 95, 75, 115, 200, 170, 110}, "Không có bệnh nhân nào."); // kết quả
     private JLabel lblKetQua = new JLabel();                       // số kết quả
     private List<BenhNhan> dsBenhNhan = new ArrayList<>();         // dữ liệu của bảng
     private JButton btnSua = TienIch.nutPhu("Sửa thông tin");
@@ -104,10 +107,16 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
     private void tim() {
         try {
             dsBenhNhan = benhNhanService.timKiem(txtTuKhoa.getText(), chkNgung.isSelected());
+            List<String> dsMa = new ArrayList<>();
+            for (BenhNhan bn : dsBenhNhan) {
+                dsMa.add(bn.getMaBN());
+            }
+            Map<String, String> nhaSi = nhaSiService.layTenNhaSiKhamGanNhat(dsMa); // hỏi một lần cho cả bảng
             List<String[]> dong = new ArrayList<>();
             for (BenhNhan bn : dsBenhNhan) {
+                String tenNhaSi = nhaSi.containsKey(bn.getMaBN()) ? nhaSi.get(bn.getMaBN()) : "Chưa khám";
                 dong.add(new String[] {bn.getMaBN(), bn.getHoTen(), TienIch.ngay(bn.getNgaySinh()), TienIch.chu(bn.getGioiTinh()),
-                    TienIch.chu(bn.getSdt()), TienIch.chu(bn.getDiaChi()), TienIch.chu(bn.getTrangThai())});
+                    TienIch.chu(bn.getSdt()), TienIch.chu(bn.getDiaChi()), tenNhaSi, TienIch.chu(bn.getTrangThai())});
             }
             TienIch.napBang(tblBenhNhan, dong);
             lblKetQua.setText(dong.isEmpty() ? "Không tìm thấy bệnh nhân nào." : "Tìm thấy " + dong.size() + " bệnh nhân (tối đa 50).");

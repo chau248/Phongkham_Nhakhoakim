@@ -123,7 +123,7 @@ public class BenhNhan {
         this.ghiChu = ghiChu;
     }
 
-    // Tuổi của bệnh nhân tại ngày hôm nay (chưa biết ngày sinh thì trả về -1)
+    // Tuổi của bệnh nhân tại ngày hôm nay
     public int tinhTuoi() {
         if (ngaySinh == null) {
             return -1;

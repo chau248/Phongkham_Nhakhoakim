@@ -3,6 +3,7 @@ package nhakhoakim.ui;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -12,6 +13,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 import nhakhoakim.dao.HoSoBenhAnService;
+import nhakhoakim.dao.NhaSiPhuTrachService;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HangSo;
@@ -26,6 +28,7 @@ import nhakhoakim.entity.NhanVien;
 public class ManHinhHoSoBenhAn extends JPanel {
 
     private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
+    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();   // chọn bệnh nhân cần xem
     private JPanel khuBanner = new JPanel(new java.awt.BorderLayout());      // chỗ đặt banner dị ứng
@@ -37,10 +40,10 @@ public class ManHinhHoSoBenhAn extends JPanel {
     private JTextField txtThuoc = TienIch.oNhap(40);                         // thuốc đang dùng
     private JButton btnLuu = TienIch.nutChinh("Lưu thay đổi");
     private JLabel lblQuyen = new JLabel();                                  // giải thích vì sao không sửa được
-    private JTable tblLieuTrinh = TienIch.taoBang(new String[] {"Loại", "Số buổi", "Giai đoạn hiện tại", "Trạng thái", "Dự kiến kết thúc"},
-            new int[] {110, 70, 240, 120, 120}, "Bệnh nhân chưa có liệu trình.");                      // liệu trình của bệnh nhân
-    private JTable tblLichSu = TienIch.taoBang(new String[] {"Ngày khám", "Lý do", "Chẩn đoán", "Trạng thái"},
-            new int[] {130, 200, 280, 100}, "Bệnh nhân chưa có lượt khám nào.");                       // lịch sử khám
+    private JTable tblLieuTrinh = TienIch.taoBang(new String[] {"Loại", "Số buổi", "Giai đoạn hiện tại", "Nha sĩ phụ trách", "Trạng thái", "Dự kiến kết thúc"},
+            new int[] {100, 65, 220, 150, 110, 110}, "Bệnh nhân chưa có liệu trình.");                // liệu trình của bệnh nhân
+    private JTable tblLichSu = TienIch.taoBang(new String[] {"Ngày khám", "Nha sĩ", "Lý do", "Chẩn đoán", "Trạng thái"},
+            new int[] {130, 150, 180, 250, 100}, "Bệnh nhân chưa có lượt khám nào.");                  // lịch sử khám
     private JPanel khuNoiDung = new JPanel();                                // phần hiện sau khi chọn bệnh nhân
     private HoSoBenhAn hoSo;                                                 // hồ sơ đang xem
     private HoSoBenhAn hoSoBanDau;                                           // bản sao hồ sơ lúc mở, để Service gộp đúng khi hai người cùng sửa
@@ -83,7 +86,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         JPanel theYTe = TienIch.the(lblThongTin, form, TienIch.dong(btnLuu, btnDongHoSo, lblQuyen));
 
         khuBanner.setOpaque(false);
-        TienIch.cotXuongDong(tblLichSu, 2);
+        TienIch.cotXuongDong(tblLichSu, 3);
         khuNoiDung.setOpaque(false);
         TienIch.xep(khuNoiDung, 14, khuBanner, theYTe, TienIch.chuThuong("Liệu trình", true), TienIch.cuonBang(tblLieuTrinh, 110),
                 TienIch.chuThuong("Lịch sử khám (mới nhất trước)", true), TienIch.cuonBang(tblLichSu, 150));
@@ -131,17 +134,30 @@ public class ManHinhHoSoBenhAn extends JPanel {
         hoSoBanDau = saoChep(hoSo);
         apDungQuyenSua();
 
+        // Lấy liệu trình và lịch sử khám trước, rồi hỏi tên nha sĩ một lần cho cả hai bảng
+        List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(bn.getMaBN());
+        List<LuotKham> dsLichSu = hoSoService.layLichSuKham(hoSo.getMaHoSo());
+        List<String> dsMaNhaSi = new ArrayList<>();
+        for (LieuTrinh lt : dsLieuTrinh) {
+            dsMaNhaSi.add(lt.getMaNhaSiPhuTrach());
+        }
+        for (LuotKham lk : dsLichSu) {
+            dsMaNhaSi.add(lk.getMaNhanVienPhuTrach());
+        }
+        Map<String, String> tenNhaSi = nhaSiService.layTen(dsMaNhaSi);
+
         List<String[]> dongLieuTrinh = new ArrayList<>();
-        for (LieuTrinh lt : hoSoService.layLieuTrinh(bn.getMaBN())) {
+        for (LieuTrinh lt : dsLieuTrinh) {
             dongLieuTrinh.add(new String[] {lt.getLoaiDichVu(), String.valueOf(lt.getSoBuoiDuKien()),
-                TienIch.chu(lt.getGiaiDoanHienTai()), lt.getTrangThai(), TienIch.ngay(lt.getNgayDuKienKetThuc())});
+                TienIch.chu(lt.getGiaiDoanHienTai()), NhaSiPhuTrachService.tenHoacMa(tenNhaSi, lt.getMaNhaSiPhuTrach()),
+                lt.getTrangThai(), TienIch.ngay(lt.getNgayDuKienKetThuc())});
         }
         TienIch.napBang(tblLieuTrinh, dongLieuTrinh);
 
         List<String[]> dongLichSu = new ArrayList<>();
-        for (LuotKham lk : hoSoService.layLichSuKham(hoSo.getMaHoSo())) {
-            dongLichSu.add(new String[] {TienIch.ngayGio(lk.getGioBatDau()), TienIch.chu(lk.getLyDoKham()),
-                TienIch.chu(lk.getChanDoan()), lk.getTrangThai()});
+        for (LuotKham lk : dsLichSu) {
+            dongLichSu.add(new String[] {TienIch.ngayGio(lk.getGioBatDau()), NhaSiPhuTrachService.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()),
+                TienIch.chu(lk.getLyDoKham()), TienIch.chu(lk.getChanDoan()), lk.getTrangThai()});
         }
         TienIch.napBang(tblLichSu, dongLichSu);
 
