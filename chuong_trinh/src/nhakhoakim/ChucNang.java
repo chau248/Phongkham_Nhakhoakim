@@ -2,6 +2,8 @@ package nhakhoakim;
 
 // Một chức năng của chương trình (một mục trong menu)
 public class ChucNang {
+	
+	
 
     private String nhom;          // nhóm đối tượng, cũng là tên menu
     private String ten;           // tên chức năng
