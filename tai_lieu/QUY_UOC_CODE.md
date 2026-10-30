@@ -1,18 +1,18 @@
 # Quy ước viết code và làm việc nhóm
 
-Theo slide môn học *Review 4: Coding Convention*, áp dụng cho cả 3 thành viên. Bảng này giống sheet *Quy ước code* trong `tai_lieu/ke_hoach/KeHoach_PhanCong_Code.xlsx`.
+Theo slide môn học *Review 4: Coding Convention*, áp dụng cho cả 3 thành viên. Bảng này giống sheet *Quy ước code* trong `tai_lieu/KeHoach_PhanCong_Code.xlsx`.
 
 | Hạng mục | Quy ước | Ví dụ |
 |---|---|---|
 | Thư mục | Chữ thường, không dấu cách, không dấu tiếng Việt; dùng gạch dưới nếu cần. Đường dẫn dự án trên máy cũng phải không dấu | tai_lieu, chuong_trinh, csdl, ho_so |
 | Tên file (ngoài Java) | Chữ thường, không dấu cách/tiếng Việt, dùng gạch dưới; mô tả nội dung | 01_schema.sql, database.properties |
-| Package | Chữ thường, không gạch dưới | nhakhoakim.entity, nhakhoakim.dao, nhakhoakim.ui (chỉ 3 package này; lớp Service nằm trong dao) |
+| Package | Chữ thường, không gạch dưới | nhakhoakim.entity, nhakhoakim.dao, nhakhoakim.service, nhakhoakim.ui, nhakhoakim.util |
 | Class / Interface | PascalCase, danh từ, bắt đầu bằng chữ cái; tên miền dùng tiếng Việt không dấu | BenhNhan, LuotKham, BenhNhanService |
 | Phương thức | camelCase, bắt đầu bằng động từ | timTheoMa, taoLichTaiKham, ghiNhatKy |
 | Biến, tham số, thuộc tính | camelCase, mô tả rõ nội dung; hằng số viết hoa với gạch dưới | maBN, tongTien, TOI_DA_LAN_SAI |
 | Exception | PascalCase kết thúc bằng Exception | NghiepVuException |
-| Control Java Swing | Tiền tố 3 chữ: txt (JTextField), txa (JTextArea), lbl (JLabel), btn (JButton), cmb (JComboBox), tbl (JTable), chk (JCheckBox), pnl (JPanel) | txtTenDangNhap, btnDangNhap, tblLichHen, cmbDichVu, lblTen |
-| Màn hình | Mỗi màn hình là một lớp Java tên ManHinh + tên màn hình, là một JPanel (extends JPanel), viết bằng code Swing và đăng ký trong hàm dangKyManHinh của MainApp; mỗi màn hình chỉ một công việc | ManHinhDatLichHen, ManHinhHoSoBenhAn |
+| Control JavaFX | Tiền tố 3 chữ: txt (TextField), lbl, btn, cmb (ComboBox), tbl (TableView), dtp (DatePicker), chk, rad, pnl, tab, lst, tre, lnk (Hyperlink) | txtTenDangNhap, btnDangNhap, tblLichHen, cmbDichVu, lblTen |
+| Màn hình | Mỗi màn hình là một lớp Java tên ManHinh + tên màn hình, viết bằng code JavaFX và gắn vào hàm taoManHinh trong MainApp; mỗi màn hình chỉ một công việc | ManHinhDatLichHen, ManHinhHoSoBenhAn |
 | Comment | Bắt buộc cho mọi class, phương thức, thuộc tính và đoạn xử lý khó; viết ngắn, một dòng // hoặc /** */, nói rõ mục đích | Xem mẫu trong ChucNang.java và MainApp.java |
 | Mã số bảng | Chuỗi dạng tiền tố + 6 chữ số, sinh bằng MaGenerator | BN000001, HD000123 |
 | Branch | Không commit trực tiếp lên main. Mỗi người một nhánh feature/<ten_viec> tách từ develop; merge vào develop sau khi test và được 1 người khác review | feature/dat_lich_hen |
