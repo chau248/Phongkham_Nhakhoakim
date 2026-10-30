@@ -21,6 +21,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import Controller.control_taikhoan;
 import Entity.NhanVien;
 
 public class Jp_body_taikhoan extends JPanel{
@@ -29,7 +30,7 @@ public class Jp_body_taikhoan extends JPanel{
 	public Jp_body_taikhoan() {
 		
 		
-		
+		control_taikhoan ac = new control_taikhoan(this);
 		
 		
 		this.setLayout(new BorderLayout());
@@ -67,6 +68,8 @@ public class Jp_body_taikhoan extends JPanel{
         
         
         JButton bt_chitiettk = new JButton("Chi tiết tài khoản");
+        
+        bt_chitiettk.addActionListener(ac);
         bt_chitiettk.setFont(new Font("Segoe UI", Font.BOLD, 13));
         bt_chitiettk.setBackground(new Color(40, 167, 69)); // Xanh lá
         bt_chitiettk.setForeground(Color.WHITE);
@@ -205,32 +208,7 @@ public class Jp_body_taikhoan extends JPanel{
         jp2.add(scroll,BorderLayout.CENTER);
         
         
-//      private String maTaiKhoan;
-//	  private String tenDangNhap;
-//	  
-//	  private NhanVien maNV;
-//	  private String matKhauHash;
-//	  private String vaiTro;
-//	  private boolean trangThaiKhoa;
-//	  private LocalDateTime ngayTao;
-//	  private LocalDateTime lanDangNhapCuoi;
-//	  private int soLanDangNhapSai;
-//	  private LocalDateTime thoiGianKhoaDen;
-//	  private LocalDateTime ngayDoiMatKhauCuoi;
-//	  private boolean yeuCauDoiMatKhau;
-        
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         
@@ -239,56 +217,26 @@ public class Jp_body_taikhoan extends JPanel{
         
         this.add(jp2,BorderLayout.CENTER);
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-		
+
 		
 	}
 	
 	public void openchitiettaikhoan() {
-		
-//      private String maTaiKhoan;
-//	  private String tenDangNhap;
-//	  
-//	  private NhanVien maNV;
-//	  private String matKhauHash;
-//	  private String vaiTro;
-//	  private boolean trangThaiKhoa;
-//	  private LocalDateTime ngayTao;
-//	  private LocalDateTime lanDangNhapCuoi;
-//	  private int soLanDangNhapSai;
-//	  private LocalDateTime thoiGianKhoaDen;
-//	  private LocalDateTime ngayDoiMatKhauCuoi;
-//	  private boolean yeuCauDoiMatKhau;
-		
+
 		JDialog dia = new JDialog();
 		
 		dia.setLayout(new BorderLayout());
 		dia.setTitle("Chi tiết tài khoản");
-		dia.setSize(900,1800);
+		dia.setSize(1200,200);
 		
 		dia.setLocationRelativeTo(null);
 		
 		
 		JPanel jp1 = new JPanel();
 		
-		jp1.setLayout(new GridLayout(1,3));
+		
+		
+		jp1.setLayout(new GridLayout(1,3,40,0));
 		
 		
 		
@@ -402,44 +350,99 @@ public class Jp_body_taikhoan extends JPanel{
 		
 //		---jp1-3
 		
+		JPanel jp1_3 = new JPanel();
+		
+		jp1_3.setLayout(new BorderLayout());
+		
+		JLabel lb_lichsu = new JLabel("LỊCH SỬ VÀ AN TOÀN HỆ THỐNG");
+		
+		jp1_3.add(lb_lichsu,BorderLayout.NORTH);
 		
 		
+		JPanel jp1_3_lichsu = new JPanel();
+		
+		jp1_3_lichsu.setLayout(new GridLayout(3,2));
+		
+		JLabel lb_ngaytao = new JLabel("Ngày tạo:");
+		jp1_3_lichsu.add(lb_ngaytao);
+		
+		JTextField jt_ngaytao = new JTextField();
+		jp1_3_lichsu.add(jt_ngaytao);
 		
 		
+		JLabel lb_dangnhapcuoi = new JLabel("Đăng nhập cuối:");
+		
+		jp1_3_lichsu.add(lb_dangnhapcuoi);
+		
+		JTextField jt_dangnhapcuoi = new JTextField();
+		
+		jp1_3_lichsu.add(jt_dangnhapcuoi);
 		
 		
+		JLabel lb_nhapsai = new JLabel("Nhập sai hiện tại:");
+		
+		jp1_3_lichsu.add(lb_nhapsai);
+		
+		JTextField jt_nhapsai = new JTextField();
+		
+		jp1_3_lichsu.add(jt_nhapsai);
 		
 		
+		jp1_3.add(jp1_3_lichsu,BorderLayout.CENTER);
 		
 		
+		JButton bt_reset = new JButton("Reset bộ đếm sai");
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		bt_reset.setBackground(new Color(40, 167, 69)); // Xanh lá
+        bt_reset.setForeground(Color.WHITE);
+        bt_reset.setFocusPainted(false);
+        bt_reset.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        
+        
+        
+        jp1_3.add(bt_reset,BorderLayout.SOUTH);
+        
+        
+        jp1.add(jp1_3);
+        
+        
+        
+//        jp2
+        
+        
+        JPanel jp2 = new JPanel();
+        
+        jp2.setLayout(new FlowLayout());
+        
+        JButton bt_luu = new JButton("Lưu thay đổi");
+        
+        bt_luu.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        bt_luu.setBackground(new Color(40, 167, 69)); // Xanh lá
+        bt_luu.setForeground(Color.WHITE);
+        bt_luu.setFocusPainted(false);
+        bt_luu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        jp2.add(bt_luu);
+        
+        
+        
+        JButton bt_huy = new JButton("Hủy bỏ");
+        
+        bt_huy.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        bt_huy.setBackground(Color.WHITE);
+        bt_huy.setForeground(new Color(33, 37, 41));
+        bt_huy.setFocusPainted(false);
+        bt_huy.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        
+        jp2.add(bt_huy);
+        
+        
+        dia.add(jp1,BorderLayout.CENTER);
+        dia.add(jp2,BorderLayout.SOUTH);
+        
+        dia.setVisible(true);
 		
 		
 	}
