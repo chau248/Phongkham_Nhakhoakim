@@ -1,11 +1,23 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-// Bản tạm do Hậu viết để chạy thử; Trường thay bằng bản đầy đủ của mình (giữ nguyên tên getter/setter).
+//maLichHen : String 
+//ngayHen : LocalDate 
+//gioHen : LocalTime 
+//trangThai : String 
+//dichVu : DichVu 
+//ngayTao : LocalDateTime 
+//thoiLuongDuKien : int (// Phút) 
+//hinhThucDat : String (// Trực tiếp / Điện thoại / Online) 
+//lyDoHuy : String 
+//daNhacHen : boolean 
+//ghiChu : String 
+//
+//
 
-// Lịch hẹn khám
 public class LichHen {
 
     private String maLichHen; // mã lịch hẹn, dạng LH000001
@@ -17,8 +29,26 @@ public class LichHen {
     private String trangThai; // Chờ xác nhận, Đã xác nhận, Hoàn thành, Không đến hoặc Đã hủy
     private String phong; // phòng khám
     private int thoiLuongDuKien; // thời lượng dự kiến (phút)
+    
+    
+    
+    
 
-    public String getMaLichHen() {
+    public LichHen(String maLichHen, String maBN, String maNhanVien, String maDichVu, LocalDate ngayHen,
+			LocalTime gioHen, String trangThai, String phong, int thoiLuongDuKien) {
+		super();
+		this.maLichHen = maLichHen;
+		this.maBN = maBN;
+		this.maNhanVien = maNhanVien;
+		this.maDichVu = maDichVu;
+		this.ngayHen = ngayHen;
+		this.gioHen = gioHen;
+		this.trangThai = trangThai;
+		this.phong = phong;
+		this.thoiLuongDuKien = thoiLuongDuKien;
+	}
+
+	public String getMaLichHen() {
         return maLichHen;
     }
 

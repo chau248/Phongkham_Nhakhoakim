@@ -1,8 +1,8 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
-// Liệu trình điều trị nhiều buổi của một bệnh nhân
 public class LieuTrinh {
 
     private String maLieuTrinh; // mã liệu trình, dạng LT000001
@@ -17,8 +17,30 @@ public class LieuTrinh {
     private String trangThai; // Đang thực hiện, Hoàn thành hoặc Đã hủy
     private String maNhaSiPhuTrach; // mã nha sĩ phụ trách
     private String ghiChu; // ghi chú
+    
+    
+    
+    
 
-    public String getMaLieuTrinh() {
+    public LieuTrinh(String maLieuTrinh, String maBN, String loaiDichVu, int soBuoiDuKien, String giaiDoanHienTai,
+			LocalDate ngayBatDau, LocalDate ngayDuKienKetThuc, LocalDate ngayKetThucThucTe, long tongChiPhiDuKien,
+			String trangThai, String maNhaSiPhuTrach, String ghiChu) {
+		super();
+		this.maLieuTrinh = maLieuTrinh;
+		this.maBN = maBN;
+		this.loaiDichVu = loaiDichVu;
+		this.soBuoiDuKien = soBuoiDuKien;
+		this.giaiDoanHienTai = giaiDoanHienTai;
+		this.ngayBatDau = ngayBatDau;
+		this.ngayDuKienKetThuc = ngayDuKienKetThuc;
+		this.ngayKetThucThucTe = ngayKetThucThucTe;
+		this.tongChiPhiDuKien = tongChiPhiDuKien;
+		this.trangThai = trangThai;
+		this.maNhaSiPhuTrach = maNhaSiPhuTrach;
+		this.ghiChu = ghiChu;
+	}
+
+	public String getMaLieuTrinh() {
         return maLieuTrinh;
     }
 
