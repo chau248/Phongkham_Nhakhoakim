@@ -19,139 +19,105 @@ import java.time.LocalTime;
 //
 
 public class LichHen {
-	
-	private String maLichHen;
-	
-	private LocalDate ngayHen;
-	
-	private LocalTime gioHen;
-	
-	private String trangThai;
-	
-	private DichVu dichVu;
-	
-	private LocalDateTime ngayTao;
-	
-	private int thoiLuongDuKien;
-	
-	private String hinhThucDat;
-	
-	private String lyDoHuy;
-	
-	private boolean daNhacHen;
-	
-	private String ghiChu;
 
-	public LichHen(String maLichHen, LocalDate ngayHen, LocalTime gioHen, String trangThai, DichVu dichVu,
-			LocalDateTime ngayTao, int thoiLuongDuKien, String hinhThucDat, String lyDoHuy, boolean daNhacHen,
-			String ghiChu) {
+    private String maLichHen; // mã lịch hẹn, dạng LH000001
+    private String maBN; // mã bệnh nhân
+    private String maNhanVien; // mã nha sĩ
+    private String maDichVu; // mã dịch vụ
+    private LocalDate ngayHen; // ngày hẹn
+    private LocalTime gioHen; // giờ hẹn
+    private String trangThai; // Chờ xác nhận, Đã xác nhận, Hoàn thành, Không đến hoặc Đã hủy
+    private String phong; // phòng khám
+    private int thoiLuongDuKien; // thời lượng dự kiến (phút)
+    
+    
+    
+    
+
+    public LichHen(String maLichHen, String maBN, String maNhanVien, String maDichVu, LocalDate ngayHen,
+			LocalTime gioHen, String trangThai, String phong, int thoiLuongDuKien) {
 		super();
 		this.maLichHen = maLichHen;
+		this.maBN = maBN;
+		this.maNhanVien = maNhanVien;
+		this.maDichVu = maDichVu;
 		this.ngayHen = ngayHen;
 		this.gioHen = gioHen;
 		this.trangThai = trangThai;
-		this.dichVu = dichVu;
-		this.ngayTao = ngayTao;
+		this.phong = phong;
 		this.thoiLuongDuKien = thoiLuongDuKien;
-		this.hinhThucDat = hinhThucDat;
-		this.lyDoHuy = lyDoHuy;
-		this.daNhacHen = daNhacHen;
-		this.ghiChu = ghiChu;
 	}
 
 	public String getMaLichHen() {
-		return maLichHen;
-	}
+        return maLichHen;
+    }
 
-	public void setMaLichHen(String maLichHen) {
-		this.maLichHen = maLichHen;
-	}
+    public void setMaLichHen(String maLichHen) {
+        this.maLichHen = maLichHen;
+    }
 
-	public LocalDate getNgayHen() {
-		return ngayHen;
-	}
+    public String getMaBN() {
+        return maBN;
+    }
 
-	public void setNgayHen(LocalDate ngayHen) {
-		this.ngayHen = ngayHen;
-	}
+    public void setMaBN(String maBN) {
+        this.maBN = maBN;
+    }
 
-	public LocalTime getGioHen() {
-		return gioHen;
-	}
+    public String getMaNhanVien() {
+        return maNhanVien;
+    }
 
-	public void setGioHen(LocalTime gioHen) {
-		this.gioHen = gioHen;
-	}
+    public void setMaNhanVien(String maNhanVien) {
+        this.maNhanVien = maNhanVien;
+    }
 
-	public String getTrangThai() {
-		return trangThai;
-	}
+    public String getMaDichVu() {
+        return maDichVu;
+    }
 
-	public void setTrangThai(String trangThai) {
-		this.trangThai = trangThai;
-	}
+    public void setMaDichVu(String maDichVu) {
+        this.maDichVu = maDichVu;
+    }
 
-	public DichVu getDichVu() {
-		return dichVu;
-	}
+    public LocalDate getNgayHen() {
+        return ngayHen;
+    }
 
-	public void setDichVu(DichVu dichVu) {
-		this.dichVu = dichVu;
-	}
+    public void setNgayHen(LocalDate ngayHen) {
+        this.ngayHen = ngayHen;
+    }
 
-	public LocalDateTime getNgayTao() {
-		return ngayTao;
-	}
+    public LocalTime getGioHen() {
+        return gioHen;
+    }
 
-	public void setNgayTao(LocalDateTime ngayTao) {
-		this.ngayTao = ngayTao;
-	}
+    public void setGioHen(LocalTime gioHen) {
+        this.gioHen = gioHen;
+    }
 
-	public int getThoiLuongDuKien() {
-		return thoiLuongDuKien;
-	}
+    public String getTrangThai() {
+        return trangThai;
+    }
 
-	public void setThoiLuongDuKien(int thoiLuongDuKien) {
-		this.thoiLuongDuKien = thoiLuongDuKien;
-	}
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
 
-	public String getHinhThucDat() {
-		return hinhThucDat;
-	}
+    public String getPhong() {
+        return phong;
+    }
 
-	public void setHinhThucDat(String hinhThucDat) {
-		this.hinhThucDat = hinhThucDat;
-	}
+    public void setPhong(String phong) {
+        this.phong = phong;
+    }
 
-	public String getLyDoHuy() {
-		return lyDoHuy;
-	}
+    public int getThoiLuongDuKien() {
+        return thoiLuongDuKien;
+    }
 
-	public void setLyDoHuy(String lyDoHuy) {
-		this.lyDoHuy = lyDoHuy;
-	}
-
-	public boolean isDaNhacHen() {
-		return daNhacHen;
-	}
-
-	public void setDaNhacHen(boolean daNhacHen) {
-		this.daNhacHen = daNhacHen;
-	}
-
-	public String getGhiChu() {
-		return ghiChu;
-	}
-
-	public void setGhiChu(String ghiChu) {
-		this.ghiChu = ghiChu;
-	}
-	
-	
-	
-	
-	
-	
-	
+    public void setThoiLuongDuKien(int thoiLuongDuKien) {
+        this.thoiLuongDuKien = thoiLuongDuKien;
+    }
 
 }

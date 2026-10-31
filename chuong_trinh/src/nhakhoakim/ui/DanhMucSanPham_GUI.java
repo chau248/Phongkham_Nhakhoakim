@@ -47,7 +47,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 
-import nhakhoakim.Controller.Control_Danhmucdichvu;
+import nhakhoakim.controller.Control_Danhmucdichvu;
 import nhakhoakim.entity.NhanVien;
 
 

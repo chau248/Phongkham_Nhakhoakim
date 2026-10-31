@@ -1,4 +1,4 @@
-package nhakhoakim.Connection;
+package nhakhoakim.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
