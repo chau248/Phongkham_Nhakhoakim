@@ -1,4 +1,4 @@
-package Entity;
+package nhakhoakim.entity;
 
 //maHoaDon : HoaDon 
 //maBenhNhan : BenhNhan 

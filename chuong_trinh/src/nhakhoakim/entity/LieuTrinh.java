@@ -1,4 +1,4 @@
-package Entity;
+package nhakhoakim.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

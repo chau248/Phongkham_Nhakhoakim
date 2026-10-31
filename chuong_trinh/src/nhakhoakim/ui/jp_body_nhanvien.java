@@ -1,4 +1,4 @@
-package App;
+package nhakhoakim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

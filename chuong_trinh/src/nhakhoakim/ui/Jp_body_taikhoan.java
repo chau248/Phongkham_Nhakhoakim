@@ -1,4 +1,4 @@
-package App;
+package nhakhoakim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,8 +21,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import Controller.control_taikhoan;
-import Entity.NhanVien;
+import nhakhoakim.Controller.control_taikhoan;
+import nhakhoakim.entity.NhanVien;
 
 public class Jp_body_taikhoan extends JPanel{
 	

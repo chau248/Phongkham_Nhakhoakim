@@ -1,4 +1,4 @@
-package DAO;
+package nhakhoakim.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import Connection.jdbcutil;
-import Entity.NhanVien;
+import nhakhoakim.Connection.jdbcutil;
+import nhakhoakim.entity.NhanVien;
 
 public class NhanVien_DAO implements Dao_interface<NhanVien>{
 	

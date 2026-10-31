@@ -1,9 +1,9 @@
-package Controller;
+package nhakhoakim.Controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import App.DanhMucSanPham_GUI;
+import nhakhoakim.ui.DanhMucSanPham_GUI;
 
 public class Control_Danhmucdichvu implements ActionListener{
 	

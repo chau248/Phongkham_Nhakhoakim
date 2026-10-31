@@ -1,4 +1,4 @@
-package DAO;
+package nhakhoakim.dao;
 
 import java.util.ArrayList;
 

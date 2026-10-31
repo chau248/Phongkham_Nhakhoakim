@@ -1,4 +1,4 @@
-package DAO;
+package nhakhoakim.dao;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import Connection.jdbcutil;
-import Entity.TaiKhoan;
+import nhakhoakim.Connection.jdbcutil;
+import nhakhoakim.entity.TaiKhoan;
 
 public class TaiKhoan_DAO implements Dao_interface<TaiKhoan> {
 	
