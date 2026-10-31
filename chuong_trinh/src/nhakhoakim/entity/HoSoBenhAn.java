@@ -1,8 +1,8 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
-// Hồ sơ bệnh án của một bệnh nhân (mỗi bệnh nhân có đúng một hồ sơ)
 public class HoSoBenhAn {
 
     private String maHoSo; // mã hồ sơ, dạng HS000001
@@ -15,8 +15,26 @@ public class HoSoBenhAn {
     private String thuocDangSuDung; // thuốc đang dùng
     private String ghiChuDacBiet; // ghi chú đặc biệt
     private String trangThaiHoSo; // Đang mở hoặc Đã đóng
+    
+    
+    
 
-    public String getMaHoSo() {
+    public HoSoBenhAn(String maHoSo, String maBN, LocalDate ngayTao, String tienSuBenh, String canhBaoDiUng,
+			String nhomMau, String benhNen, String thuocDangSuDung, String ghiChuDacBiet, String trangThaiHoSo) {
+		super();
+		this.maHoSo = maHoSo;
+		this.maBN = maBN;
+		this.ngayTao = ngayTao;
+		this.tienSuBenh = tienSuBenh;
+		this.canhBaoDiUng = canhBaoDiUng;
+		this.nhomMau = nhomMau;
+		this.benhNen = benhNen;
+		this.thuocDangSuDung = thuocDangSuDung;
+		this.ghiChuDacBiet = ghiChuDacBiet;
+		this.trangThaiHoSo = trangThaiHoSo;
+	}
+
+	public String getMaHoSo() {
         return maHoSo;
     }
 

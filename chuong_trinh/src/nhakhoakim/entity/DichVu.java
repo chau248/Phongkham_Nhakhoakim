@@ -1,8 +1,17 @@
 package nhakhoakim.entity;
 
-// Bản tạm do Hậu viết để chạy thử; Tâm thay bằng bản đầy đủ của mình (giữ nguyên tên getter/setter).
+import java.math.BigDecimal;
 
-// Dịch vụ nha khoa
+//maDichVu : String 
+//tenDichVu : String 
+// gia : BigDecimal 
+// thoiGianDuKien : int 
+// moTa : .. 
+// donViTinh : String (// Răng / Lần / Hàm) 
+//trangThaiHoatDong : boolean 
+// yeuCauLieuTrinh : boolean (// Cần nhiều buổi điều trị hay không) 
+//lienQuanImplantCauRang : boolean (// Dùng cho ràng buộc sơ đồ răng "đã nhổ") 
+
 public class DichVu {
 
     private String maDichVu; // mã dịch vụ, dạng DV000001
@@ -13,8 +22,26 @@ public class DichVu {
     private boolean trangThaiHoatDong; // true nếu đang cung cấp
     private boolean yeuCauLieuTrinh; // true nếu cần theo liệu trình
     private boolean lienQuanImplantCauRang; // true nếu là dịch vụ Implant hoặc cầu răng
+    
+    
+    
+    
+    
 
-    public String getMaDichVu() {
+    public DichVu(String maDichVu, String tenDichVu, long gia, int thoiGianDuKien, String loaiDichVu,
+			boolean trangThaiHoatDong, boolean yeuCauLieuTrinh, boolean lienQuanImplantCauRang) {
+		super();
+		this.maDichVu = maDichVu;
+		this.tenDichVu = tenDichVu;
+		this.gia = gia;
+		this.thoiGianDuKien = thoiGianDuKien;
+		this.loaiDichVu = loaiDichVu;
+		this.trangThaiHoatDong = trangThaiHoatDong;
+		this.yeuCauLieuTrinh = yeuCauLieuTrinh;
+		this.lienQuanImplantCauRang = lienQuanImplantCauRang;
+	}
+
+	public String getMaDichVu() {
         return maDichVu;
     }
 

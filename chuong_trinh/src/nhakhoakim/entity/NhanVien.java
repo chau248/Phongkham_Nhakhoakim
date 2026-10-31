@@ -1,10 +1,11 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
-// Bản tạm do Hậu viết để chạy thử; Tâm thay bằng bản đầy đủ của mình (giữ nguyên tên getter/setter).
 
-// Nhân viên phòng khám
+//- maNV : String   - hoTen : String   - vaiTro : String   - ngaySinh : LocalDate   - gioiTinh : String   - sdt : String   - email : String   - diaChi : String   - ngayVaoLam : LocalDate   - chuyenKhoa : String (// Áp dụng cho nha sĩ, nội nha...)   - trangThai : String   - soChungChiHanhNghe : String   - ngayHetHanChungChi : LocalDate   - danhSachLuotKham : LuotKham   - danhSachLichHen : LichHen
+
 public class NhanVien {
 
     private String maNV; // mã nhân viên, dạng NV000001
@@ -14,8 +15,24 @@ public class NhanVien {
     private LocalDate ngayHetHanChungChi; // ngày hết hạn chứng chỉ hành nghề
     private String chuyenKhoa; // chuyên khoa
     private String trangThai; // Đang làm việc hoặc Nghỉ việc
+    
+    
+    
+    
+    
+    public NhanVien(String maNV, String hoTen, String vaiTro, String soChungChiHanhNghe, LocalDate ngayHetHanChungChi,
+			String chuyenKhoa, String trangThai) {
+		super();
+		this.maNV = maNV;
+		this.hoTen = hoTen;
+		this.vaiTro = vaiTro;
+		this.soChungChiHanhNghe = soChungChiHanhNghe;
+		this.ngayHetHanChungChi = ngayHetHanChungChi;
+		this.chuyenKhoa = chuyenKhoa;
+		this.trangThai = trangThai;
+	}
 
-    public String getMaNV() {
+	public String getMaNV() {
         return maNV;
     }
 

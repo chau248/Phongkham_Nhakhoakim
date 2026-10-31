@@ -2,7 +2,26 @@ package nhakhoakim.entity;
 
 import java.time.LocalDateTime;
 
-// Tình trạng một răng được ghi nhận trong một lượt khám
+//- maBanGhi : String
+//
+//- soFDI : int
+//
+//- trangThai : String
+//
+//- vatLieu : String
+//
+//- matRang : String (Mặt răng (gần, xa, nhai, ngoài, trong))
+//
+//- ngayGhiNhan : LocalDateTime
+//
+//- maDichVu : String (Dịch vụ áp dụng cho răng này)
+//
+//- daNho : boolean
+//
+//- mauHienThi : String (Màu/ký hiệu hiển thị trên sơ đồ răng)
+//
+//- ghiChu : String
+
 public class RangDieuTri {
 
     private String maBanGhi; // mã bản ghi, dạng BG000001
@@ -16,8 +35,32 @@ public class RangDieuTri {
     private boolean daNho; // true nếu răng đã nhổ
     private String mauHienThi; // màu hiển thị trên sơ đồ răng
     private String ghiChu; // ghi chú
+    
+    
+    
+    
+    
+    
 
-    public String getMaBanGhi() {
+    public RangDieuTri(String maBanGhi, String maLuotKham, int soFDI, String matRang, String trangThai, String vatLieu,
+			LocalDateTime ngayGhiNhan, String maDichVu, boolean daNho, String mauHienThi, String ghiChu) {
+		super();
+		this.maBanGhi = maBanGhi;
+		this.maLuotKham = maLuotKham;
+		this.soFDI = soFDI;
+		this.matRang = matRang;
+		this.trangThai = trangThai;
+		this.vatLieu = vatLieu;
+		this.ngayGhiNhan = ngayGhiNhan;
+		this.maDichVu = maDichVu;
+		this.daNho = daNho;
+		this.mauHienThi = mauHienThi;
+		this.ghiChu = ghiChu;
+	}
+    
+    
+
+	public String getMaBanGhi() {
         return maBanGhi;
     }
 
@@ -128,5 +171,5 @@ public class RangDieuTri {
     public static boolean laRangKhon(int so) {
         return laRangVinhVien(so) && so % 10 == 8;
     }
-
+    
 }
