@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,7 +10,7 @@ import nhakhoakim.entity.CaTruc;
 // Ca trực của nhân viên
 // Bản tạm do Hậu viết để chạy thử: ca trực hôm nay giống 02_seed.sql (dữ liệu nằm trong bộ nhớ).
 // Tâm thay bằng bản đọc từ CSDL (giữ nguyên tên hàm).
-public class CaTrucService {
+public class CaTrucController {
 
     private static final List<CaTruc> DANH_SACH = new ArrayList<>();
 

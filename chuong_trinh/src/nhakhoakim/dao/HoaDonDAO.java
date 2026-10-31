@@ -70,7 +70,7 @@ public class HoaDonDAO {
             throw new LoiCSDL("Không đọc được hóa đơn: " + e.getMessage(), e);
         }
     }
-    List<HoaDon> layDanhSachHoaDon() {
+    public List<HoaDon> layDanhSachHoaDon() {
         List<HoaDon> ds = new ArrayList<>();
         String sql = "SELECT * FROM dbo.HoaDon";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql);

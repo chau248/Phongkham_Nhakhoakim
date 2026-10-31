@@ -15,8 +15,8 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import nhakhoakim.dao.DongThoiGianService;
-import nhakhoakim.dao.HoSoBenhAnService;
+import nhakhoakim.controller.DongThoiGianController;
+import nhakhoakim.controller.HoSoBenhAnController;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DongThoiGian;
 import nhakhoakim.entity.DongThoiGian.SuKienDieuTri;
@@ -28,8 +28,8 @@ public class ManHinhDongThoiGian extends JPanel {
 
     private static final String TAT_CA = "Tất cả";
 
-    private DongThoiGianService dongThoiGianService = new DongThoiGianService();
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
+    private DongThoiGianController dongThoiGianService = new DongThoiGianController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();
     private JComboBox<String> cmbLoc = new JComboBox<>(new String[] {TAT_CA, SuKienDieuTri.LOAI_KHAM, SuKienDieuTri.LOAI_LIEU_TRINH,

@@ -10,11 +10,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import nhakhoakim.dao.BenhNhanService;
-import nhakhoakim.dao.GoiYDieuTriService;
-import nhakhoakim.dao.HoSoBenhAnService;
-import nhakhoakim.dao.LuotKhamService;
-import nhakhoakim.dao.NhaSiPhuTrachService;
+import nhakhoakim.controller.BenhNhanController;
+import nhakhoakim.controller.GoiYDieuTriController;
+import nhakhoakim.controller.HoSoBenhAnController;
+import nhakhoakim.controller.LuotKhamController;
+import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.GoiYDieuTri;
@@ -27,11 +27,11 @@ import nhakhoakim.entity.LuotKham;
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
 public class ManHinhGoiYDieuTri extends JPanel {
 
-    private GoiYDieuTriService goiYService = new GoiYDieuTriService();
-    private LuotKhamService luotKhamService = new LuotKhamService();
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
-    private BenhNhanService benhNhanService = new BenhNhanService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
+    private GoiYDieuTriController goiYService = new GoiYDieuTriController();
+    private LuotKhamController luotKhamService = new LuotKhamController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private BenhNhanController benhNhanService = new BenhNhanController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private LuotKham luotKham;                                  // lượt khám đang khám
     private List<GoiYDieuTri> dsGoiY = new ArrayList<>();       // dữ liệu bảng gợi ý

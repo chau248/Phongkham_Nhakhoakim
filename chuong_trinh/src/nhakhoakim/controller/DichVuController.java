@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +9,7 @@ import nhakhoakim.entity.DichVu;
 // Danh mục dịch vụ (chỉ đọc)
 // Bản tạm do Hậu viết để chạy thử, dữ liệu giống 02_seed.sql.
 // Tâm thay bằng bản đọc từ CSDL (giữ nguyên tên hàm).
-public class DichVuService {
+public class DichVuController {
 
     private static final List<DichVu> DANH_SACH = new ArrayList<>();
 

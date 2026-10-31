@@ -7,14 +7,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
-import nhakhoakim.dao.BenhNhanService;
+import nhakhoakim.controller.BenhNhanController;
 import nhakhoakim.entity.BenhNhan;
 
 // Màn hình thêm mới hoặc cập nhật thông tin hành chính của bệnh nhân (thêm mới thì hệ thống tạo luôn hồ sơ bệnh án rỗng)
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
 public class ManHinhHoSoBenhNhan extends JPanel {
 
-    private BenhNhanService benhNhanService = new BenhNhanService();
+    private BenhNhanController benhNhanService = new BenhNhanController();
 
     private BenhNhan benhNhan;                                   // null nghĩa là đang thêm mới
     private JLabel lblMa = new JLabel("(tự sinh khi lưu)");      // mã bệnh nhân

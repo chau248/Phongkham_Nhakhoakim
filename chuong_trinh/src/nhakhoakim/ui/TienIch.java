@@ -41,7 +41,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import nhakhoakim.MainApp;
-import nhakhoakim.dao.BenhNhanService;
+import nhakhoakim.controller.BenhNhanController;
 import nhakhoakim.dao.NghiepVuException;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DichVu;
@@ -441,7 +441,7 @@ public class TienIch {
     public static class ChonBenhNhan extends JPanel {
         private JTextField txtTim = oNhap(20);
         private JComboBox<BenhNhan> cmb = new JComboBox<>();
-        private BenhNhanService benhNhanService = new BenhNhanService();
+        private BenhNhanController benhNhanService = new BenhNhanController();
 
         public ChonBenhNhan() {
             super(new FlowLayout(FlowLayout.LEFT, 8, 0));

@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,7 +19,7 @@ import nhakhoakim.entity.NhanVien;
 
 // Nghiệp vụ hồ sơ bệnh án: xem, cập nhật tiền sử - dị ứng (BN-06 đến BN-09, BN-15), tạo hồ sơ rỗng (BN-04),
 // xem liệu trình (BN-10, BN-11) và lịch sử khám. Chặn thuốc cùng nhóm dị ứng (BN-16) nằm ở entity HoSoBenhAn.
-public class HoSoBenhAnService {
+public class HoSoBenhAnController {
 
     // Các danh sách từ khóa dùng cho canhBaoYTe (viết thường, có dấu); muốn thêm từ khóa thì sửa ở đây
     private static final String[] THUOC_CHONG_DONG = {"warfarin", "aspirin", "clopidogrel", "plavix", "heparin", "rivaroxaban",
@@ -33,18 +35,18 @@ public class HoSoBenhAnService {
     private LieuTrinhDAO lieuTrinhDAO;
     private LuotKhamDAO luotKhamDAO;
     private BenhNhanDAO benhNhanDAO;
-    private NhatKyService nhatKyService;
+    private NhatKyController nhatKyService;
     private Supplier<NhanVien> nguoiDung; // cho biết ai đang đăng nhập (kiểm thử thì truyền người giả)
 
     // Dùng DAO thật và người đăng nhập thật của chương trình
-    public HoSoBenhAnService() {
-        this(new HoSoBenhAnDAO(), new LieuTrinhDAO(), new LuotKhamDAO(), new BenhNhanDAO(), new NhatKyService(),
+    public HoSoBenhAnController() {
+        this(new HoSoBenhAnDAO(), new LieuTrinhDAO(), new LuotKhamDAO(), new BenhNhanDAO(), new NhatKyController(),
                 PhienLamViec::getNhanVienHienTai);
     }
 
     // Dùng DAO và người dùng truyền vào (để kiểm thử không cần CSDL)
-    public HoSoBenhAnService(HoSoBenhAnDAO hoSoDAO, LieuTrinhDAO lieuTrinhDAO, LuotKhamDAO luotKhamDAO, BenhNhanDAO benhNhanDAO,
-            NhatKyService nhatKyService, Supplier<NhanVien> nguoiDung) {
+    public HoSoBenhAnController(HoSoBenhAnDAO hoSoDAO, LieuTrinhDAO lieuTrinhDAO, LuotKhamDAO luotKhamDAO, BenhNhanDAO benhNhanDAO,
+            NhatKyController nhatKyService, Supplier<NhanVien> nguoiDung) {
         this.hoSoDAO = hoSoDAO;
         this.lieuTrinhDAO = lieuTrinhDAO;
         this.luotKhamDAO = luotKhamDAO;
@@ -253,7 +255,7 @@ public class HoSoBenhAnService {
         return hs;
     }
 
-    // Dựng đối tượng hồ sơ rỗng đã có mã mới, chưa ghi vào CSDL (BenhNhanService ghi cùng lúc với bệnh nhân)
+    // Dựng đối tượng hồ sơ rỗng đã có mã mới, chưa ghi vào CSDL (BenhNhanController ghi cùng lúc với bệnh nhân)
     public HoSoBenhAn taoDoiTuongHoSoRong(String maBN) {
         HoSoBenhAn hs = new HoSoBenhAn();
         hs.setMaHoSo(MaGenerator.taoMa("HS"));

@@ -1,10 +1,12 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 import nhakhoakim.entity.HoaDon;
 import nhakhoakim.entity.LuotKham;
 import java.util.List;
-public class HoaDonService {
+public class HoaDonController {
     private HoaDonDAO hdDAO;
-    public HoaDonService() {
+    public HoaDonController() {
         this.hdDAO = new HoaDonDAO();
     }
     public List<HoaDon> hienDanhSachHoaDon() {

@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.RangDieuTri;
 
 // Nghiệp vụ sơ đồ răng: tình trạng mới nhất của từng răng và ghi nhận răng trong lượt khám
-public class RangDieuTriService {
+public class RangDieuTriController {
 
     private static final int DO_DAI_VAT_LIEU = 100;  // độ dài cột vatLieu
     private static final int DO_DAI_GHI_CHU = 255;   // độ dài cột ghiChu
@@ -43,19 +45,19 @@ public class RangDieuTriService {
     }
 
     private RangDieuTriDAO rangDAO;
-    private LuotKhamService luotKhamService;
-    private HoSoBenhAnService hoSoService;
-    private DichVuService dichVuService;
+    private LuotKhamController luotKhamService;
+    private HoSoBenhAnController hoSoService;
+    private DichVuController dichVuService;
     private Supplier<NhanVien> nguoiDung; // trả về người đang đăng nhập
 
     // Dùng trong chương trình: các phụ thuộc mặc định, người dùng lấy từ phiên làm việc
-    public RangDieuTriService() {
-        this(new RangDieuTriDAO(), new LuotKhamService(), new HoSoBenhAnService(), new DichVuService(), PhienLamViec::getNhanVienHienTai);
+    public RangDieuTriController() {
+        this(new RangDieuTriDAO(), new LuotKhamController(), new HoSoBenhAnController(), new DichVuController(), PhienLamViec::getNhanVienHienTai);
     }
 
     // Dùng khi kiểm thử: truyền vào các phụ thuộc và người đang đăng nhập
-    public RangDieuTriService(RangDieuTriDAO rangDAO, LuotKhamService luotKhamService, HoSoBenhAnService hoSoService,
-            DichVuService dichVuService, Supplier<NhanVien> nguoiDung) {
+    public RangDieuTriController(RangDieuTriDAO rangDAO, LuotKhamController luotKhamService, HoSoBenhAnController hoSoService,
+            DichVuController dichVuService, Supplier<NhanVien> nguoiDung) {
         this.rangDAO = rangDAO;
         this.luotKhamService = luotKhamService;
         this.hoSoService = hoSoService;

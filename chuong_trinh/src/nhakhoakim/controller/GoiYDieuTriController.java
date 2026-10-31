@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,12 +29,12 @@ import nhakhoakim.entity.GoiYDieuTri.UocTinhChiPhi;
 //  - Răng đã nhổ ở lượt khám trước mà chưa phục hình: gợi ý Implant hoặc cầu răng (trừ khi đang có liệu trình Implant).
 //    Không gợi ý Implant / cầu răng cho răng sữa, răng khôn (số 8) hoặc bệnh nhân dưới 18 tuổi.
 //  - Chưa lấy cao răng trong 6 tháng gần đây: gợi ý lấy cao răng định kỳ.
-public class GoiYDieuTriService {
+public class GoiYDieuTriController {
 
     private static final int PHAN_TRAM_VAT = 8;
     private static final int SO_THANG_VE_SINH = 6;
     private static final int TUOI_DU_CAY_GHEP = 18;       // dưới tuổi này không gợi ý Implant / cầu răng
-    private static final int TOI_DA_SO_LUONG = 10;        // số lượng tối đa của một dịch vụ trong lượt khám (giống LuotKhamService)
+    private static final int TOI_DA_SO_LUONG = 10;        // số lượng tối đa của một dịch vụ trong lượt khám (giống LuotKhamController)
     private static final String TU_KHOA_CAU_RANG = "cầu"; // tên dịch vụ chứa từ này là dịch vụ cầu răng
 
     // Mức độ gợi ý
@@ -41,22 +43,22 @@ public class GoiYDieuTriService {
     private static final String MUC_CAN_NHAC = "Cân nhắc";
     private static final String MUC_DINH_KY = "Định kỳ";
 
-    private LuotKhamService luotKhamService;
-    private HoSoBenhAnService hoSoService;
-    private RangDieuTriService rangService;
-    private DichVuService dichVuService;
+    private LuotKhamController luotKhamService;
+    private HoSoBenhAnController hoSoService;
+    private RangDieuTriController rangService;
+    private DichVuController dichVuService;
     private BenhNhanDAO benhNhanDAO;
     private Supplier<NhanVien> nguoiDung; // trả về người đang đăng nhập
 
     // Dùng trong chương trình: các phụ thuộc mặc định, người dùng lấy từ phiên làm việc
-    public GoiYDieuTriService() {
-        this(new LuotKhamService(), new HoSoBenhAnService(), new RangDieuTriService(), new DichVuService(), new BenhNhanDAO(),
+    public GoiYDieuTriController() {
+        this(new LuotKhamController(), new HoSoBenhAnController(), new RangDieuTriController(), new DichVuController(), new BenhNhanDAO(),
                 PhienLamViec::getNhanVienHienTai);
     }
 
     // Dùng khi kiểm thử: truyền vào các phụ thuộc và người đang đăng nhập
-    public GoiYDieuTriService(LuotKhamService luotKhamService, HoSoBenhAnService hoSoService, RangDieuTriService rangService,
-            DichVuService dichVuService, BenhNhanDAO benhNhanDAO, Supplier<NhanVien> nguoiDung) {
+    public GoiYDieuTriController(LuotKhamController luotKhamService, HoSoBenhAnController hoSoService, RangDieuTriController rangService,
+            DichVuController dichVuService, BenhNhanDAO benhNhanDAO, Supplier<NhanVien> nguoiDung) {
         this.luotKhamService = luotKhamService;
         this.hoSoService = hoSoService;
         this.rangService = rangService;
