@@ -9,6 +9,7 @@ public class HoaDon {
     private LocalDateTime ngayLap, ngayThanhToan;
     private ChiTietHoaDon chiTiet;
     private BigDecimal tongTien,tienGiamGia, tongTienTruocThue, phanTramThue;
+    private java.util.List<ChiTietHoaDon> dsChiTiet = new java.util.ArrayList<>(); // các dòng chi tiết của hóa đơn
 
     public String getMaHoaDon() {
         return maHoaDon;
@@ -133,4 +134,13 @@ public class HoaDon {
     public void setNgayThanhToan(LocalDateTime ngayThanhToan) {
         this.ngayThanhToan = ngayThanhToan;
     }
+
+    public java.util.List<ChiTietHoaDon> getDsChiTiet() {
+        return dsChiTiet;
+    }
+
+    public void setDsChiTiet(java.util.List<ChiTietHoaDon> dsChiTiet) {
+        this.dsChiTiet = dsChiTiet;
+    }
+
 }

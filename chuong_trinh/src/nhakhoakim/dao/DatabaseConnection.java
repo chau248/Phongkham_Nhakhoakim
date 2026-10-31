@@ -21,7 +21,7 @@ public class DatabaseConnection {
         try (InputStreamReader in = new InputStreamReader(new FileInputStream(FILE_CAU_HINH), StandardCharsets.UTF_8)) {
             p.load(in);
         } catch (IOException e) {
-            throw new LoiCSDL("Chưa có file " + FILE_CAU_HINH + " (xem tai_lieu/huong_dan/HUONG_DAN_CAI_DAT.md)", e);
+            throw new LoiCSDL("Chưa có file " + FILE_CAU_HINH + " (sao chép config/database.properties.example thành database.properties rồi điền thông tin SQL Server, xem README.md)", e);
         }
         String url = "jdbc:sqlserver://" + p.getProperty("db.host", "localhost") + ":" + p.getProperty("db.port", "1433")
                 + ";databaseName=" + p.getProperty("db.name", "NhaKhoaKim")

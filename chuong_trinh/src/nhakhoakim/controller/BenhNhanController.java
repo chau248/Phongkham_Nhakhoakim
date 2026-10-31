@@ -12,7 +12,7 @@ import nhakhoakim.entity.LuotKham;
 import nhakhoakim.entity.NhanVien;
 
 // Nghiệp vụ bệnh nhân: tìm kiếm, thêm mới (kèm hồ sơ bệnh án rỗng), cập nhật thông tin hành chính
-// Ràng buộc BN-01 đến BN-05, BN-12 đến BN-14, BN-17, BN-18 trong tai_lieu/quy_dinh/RANG_BUOC_NGHIEP_VU.md
+// Ràng buộc BN-01 đến BN-05, BN-12 đến BN-14, BN-17, BN-18 (file RANG_BUOC_NGHIEP_VU.md trong lịch sử git)
 // (phần hồ sơ bệnh án BN-06 đến BN-11, BN-15, BN-16 nằm ở HoSoBenhAnController và entity HoSoBenhAn)
 public class BenhNhanController {
 

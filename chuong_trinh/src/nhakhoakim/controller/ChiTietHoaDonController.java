@@ -1,19 +1,16 @@
 package nhakhoakim.controller;
 
-import nhakhoakim.dao.*;
-import nhakhoakim.entity.ChiTietHoaDon;
-import java.math.BigDecimal;
 import java.util.List;
+import nhakhoakim.dao.ChiTietHoaDonDAO;
+import nhakhoakim.entity.ChiTietHoaDon;
+
+// Dòng chi tiết của hóa đơn (chỉ đọc). Dòng chi tiết được tạo cùng hóa đơn trong HoaDonController.lapHoaDon.
 public class ChiTietHoaDonController {
-    private ChiTietHoaDonDAO cthdDAO;
-    public ChiTietHoaDonController() {
-        this.cthdDAO = new ChiTietHoaDonDAO();
-    }
-    public void taoChiTietHoaDon(String maHoaDon, int soLuong, int soFDIRang, String maDichVu, String ghiChu, String maChiTiet, BigDecimal donGia,
-            BigDecimal giamGia) {
-        cthdDAO.taoChiTietHoaDon(maHoaDon, soLuong, soFDIRang, maDichVu, ghiChu, maChiTiet, donGia, giamGia);
-    }
-    public List<ChiTietHoaDon> layDanhSachChiTietHoaDon(String maHoaDon) {
-        return cthdDAO.layDanhSachChiTietHoaDon(maHoaDon);
+
+    private ChiTietHoaDonDAO dao = new ChiTietHoaDonDAO();
+
+    // Các dòng chi tiết của một hóa đơn
+    public List<ChiTietHoaDon> layTheoHoaDon(String maHoaDon) {
+        return dao.layTheoHoaDon(maHoaDon);
     }
 }

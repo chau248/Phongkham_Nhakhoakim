@@ -6,72 +6,118 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import nhakhoakim.entity.BenhNhan;
-import nhakhoakim.entity.HoSoBenhAn;
-import nhakhoakim.entity.LichHen;
 import java.util.ArrayList;
 import java.util.List;
+import nhakhoakim.entity.LichHen;
+
+// Truy cập bảng LichHen (chỉ lớp DAO được viết SQL). Quy tắc đặt, dời, hủy nằm ở LichHenController.
 public class LichHenDAO {
-    public HoSoBenhAnDAO hoSoBenhAnDAO = new HoSoBenhAnDAO();
-    private final BenhNhanDAO benhNhanDAO = new BenhNhanDAO();
-    // Sửa thông tin hành chính của bệnh nhân đặt lịch hẹn (các cột này nằm ở bảng BenhNhan)
-    public BenhNhan suaThongTinBenhNhan(LichHen lh, String ht, String gt, LocalDate ns, String sdt, String dc, String email, String cccd, String nguoiLH, String sdtNguoiLH) {
-        String maBN = lh.getMaBN();
-        String sql = "UPDATE dbo.BenhNhan SET hoTen = ?, ngaySinh = ?, gioiTinh = ?, sdt = ?, diaChi = ?, email = ?, soCCCD = ?, nguoiLienHeKhanCap = ?, sdtNguoiLienHe = ? WHERE maBN = ?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, ht);
-            ps.setObject(2, ns);
-            ps.setString(3, gt);
-            ps.setString(4, sdt);
-            ps.setString(5, dc);
-            ps.setString(6, email);
-            ps.setString(7, cccd);
-            ps.setString(8, nguoiLH);
-            ps.setString(9, sdtNguoiLH);
-            ps.setString(10, maBN);
-            if (ps.executeUpdate() != 1) {
-                throw new LoiCSDL("Không cập nhật được thông tin bệnh nhân", new SQLException());
-            }
+
+    static final String CAC_COT = "maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen, trangThai, thoiLuongDuKien, phong, hinhThucDat,"
+            + " lyDoHuy, daNhacHen";
+    static final String CON_HIEU_LUC = "trangThai IN (N'Chờ xác nhận', N'Đã xác nhận')";
+    static final String SQL_THEM = "INSERT INTO dbo.LichHen (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static final String SQL_THEO_MA = "SELECT " + CAC_COT + " FROM dbo.LichHen WHERE maLichHen = ?";
+    static final String SQL_THEO_KHOANG = "SELECT " + CAC_COT + " FROM dbo.LichHen WHERE ngayHen BETWEEN ? AND ? ORDER BY ngayHen, gioHen, maLichHen";
+    static final String SQL_THEO_NHAN_VIEN = "SELECT " + CAC_COT + " FROM dbo.LichHen WHERE maNhanVien = ? AND ngayHen BETWEEN ? AND ?"
+            + " ORDER BY ngayHen, gioHen, maLichHen";
+    static final String SQL_HIEU_LUC_NHA_SI_NGAY = "SELECT " + CAC_COT + " FROM dbo.LichHen WHERE maNhanVien = ? AND ngayHen = ? AND " + CON_HIEU_LUC
+            + " ORDER BY gioHen";
+    static final String SQL_HIEU_LUC_BENH_NHAN_NGAY = "SELECT " + CAC_COT + " FROM dbo.LichHen WHERE maBN = ? AND ngayHen = ? AND " + CON_HIEU_LUC
+            + " ORDER BY gioHen";
+    static final String SQL_DA_XAC_NHAN_BENH_NHAN_NGAY = "SELECT " + CAC_COT + " FROM dbo.LichHen WHERE maBN = ? AND ngayHen = ?"
+            + " AND trangThai = N'Đã xác nhận' ORDER BY gioHen";
+    static final String SQL_DOI_TRANG_THAI = "UPDATE dbo.LichHen SET trangThai = ?, lyDoHuy = ? WHERE maLichHen = ?";
+    static final String SQL_DOI_NGAY_GIO = "UPDATE dbo.LichHen SET ngayHen = ?, gioHen = ?, phong = ?, thoiLuongDuKien = ? WHERE maLichHen = ?";
+    static final String SQL_DEM_DANG_KHAM = "SELECT COUNT(*) FROM dbo.LuotKham WHERE maLichHen = ? AND trangThai = N'Đang khám'";
+
+    // Thêm một lịch hẹn mới
+    public void them(LichHen lh) {
+        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
+            ps.setString(1, lh.getMaLichHen());
+            ps.setString(2, lh.getMaBN());
+            ps.setString(3, lh.getMaNhanVien());
+            ps.setString(4, lh.getMaDichVu());
+            ps.setObject(5, lh.getNgayHen());
+            ps.setObject(6, lh.getGioHen());
+            ps.setString(7, lh.getTrangThai());
+            ps.setInt(8, lh.getThoiLuongDuKien());
+            ps.setString(9, lh.getPhong());
+            ps.setString(10, lh.getHinhThucDat());
+            ps.setString(11, lh.getLyDoHuy());
+            ps.setBoolean(12, lh.isDaNhacHen());
+            ps.executeUpdate();
         } catch (SQLException e) {
-            throw new LoiCSDL("Không cập nhật được thông tin bệnh nhân: " + e.getMessage(), e);
-        }
-        return benhNhanDAO.timTheoMa(maBN);
-    }
-    // Hồ sơ bệnh án của bệnh nhân đặt lịch hẹn (bảng LichHen không có cột maHoSo nên tìm theo maBN)
-    public HoSoBenhAn layHoSoCuaLichHen(LichHen lh) {
-        return hoSoBenhAnDAO.timTheoBenhNhan(lh.getMaBN());
-    }
-    public void huyLichHen(String maLichHen, String lyDoHuy) {
-        String sql = "UPDATE dbo.LichHen SET trangThai = N'Đã hủy', lyDoHuy = ? WHERE maLichHen = ?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, lyDoHuy);
-            ps.setString(2, maLichHen);
-            int n = ps.executeUpdate();
-            if (n != 1) {
-                throw new LoiCSDL("Không hủy được lịch hẹn", new SQLException());
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không hủy được lịch hẹn: " + e.getMessage(), e);
+            throw new LoiCSDL("Không thêm được lịch hẹn: " + e.getMessage(), e);
         }
     }
-    public void capNhatLichHen(LocalDate ngayHen, LocalTime gioHen, String ghiChu, String maLichHen) {
-        String sql = "UPDATE dbo.LichHen SET ngayHen = ?, gioHen = ?, ghiChu = ? WHERE maLichHen = ?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setObject(1, ngayHen);
-            ps.setObject(2, gioHen);
-            ps.setString(3, ghiChu);
-            ps.setString(4, maLichHen);
-            int n = ps.executeUpdate();
-            if (n != 1) {
-                throw new LoiCSDL("Không cập nhật được lịch hẹn", new SQLException());
+
+    // Tìm lịch hẹn theo mã; không có thì trả về null
+    public LichHen timTheoMa(String maLichHen) {
+        List<LichHen> ds = layDanhSach(SQL_THEO_MA, maLichHen);
+        return ds.isEmpty() ? null : ds.get(0);
+    }
+
+    // Lịch hẹn của mọi nha sĩ trong khoảng ngày (gồm cả hai đầu), theo ngày giờ
+    public List<LichHen> layTheoKhoang(LocalDate tu, LocalDate den) {
+        return layDanhSach(SQL_THEO_KHOANG, tu, den);
+    }
+
+    // Lịch hẹn của một nha sĩ trong khoảng ngày (gồm cả hai đầu), theo ngày giờ
+    public List<LichHen> layTheoNhanVien(String maNV, LocalDate tu, LocalDate den) {
+        return layDanhSach(SQL_THEO_NHAN_VIEN, maNV, tu, den);
+    }
+
+    // Lịch còn hiệu lực (Chờ xác nhận hoặc Đã xác nhận) của một nha sĩ trong một ngày, dùng để kiểm tra trùng giờ
+    public List<LichHen> layConHieuLucTheoNhaSiVaNgay(String maNV, LocalDate ngay) {
+        return layDanhSach(SQL_HIEU_LUC_NHA_SI_NGAY, maNV, ngay);
+    }
+
+    // Lịch còn hiệu lực của một bệnh nhân trong một ngày, dùng để kiểm tra bệnh nhân không có hai lịch chồng nhau
+    public List<LichHen> layConHieuLucTheoBenhNhanVaNgay(String maBN, LocalDate ngay) {
+        return layDanhSach(SQL_HIEU_LUC_BENH_NHAN_NGAY, maBN, ngay);
+    }
+
+    // Lịch Đã xác nhận của một bệnh nhân trong một ngày (khám vãng lai gắn lịch này vào lượt khám)
+    public List<LichHen> layDaXacNhanTheoBenhNhan(String maBN, LocalDate ngay) {
+        return layDanhSach(SQL_DA_XAC_NHAN_BENH_NHAN_NGAY, maBN, ngay);
+    }
+
+    // Đổi trạng thái lịch hẹn; lyDoHuy chỉ có khi hủy (các trạng thái khác truyền null)
+    public void doiTrangThai(String maLichHen, String trangThai, String lyDoHuy) {
+        chay(SQL_DOI_TRANG_THAI, trangThai, lyDoHuy, maLichHen);
+    }
+
+    // Dời lịch sang ngày giờ khác (kèm phòng và thời lượng tính lại)
+    public void doiNgayGio(String maLichHen, LocalDate ngay, LocalTime gio, String phong, int thoiLuongPhut) {
+        chay(SQL_DOI_NGAY_GIO, ngay, gio, phong, thoiLuongPhut, maLichHen);
+    }
+
+    // Lịch hẹn này đang có lượt khám Đang khám không (không được dời hoặc hủy lịch lúc đó, LH-06)
+    public boolean coLuotKhamDangKham(String maLichHen) {
+        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_DEM_DANG_KHAM)) {
+            ps.setString(1, maLichHen);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
             }
+        } catch (SQLException e) {
+            throw new LoiCSDL("Không kiểm tra được lượt khám của lịch hẹn: " + e.getMessage(), e);
+        }
+    }
+
+    // Chạy một câu UPDATE với các tham số bất kỳ
+    private void chay(String sql, Object... thamSo) {
+        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+            for (int i = 0; i < thamSo.length; i++) {
+                ps.setObject(i + 1, thamSo[i]);
+            }
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new LoiCSDL("Không cập nhật được lịch hẹn: " + e.getMessage(), e);
         }
-
     }
-    // Lấy danh sách lịch hẹn theo câu lệnh SQL; tham số là các giá trị để điền vào dấu ? trong SQL
+
+    // Chạy câu SELECT với các tham số bất kỳ và đọc tất cả dòng
     private List<LichHen> layDanhSach(String sql, Object... thamSo) {
         List<LichHen> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -80,54 +126,25 @@ public class LichHenDAO {
             }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    
-                    ds.add(doc(rs));
+                    LichHen lh = new LichHen();
+                    lh.setMaLichHen(rs.getString("maLichHen"));
+                    lh.setMaBN(rs.getString("maBN"));
+                    lh.setMaNhanVien(rs.getString("maNhanVien"));
+                    lh.setMaDichVu(rs.getString("maDichVu"));
+                    lh.setNgayHen(rs.getObject("ngayHen", LocalDate.class));
+                    lh.setGioHen(rs.getObject("gioHen", LocalTime.class));
+                    lh.setTrangThai(rs.getString("trangThai"));
+                    lh.setThoiLuongDuKien(rs.getInt("thoiLuongDuKien"));
+                    lh.setPhong(rs.getString("phong"));
+                    lh.setHinhThucDat(rs.getString("hinhThucDat"));
+                    lh.setLyDoHuy(rs.getString("lyDoHuy"));
+                    lh.setDaNhacHen(rs.getBoolean("daNhacHen"));
+                    ds.add(lh);
                 }
             }
         } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được danh sách lịch hẹn: " + e.getMessage(), e);
+            throw new LoiCSDL("Không đọc được lịch hẹn: " + e.getMessage(), e);
         }
         return ds;
-    }
-    // doc 1 lich hen tu ResultSet
-    private LichHen doc(ResultSet rs) throws SQLException {
-        LichHen lh = new LichHen();
-        lh.setMaLichHen(rs.getString("maLichHen"));
-        lh.setMaBN(rs.getString("maBN"));
-        lh.setMaNhanVien(rs.getString("maNhanVien"));
-        lh.setMaDichVu(rs.getString("maDichVu"));
-        lh.setNgayHen(rs.getObject("ngayHen", LocalDate.class));
-        lh.setGioHen(rs.getObject("gioHen", LocalTime.class));
-        lh.setTrangThai(rs.getString("trangThai"));
-        lh.setPhong(rs.getString("phong"));
-        lh.setThoiLuongDuKien(rs.getInt("thoiLuongDuKien"));
-        lh.setHinhThucDat(rs.getString("hinhThucDat"));
-        lh.setDaNhacHen(rs.getBoolean("daNhacHen"));
-        return lh;
-    }
-    // Thêm lịch hẹn; trả về đối tượng LichHen vừa thêm (có mã lịch hẹn); nếu lỗi thì ném lỗi LoiCSDL
-    public LichHen themLichHen(LichHen lh) {
-        String sql = "INSERT INTO dbo.LichHen (maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen, trangThai, phong, thoiLuongDuKien, hinhThucDat, daNhacHen) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, lh.getMaLichHen());
-            ps.setString(2, lh.getMaBN());
-            ps.setString(3, lh.getMaNhanVien());
-            ps.setString(4, lh.getMaDichVu());
-            ps.setObject(5, lh.getNgayHen());
-            ps.setObject(6, lh.getGioHen());
-            ps.setString(7, lh.getTrangThai());
-            ps.setString(8, lh.getPhong());
-            ps.setInt(9, lh.getThoiLuongDuKien());
-            ps.setString(10, lh.getHinhThucDat());
-            ps.setBoolean(11, lh.isDaNhacHen());
-            int n = ps.executeUpdate();
-            if (n != 1) {
-                throw new LoiCSDL("Không thêm được lịch hẹn", new SQLException());
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không thêm được lịch hẹn: " + e.getMessage(), e);
-        }
-        return lh;
     }
 }
