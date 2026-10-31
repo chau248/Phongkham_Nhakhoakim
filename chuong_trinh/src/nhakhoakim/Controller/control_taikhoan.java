@@ -1,9 +1,9 @@
-package Controller;
+package nhakhoakim.Controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import App.Jp_body_taikhoan;
+import nhakhoakim.ui.Jp_body_taikhoan;
 
 public class control_taikhoan implements ActionListener {
 	

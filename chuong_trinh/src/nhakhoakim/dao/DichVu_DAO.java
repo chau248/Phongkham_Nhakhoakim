@@ -1,4 +1,4 @@
-package DAO;
+package nhakhoakim.dao;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import Connection.jdbcutil;
-import Entity.DichVu;
-import Entity.NhanVien;
+import nhakhoakim.Connection.jdbcutil;
+import nhakhoakim.entity.DichVu;
+import nhakhoakim.entity.NhanVien;
 
 public class DichVu_DAO implements Dao_interface<DichVu>{
 

@@ -1,4 +1,4 @@
-package App;
+package nhakhoakim.ui;
 
 
 
@@ -47,8 +47,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 
-import Controller.Control_Danhmucdichvu;
-import Entity.NhanVien;
+import nhakhoakim.Controller.Control_Danhmucdichvu;
+import nhakhoakim.entity.NhanVien;
 
 
 

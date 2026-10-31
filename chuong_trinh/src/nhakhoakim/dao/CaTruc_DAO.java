@@ -1,8 +1,8 @@
-package DAO;
+package nhakhoakim.dao;
 
 import java.util.ArrayList;
 
-import Entity.CaTruc;
+import nhakhoakim.entity.CaTruc;
 
 public class CaTruc_DAO implements Dao_interface<CaTruc>{
 
