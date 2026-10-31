@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 // Kết nối SQL Server, đọc thông tin từ file config/database.properties (file này không commit lên Git)
-// Bản tạm do Hậu viết để chạy thử; Tâm thay bằng bản đầy đủ (giữ nguyên tên hàm getConnection).
 public class DatabaseConnection {
 
     private static final String FILE_CAU_HINH = "config/database.properties";

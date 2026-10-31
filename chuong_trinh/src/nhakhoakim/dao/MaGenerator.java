@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 // Sinh mã dạng tiền tố + 6 chữ số (BN000001, HS000001...) dựa vào bảng BoDemMa
-// Bản tạm do Hậu viết để chạy thử; Tâm thay bằng bản đầy đủ (giữ nguyên tên hàm taoMa).
 public class MaGenerator {
 
     // Tăng bộ đếm của tiền tố lên 1 và trả về mã mới

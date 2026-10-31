@@ -24,6 +24,8 @@ Java 11 trở lên, giao diện Java Swing, SQL Server (JDBC thuần, không dù
 2. **Cấu hình kết nối:** sao chép `chuong_trinh/config/database.properties.example` thành `database.properties` (cùng thư mục), điền `db.user` và `db.password` của tài khoản SQL Server (tài khoản này cần quyền đọc ghi CSDL `NhaKhoaKim`). File này nằm trong `.gitignore`, không commit.
 3. **Chạy:** chạy lớp `nhakhoakim.MainApp` (Eclipse: Run As Java Application, thư mục làm việc là `chuong_trinh`). Hộp đăng nhập hiện ra trước.
 
+Hướng dẫn chi tiết cho từng thành viên (cài đặt, đọc code theo phần phụ trách, thực hành, demo, câu hỏi bảo vệ): xem [HUONG_DAN.md](HUONG_DAN.md).
+
 ## Tài khoản mẫu
 
 Mật khẩu của tất cả tài khoản mẫu là `123456` (lưu dạng băm). Hãy đổi mật khẩu trước khi dùng thật.
