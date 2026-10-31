@@ -5,7 +5,3 @@ db.port=1433
 db.name=NhaKhoaKim
 db.user=nhakhoa
 db.password=DOI_MAT_KHAU_CUA_BAN
-
-# Chi de chay thu khi chua co man hinh dang nhap: nhan vien dang dung chuong trinh.
-# NV000002 nha si, NV000004 y ta, NV000006 le tan, NV000001 quan ly
-dev.maNhanVien=NV000002
