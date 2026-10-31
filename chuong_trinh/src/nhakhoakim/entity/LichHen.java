@@ -1,23 +1,11 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-//maLichHen : String 
-//ngayHen : LocalDate 
-//gioHen : LocalTime 
-//trangThai : String 
-//dichVu : DichVu 
-//ngayTao : LocalDateTime 
-//thoiLuongDuKien : int (// Phút) 
-//hinhThucDat : String (// Trực tiếp / Điện thoại / Online) 
-//lyDoHuy : String 
-//daNhacHen : boolean 
-//ghiChu : String 
-//
-//
+// Bản tạm do Hậu viết để chạy thử; Trường thay bằng bản đầy đủ của mình (giữ nguyên tên getter/setter).
 
+// Lịch hẹn khám
 public class LichHen {
 
     private String maLichHen; // mã lịch hẹn, dạng LH000001
@@ -29,26 +17,12 @@ public class LichHen {
     private String trangThai; // Chờ xác nhận, Đã xác nhận, Hoàn thành, Không đến hoặc Đã hủy
     private String phong; // phòng khám
     private int thoiLuongDuKien; // thời lượng dự kiến (phút)
+    private String maHoSo; // mã hồ sơ bệnh án (có thể null nếu chưa có hồ sơ)
+    private String hinhThucDat; // hình thức đặt: trực tiếp, online
+    private boolean daNhacHen; // trạng thái nhắc hẹn: chưa nhắc, đã nhắc, không nhắc (bệnh nhân không muốn nhận nhắc hẹn)
+    private String lyDoHuy; // lý do hủy (có thể null nếu chưa hủy)
     
-    
-    
-    
-
-    public LichHen(String maLichHen, String maBN, String maNhanVien, String maDichVu, LocalDate ngayHen,
-			LocalTime gioHen, String trangThai, String phong, int thoiLuongDuKien) {
-		super();
-		this.maLichHen = maLichHen;
-		this.maBN = maBN;
-		this.maNhanVien = maNhanVien;
-		this.maDichVu = maDichVu;
-		this.ngayHen = ngayHen;
-		this.gioHen = gioHen;
-		this.trangThai = trangThai;
-		this.phong = phong;
-		this.thoiLuongDuKien = thoiLuongDuKien;
-	}
-
-	public String getMaLichHen() {
+    public String getMaLichHen() {
         return maLichHen;
     }
 
@@ -120,4 +94,74 @@ public class LichHen {
         this.thoiLuongDuKien = thoiLuongDuKien;
     }
 
+    public LichHen(String maLichHen, String maBN, String maNhanVien, String maDichVu, LocalDate ngayHen,
+            LocalTime gioHen, String hinhThucDat, boolean daNhacHen, String phong, int thoiLuongDuKien) {
+        setMaLichHen(maLichHen);
+        setGioHen(gioHen);
+        setMaBN(maBN);
+        setMaDichVu(maDichVu);
+        setMaNhanVien(maNhanVien);
+        setNgayHen(ngayHen);
+        setPhong(phong);
+        setThoiLuongDuKien(thoiLuongDuKien);
+        setTrangThai("Chưa hoàn thành");
+        setMaHoSo(null);
+        setHinhThucDat(hinhThucDat);
+        setDaNhacHen(daNhacHen);
+        setLyDoHuy(null);
+    }
+    public LichHen() {
+        setMaLichHen("none");
+        setGioHen(null);
+        setMaBN("");
+        setMaDichVu("");
+        setMaNhanVien("");
+        setNgayHen(null);
+        setPhong("");
+        setTrangThai("Chưa hoàn thành");
+        setThoiLuongDuKien(0);
+        setMaHoSo(null);
+        setHinhThucDat("");
+        setDaNhacHen(false);
+        setLyDoHuy(null);
+    }
+    @Override
+    public String toString() {
+        return "LichHen [maLichHen=" + maLichHen + ", maBN=" + maBN + ", maNhanVien=" + maNhanVien + ", maDichVu="
+                + maDichVu + ", ngayHen=" + ngayHen + ", gioHen=" + gioHen + ", trangThai=" + trangThai + ", phong="
+                + phong + ", thoiLuongDuKien=" + thoiLuongDuKien + "]";
+    }
+
+    public String getMaHoSo() {
+        return maHoSo;
+    }
+
+    public void setMaHoSo(String maHoSo) {
+        this.maHoSo = maHoSo;
+    }
+
+    public String getHinhThucDat() {
+        return hinhThucDat;
+    }
+
+    public void setHinhThucDat(String hinhThucDat) {
+        this.hinhThucDat = hinhThucDat;
+    }
+
+    public boolean isDaNhacHen() {
+        return daNhacHen;
+    }
+
+    public void setDaNhacHen(boolean daNhacHen) {
+        this.daNhacHen = daNhacHen;
+    }
+
+    public String getLyDoHuy() {
+        return lyDoHuy;
+    }
+
+    public void setLyDoHuy(String lyDoHuy) {
+        this.lyDoHuy = lyDoHuy;
+    }
+    
 }
