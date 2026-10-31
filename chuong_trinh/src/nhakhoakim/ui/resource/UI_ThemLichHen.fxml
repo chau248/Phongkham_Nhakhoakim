@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="nhakhoakim.ui.ThemLichHenController"
+      spacing="12.0" prefWidth="540.0"
+      style="-fx-background-color: white; -fx-font-family: 'Segoe UI';">
+    <padding><Insets top="14.0" right="18.0" bottom="14.0" left="18.0"/></padding>
+    <Label text="Chọn bệnh nhân rồi nhấn Enter để tìm theo mã, tên hoặc số điện thoại."
+           wrapText="true" style="-fx-text-fill: #6B7C8A;"/>
+    <GridPane hgap="12.0" vgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="135.0" prefWidth="145.0"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+        <Label text="Bệnh nhân (*)" GridPane.rowIndex="0" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="cmbBenhNhan" maxWidth="Infinity" promptText="Mã - họ tên"
+                  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="Dịch vụ (*)" GridPane.rowIndex="1" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="cmbDichVu" maxWidth="Infinity" promptText="Chọn dịch vụ"
+                  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Nha sĩ (*)" GridPane.rowIndex="2" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="cmbNhaSi" maxWidth="Infinity" promptText="Chọn nha sĩ"
+                  GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label text="Ngày hẹn (*)" GridPane.rowIndex="3" style="-fx-font-weight: bold;"/>
+        <DatePicker fx:id="dpNgayHen" maxWidth="Infinity"
+                    GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label text="Giờ hẹn (HH:mm) (*)" GridPane.rowIndex="4" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtGioHen" promptText="09:00"
+                   GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label text="Thời lượng (phút) (*)" GridPane.rowIndex="5" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtThoiLuong" promptText="Tự điền theo dịch vụ"
+                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+        <Label text="Phòng" GridPane.rowIndex="6" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtPhong" promptText="Không bắt buộc"
+                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label text="Hình thức đặt" GridPane.rowIndex="7" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="cmbHinhThucDat" maxWidth="Infinity"
+                  GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <Label text="Nhắc hẹn" GridPane.rowIndex="8" style="-fx-font-weight: bold;"/>
+        <CheckBox fx:id="chkDaNhacHen" text="Đã nhắc hẹn"
+                  GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+        <Label text="Ghi chú" GridPane.rowIndex="9" style="-fx-font-weight: bold;"/>
+        <TextArea fx:id="txtGhiChu" prefRowCount="3" wrapText="true" promptText="Ghi chú (tối đa 255 ký tự)"
+                  GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+    </GridPane>
+</VBox>

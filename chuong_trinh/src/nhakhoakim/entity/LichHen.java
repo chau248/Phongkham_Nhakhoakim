@@ -1,6 +1,7 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 // Bản tạm do Hậu viết để chạy thử; Trường thay bằng bản đầy đủ của mình (giữ nguyên tên getter/setter).
@@ -15,12 +16,17 @@ public class LichHen {
     private LocalDate ngayHen; // ngày hẹn
     private LocalTime gioHen; // giờ hẹn
     private String trangThai; // Chờ xác nhận, Đã xác nhận, Hoàn thành, Không đến hoặc Đã hủy
+    private LocalDateTime ngayTao; // thời điểm tạo, do CSDL tự sinh
     private String phong; // phòng khám
     private int thoiLuongDuKien; // thời lượng dự kiến (phút)
-    private String maHoSo; // mã hồ sơ bệnh án (có thể null nếu chưa có hồ sơ)
-    private String hinhThucDat; // hình thức đặt: trực tiếp, online
+    private String hinhThucDat; // Trực tiếp, Điện thoại hoặc Online
     private boolean daNhacHen; // trạng thái nhắc hẹn: chưa nhắc, đã nhắc, không nhắc (bệnh nhân không muốn nhận nhắc hẹn)
     private String lyDoHuy; // lý do hủy (có thể null nếu chưa hủy)
+    private String ghiChu;
+    private String tenBenhNhan; // thông tin JOIN để hiển thị, không phải cột dbo.LichHen
+    private String sdtBenhNhan;
+    private String tenDichVu;
+    private String tenNhanVien;
     
     public String getMaLichHen() {
         return maLichHen;
@@ -104,8 +110,8 @@ public class LichHen {
         setNgayHen(ngayHen);
         setPhong(phong);
         setThoiLuongDuKien(thoiLuongDuKien);
-        setTrangThai("Chưa hoàn thành");
-        setMaHoSo(null);
+        setTrangThai("Chờ xác nhận");
+        setNgayTao(null);
         setHinhThucDat(hinhThucDat);
         setDaNhacHen(daNhacHen);
         setLyDoHuy(null);
@@ -118,9 +124,9 @@ public class LichHen {
         setMaNhanVien("");
         setNgayHen(null);
         setPhong("");
-        setTrangThai("Chưa hoàn thành");
+        setTrangThai("Chờ xác nhận");
         setThoiLuongDuKien(0);
-        setMaHoSo(null);
+        setNgayTao(null);
         setHinhThucDat("");
         setDaNhacHen(false);
         setLyDoHuy(null);
@@ -132,12 +138,12 @@ public class LichHen {
                 + phong + ", thoiLuongDuKien=" + thoiLuongDuKien + "]";
     }
 
-    public String getMaHoSo() {
-        return maHoSo;
+    public LocalDateTime getNgayTao() {
+        return ngayTao;
     }
 
-    public void setMaHoSo(String maHoSo) {
-        this.maHoSo = maHoSo;
+    public void setNgayTao(LocalDateTime ngayTao) {
+        this.ngayTao = ngayTao;
     }
 
     public String getHinhThucDat() {
@@ -162,6 +168,46 @@ public class LichHen {
 
     public void setLyDoHuy(String lyDoHuy) {
         this.lyDoHuy = lyDoHuy;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public String getTenBenhNhan() {
+        return tenBenhNhan;
+    }
+
+    public void setTenBenhNhan(String tenBenhNhan) {
+        this.tenBenhNhan = tenBenhNhan;
+    }
+
+    public String getSdtBenhNhan() {
+        return sdtBenhNhan;
+    }
+
+    public void setSdtBenhNhan(String sdtBenhNhan) {
+        this.sdtBenhNhan = sdtBenhNhan;
+    }
+
+    public String getTenDichVu() {
+        return tenDichVu;
+    }
+
+    public void setTenDichVu(String tenDichVu) {
+        this.tenDichVu = tenDichVu;
+    }
+
+    public String getTenNhanVien() {
+        return tenNhanVien;
+    }
+
+    public void setTenNhanVien(String tenNhanVien) {
+        this.tenNhanVien = tenNhanVien;
     }
     
 }

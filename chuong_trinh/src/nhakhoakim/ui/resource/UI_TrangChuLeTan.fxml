@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="752.0" prefWidth="1200.0" style="-fx-background-color: white; -fx-font-family: 'Segoe UI';" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nhakhoakim.ui.LichHenController">
+    <center>
+        <TabPane style="-fx-tab-min-width: 300px; -fx-tab-max-width: 540px;" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Quản lý lịch hẹn">
+                    <content>
+                        <BorderPane minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1280.0">
+                            <padding><Insets bottom="20.0" left="22.0" right="22.0" top="18.0" /></padding>
+                            <center>
+                                <HBox spacing="20.0">
+                                    <VBox spacing="12.0" HBox.hgrow="ALWAYS">
+                                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                            <Label prefHeight="28.0" prefWidth="90.0" style="-fx-font-size: 22px; -fx-font-weight: bold;" text="Lịch hẹn" textAlignment="CENTER" />
+                                           <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="581.0" spacing="8.0">
+                                               <Button onAction="#tuanTruoc" prefHeight="23.0" prefWidth="100.0" text="‹ Tuần trước" />
+                                               <Button onAction="#veHomNay" prefHeight="23.0" prefWidth="85.0" text="Hôm nay" />
+                                               <Button onAction="#tuanTiep" prefHeight="23.0" prefWidth="100.0" text="Tuần sau ›" />
+                                               <Label fx:id="lblTuan" style="-fx-font-weight: bold; -fx-padding: 0 0 0 8;" />
+                                           </HBox>
+                                            <Region prefHeight="31.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                            <Button onAction="#moCuaSoThem" style="-fx-background-color: #0787F9; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 8 16;" text="+  Thêm lịch hẹn" />
+                                        </HBox>
+                                        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: white; -fx-background: white; -fx-border-color: #C5C5C5;" VBox.vgrow="ALWAYS">
+                                            <content>
+                                                <GridPane gridLinesVisible="true" prefHeight="507.0" prefWidth="878.0" style="-fx-background-color: #D6D6D6; -fx-border-color: #C5C5C5;">
+                                                    <padding><Insets bottom="4.0" left="4.0" right="4.0" top="4.0" /></padding>
+                                                    <columnConstraints>
+                                                        <ColumnConstraints minWidth="84.0" prefWidth="84.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                        <ColumnConstraints hgrow="ALWAYS" minWidth="112.0" prefWidth="142.0" />
+                                                    </columnConstraints>
+                                                    <children>
+                                                        <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" prefHeight="64.0" prefWidth="84.0" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Buổi" />
+                                                        <Label fx:id="lblNgay0" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Thứ Hai" wrapText="true" GridPane.columnIndex="1" />
+                                                        <Label fx:id="lblNgay1" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" prefWidth="112.0" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Thứ Ba" wrapText="true" GridPane.columnIndex="2" />
+                                                        <Label fx:id="lblNgay2" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Thứ Tư" wrapText="true" GridPane.columnIndex="3" />
+                                                        <Label fx:id="lblNgay3" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Thứ Năm" wrapText="true" GridPane.columnIndex="4" />
+                                                        <Label fx:id="lblNgay4" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Thứ Sáu" wrapText="true" GridPane.columnIndex="5" />
+                                                        <Label fx:id="lblNgay5" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Thứ Bảy" wrapText="true" GridPane.columnIndex="6" />
+                                                        <Label fx:id="lblNgay6" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Chủ Nhật" wrapText="true" GridPane.columnIndex="7" />
+                                                        <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" minHeight="180.0" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Sáng&#10;05:00–12:00" wrapText="true" GridPane.rowIndex="1" />
+                                                        <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" minHeight="180.0" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Chiều&#10;12:00–18:00" wrapText="true" GridPane.rowIndex="2" />
+                                                        <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" minHeight="100.0" style="-fx-background-color: #D8D8D8; -fx-padding: 8; -fx-font-weight: bold;" text="Tối&#10;18:00–20:00" wrapText="true" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot00" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot01" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot02" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot03" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot04" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot05" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot06" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+                                                        <VBox fx:id="slot10" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot11" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot12" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot13" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot14" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot15" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot16" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="7" GridPane.rowIndex="2" />
+                                                        <VBox fx:id="slot20" minHeight="100.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot21" minHeight="100.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot22" minHeight="180.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot23" minHeight="100.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot24" minHeight="100.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot25" minHeight="100.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="6" GridPane.rowIndex="3" />
+                                                        <VBox fx:id="slot26" minHeight="100.0" spacing="6.0" style="-fx-background-color: #F4F4F5;" GridPane.columnIndex="7" GridPane.rowIndex="3" />
+                                                    </children>
+                                       <rowConstraints>
+                                          <RowConstraints />
+                                          <RowConstraints />
+                                          <RowConstraints />
+                                          <RowConstraints />
+                                       </rowConstraints>
+                                                </GridPane>
+                                            </content>
+                                        </ScrollPane>
+                                    </VBox>
+                                    <VBox minWidth="280.0" prefWidth="330.0" spacing="10.0" style="-fx-background-color: white; -fx-border-color: #E1E4E8; -fx-border-radius: 8; -fx-background-radius: 8;">
+                                        <padding><Insets bottom="18.0" left="18.0" right="18.0" top="18.0" /></padding>
+                                        <Label fx:id="lblChiTiet" style="-fx-font-size: 17px; -fx-font-weight: bold;" text="Thông tin lịch hẹn" wrapText="true" />
+                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Ngày giờ hẹn" />
+                              <HBox prefHeight="23.0" prefWidth="242.0" spacing="8.0">
+                                 <children>
+                                              <DatePicker fx:id="dpNgayHen" maxWidth="Infinity" prefHeight="23.0" prefWidth="147.0" promptText="dd/MM/yyyy" />
+                                              <TextField fx:id="txtGioHen" editable="false" promptText="HH:mm" />
+                                 </children>
+                              </HBox>
+                                        <VBox prefHeight="68.0" prefWidth="242.0" spacing="3.0">
+                                 <children>
+                                              <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Ghi chú" />
+                                              <TextArea fx:id="txtGhiChu" editable="false" prefHeight="69.0" prefRowCount="3" prefWidth="242.0" promptText="Ghi chú" wrapText="true" />
+                                 </children>
+                                        </VBox>
+                                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                                            <Button fx:id="btnHuy" onAction="#moXacNhanHuy" style="-fx-background-color: #FF3B45; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 7 14;" text="Hủy lịch" />
+                                            <Button fx:id="btnCapNhat" onAction="#capNhatLich" style="-fx-background-color: #0787F9; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 7 14;" text="Cập nhật lịch hẹn" />
+                                        </HBox>
+                                        <VBox spacing="3.0">
+                                            <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Mã bệnh nhân - Họ tên" />
+                                            <Label fx:id="lblBenhNhan" maxWidth="Infinity" style="-fx-background-color: #F1F1F4; -fx-background-radius: 5; -fx-padding: 8;" wrapText="true" />
+                                        </VBox>
+                                        <VBox spacing="3.0">
+                                            <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Dịch vụ" />
+                                            <Label fx:id="lblDichVu" maxWidth="Infinity" style="-fx-background-color: #F1F1F4; -fx-background-radius: 5; -fx-padding: 8;" wrapText="true" />
+                                        </VBox>
+                                        <VBox spacing="3.0">
+                                            <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Nha sĩ phụ trách" />
+                                            <Label fx:id="lblNhaSi" maxWidth="Infinity" style="-fx-background-color: #F1F1F4; -fx-background-radius: 5; -fx-padding: 8;" wrapText="true" />
+                                        </VBox>
+                              <HBox prefHeight="50.0" prefWidth="242.0" spacing="8.0">
+                                 <children>
+                                              <VBox prefHeight="50.0" prefWidth="128.0" spacing="4.0">
+                                                  <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Thời lượng" />
+                                                  <Label fx:id="lblThoiLuong" maxWidth="Infinity" prefHeight="31.0" prefWidth="128.0" style="-fx-background-color: #F1F1F4; -fx-background-radius: 5; -fx-padding: 8;" wrapText="true" />
+                                              </VBox>
+                                    <VBox prefHeight="50.0" prefWidth="123.0" spacing="3.0">
+                                       <children>
+                                          <Label style="-fx-font-weight: bold; -fx-text-fill: #6B7C8A;" text="Phòng" />
+                                          <Label fx:id="lblPhong" maxWidth="Infinity" prefHeight="31.0" prefWidth="128.0" style="-fx-background-color: #F1F1F4; -fx-background-radius: 5; -fx-padding: 8;" wrapText="true" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <Label fx:id="lblThongTinThem" maxWidth="Infinity" style="-fx-text-fill: #858A91;" text="(thông tin thêm)" wrapText="true" />
+                              <Button fx:id="btnCapNhatHoSo" onAction="#moCapNhatHoSo" style="-fx-text-fill: Black; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 7 14;" text="Cập nhật hồ sơ cá nhân" />
+                                    </VBox>
+                                </HBox>
+                            </center>
+                        </BorderPane>
+                    </content>
+                </Tab>
+                <Tab text="Thanh toán hóa đơn">
+                    <content>
+                        <BorderPane>
+                            <padding><Insets bottom="20.0" left="22.0" right="22.0" top="18.0" /></padding>
+
+                        </BorderPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>
