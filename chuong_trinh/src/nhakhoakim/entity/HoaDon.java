@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 public class HoaDon {
     private String trangThai,maHoaDon,hinhThucThanhToan,maBenhNhan,ghiChu;
     private String maNhanVien;
-    private LocalDateTime ngayLap;
+    private LocalDateTime ngayLap, ngayThanhToan;
     private ChiTietHoaDon chiTiet;
-    private BigDecimal tongTien,tienGiamGia, tongTienTruocThue, phanTramGiamGia;
+    private BigDecimal tongTien,tienGiamGia, tongTienTruocThue, phanTramThue;
 
     public String getMaHoaDon() {
         return maHoaDon;
@@ -65,7 +65,7 @@ public class HoaDon {
         this.trangThai = trangThai;
     }
     public HoaDon(String maHoaDon, String hinhThucThanhToan, String maBenhNhan, String ghiChu, String maNhanVien,
-            LocalDateTime ngayLap, ChiTietHoaDon chiTiet, BigDecimal tongTien, String trangThai, BigDecimal tienGiamGia, BigDecimal tongTienTruocThue, BigDecimal phanTramGiamGia) {
+            LocalDateTime ngayLap, ChiTietHoaDon chiTiet, BigDecimal tongTien, String trangThai, BigDecimal tienGiamGia, BigDecimal tongTienTruocThue, BigDecimal phanTramThue) {
         setMaNhanVien(maNhanVien);
         setMaHoaDon(maHoaDon);
         setChiTiet(chiTiet);
@@ -78,7 +78,7 @@ public class HoaDon {
         setTrangThai(trangThai);
         setTienGiamGia(tienGiamGia);
         setTongTienTruocThue(tongTienTruocThue);
-        setPhanTramGiamGia(phanTramGiamGia);
+        setPhanTramThue(phanTramThue);
     }
     public HoaDon(String ma, String bn, LocalDateTime ngayLap){
         setMaHoaDon(ma);
@@ -121,10 +121,16 @@ public class HoaDon {
     public void setTongTienTruocThue(BigDecimal tongTienTruocThue) {
         this.tongTienTruocThue = tongTienTruocThue;
     }
-    public BigDecimal getPhanTramGiamGia() {
-        return phanTramGiamGia;
+    public BigDecimal getPhanTramThue() {
+        return phanTramThue;
     }
-    public void setPhanTramGiamGia(BigDecimal phanTramGiamGia) {
-        this.phanTramGiamGia = phanTramGiamGia;
+    public void setPhanTramThue(BigDecimal phanTramThue) {
+        this.phanTramThue = phanTramThue;
     }
-}   
+    public LocalDateTime getNgayThanhToan() {
+        return ngayThanhToan;
+    }
+    public void setNgayThanhToan(LocalDateTime ngayThanhToan) {
+        this.ngayThanhToan = ngayThanhToan;
+    }
+}

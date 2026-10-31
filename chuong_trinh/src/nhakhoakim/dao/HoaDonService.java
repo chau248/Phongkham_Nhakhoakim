@@ -16,7 +16,7 @@ public class HoaDonService {
         }
         return hdDAO.timHoaDon(maHoaDon);
     }
-    public HoaDon xacDinhThanhToan(String maHoaDon, String hinhThucThanhToan, String ghiChu, String maNhanVien, java.math.BigDecimal tongTien, java.math.BigDecimal tienGiamGia, java.math.BigDecimal tongTienTruocThue, java.math.BigDecimal phanTramGiamGia, String trangThai) {
+    public HoaDon xacDinhThanhToan(String maHoaDon, String hinhThucThanhToan, String ghiChu, String maNhanVien, java.math.BigDecimal tongTien, java.math.BigDecimal tienGiamGia, java.math.BigDecimal tongTienTruocThue, java.math.BigDecimal phanTramThue, String trangThai) {
         if (maHoaDon == null || maHoaDon.trim().isEmpty()) {
             throw new NghiepVuException("Mã hóa đơn không được để trống");
         }
@@ -35,16 +35,16 @@ public class HoaDonService {
         if (tongTienTruocThue == null || tongTienTruocThue.compareTo(java.math.BigDecimal.ZERO) < 0) {
             throw new NghiepVuException("Tổng tiền trước thuế không hợp lệ");
         }
-        if (phanTramGiamGia == null || phanTramGiamGia.compareTo(java.math.BigDecimal.ZERO) < 0) {
-            throw new NghiepVuException("Phần trăm giảm giá không hợp lệ");
+        if (phanTramThue == null || phanTramThue.compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new NghiepVuException("Phần trăm thuế không hợp lệ");
         }
         if (trangThai == null || trangThai.trim().isEmpty()) {
             throw new NghiepVuException("Trạng thái không được để trống");
         }
-        return hdDAO.xacDinhThanhToan(maHoaDon, hinhThucThanhToan, ghiChu, maNhanVien, tongTien, tienGiamGia, tongTienTruocThue, phanTramGiamGia, trangThai);
+        return hdDAO.xacDinhThanhToan(maHoaDon, hinhThucThanhToan, ghiChu, maNhanVien, tongTien, tienGiamGia, tongTienTruocThue, phanTramThue, trangThai);
     }
     public HoaDon taoHoaDon(LuotKham lk) {
-        if (lk.getTrangThai()=="Hoàn thành") {
+        if ("Hoàn thành".equals(lk.getTrangThai())) {
             return hdDAO.taoHoaDon(lk);
         } else {
             throw new NghiepVuException("Chỉ có thể tạo hóa đơn cho lượt khám đã hoàn thành");

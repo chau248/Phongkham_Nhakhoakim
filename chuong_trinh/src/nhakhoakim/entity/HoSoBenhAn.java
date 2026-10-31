@@ -19,6 +19,9 @@ public class HoSoBenhAn {
     
     
 
+    public HoSoBenhAn() {
+    }
+
     public HoSoBenhAn(String maHoSo, String maBN, LocalDate ngayTao, String tienSuBenh, String canhBaoDiUng,
 			String nhomMau, String benhNen, String thuocDangSuDung, String ghiChuDacBiet, String trangThaiHoSo) {
 		super();

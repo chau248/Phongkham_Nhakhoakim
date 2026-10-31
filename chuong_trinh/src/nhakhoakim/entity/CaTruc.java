@@ -13,6 +13,9 @@ public class CaTruc {
     
     
 
+    public CaTruc() {
+    }
+
     public CaTruc(String maCaTruc, NhanVien maNV, LocalDate ngay, String caLam, String phong, String trangThai) {
 		super();
 		this.maCaTruc = maCaTruc;

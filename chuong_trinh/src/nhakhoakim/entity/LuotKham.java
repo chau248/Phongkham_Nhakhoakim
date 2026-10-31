@@ -28,6 +28,9 @@ public class LuotKham {
     
     
 
+    public LuotKham() {
+    }
+
     public LuotKham(String maLuotKham, String maHoSo, String maNhanVienPhuTrach, String maLieuTrinh, String maHoaDon,
 			String maLichHen, LocalDateTime gioBatDau, LocalDateTime gioKetThuc, String lyDoKham, String chanDoan,
 			String huongDieuTri, String donThuoc, LocalDate ngayTaiKham, String trangThai, String ghiChu) {
