@@ -3,7 +3,8 @@ package nhakhoakim.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-// Một lượt khám của bệnh nhân với một nha sĩ
+
+//- maLuotKham : String   - gioBatDau : LocalDateTime   - gioKetThuc : LocalDateTime   - lyDoKham : String   - huongDieuTri : String   - donThuoc : String   - ngayTaiKham : LocalDate   - trangThai : String   - chanDoan : String   - ghiChu : String   - danhSachRang : RangDieuTri   - hoaDon : HoaDon   - nhanVienPhuTrach : NhanVien   
 public class LuotKham {
 
     private String maLuotKham; // mã lượt khám, dạng LK000001
@@ -21,8 +22,34 @@ public class LuotKham {
     private LocalDate ngayTaiKham; // ngày hẹn tái khám
     private String trangThai; // Đang khám, Hoàn thành hoặc Đã hủy
     private String ghiChu; // ghi chú
+    
+    
+    
+    
+    
 
-    public String getMaLuotKham() {
+    public LuotKham(String maLuotKham, String maHoSo, String maNhanVienPhuTrach, String maLieuTrinh, String maHoaDon,
+			String maLichHen, LocalDateTime gioBatDau, LocalDateTime gioKetThuc, String lyDoKham, String chanDoan,
+			String huongDieuTri, String donThuoc, LocalDate ngayTaiKham, String trangThai, String ghiChu) {
+		super();
+		this.maLuotKham = maLuotKham;
+		this.maHoSo = maHoSo;
+		this.maNhanVienPhuTrach = maNhanVienPhuTrach;
+		this.maLieuTrinh = maLieuTrinh;
+		this.maHoaDon = maHoaDon;
+		this.maLichHen = maLichHen;
+		this.gioBatDau = gioBatDau;
+		this.gioKetThuc = gioKetThuc;
+		this.lyDoKham = lyDoKham;
+		this.chanDoan = chanDoan;
+		this.huongDieuTri = huongDieuTri;
+		this.donThuoc = donThuoc;
+		this.ngayTaiKham = ngayTaiKham;
+		this.trangThai = trangThai;
+		this.ghiChu = ghiChu;
+	}
+
+	public String getMaLuotKham() {
         return maLuotKham;
     }
 

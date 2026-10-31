@@ -1,8 +1,29 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
-// Bệnh nhân (thông tin hành chính)
+//maBN : String 
+//hoTen : String 
+//ngaySinh : LocalDate 
+//sdt : String 
+//namSinh : int 
+//gioiTinh : String 
+//diaChi : String 
+//email : String 
+//soCCCD : String 
+//nguoiLienHeKhanCap : String 
+//sdtNguoiLienHe : String 
+//ngayDangKy : LocalDate 
+//trangThai : String 
+//ghiChu : String 
+//hoSoBenhAn : HoSoBenHAn 
+//danhSachLieuTrinh : LieuTrinh 
+//danhSachLichHen : LichHen 
+//danhSachHoaDon : HoaDon 
+//danhSachNhaSi : NhanVien 
+
+
 public class BenhNhan {
 
     private String maBN; // mã bệnh nhân, dạng BN000001
@@ -18,8 +39,28 @@ public class BenhNhan {
     private LocalDate ngayDangKy; // ngày đăng ký
     private String trangThai; // Đang điều trị hoặc Ngừng theo dõi
     private String ghiChu; // ghi chú
+    
 
-    public String getMaBN() {
+    public BenhNhan(String maBN, String hoTen, LocalDate ngaySinh, String gioiTinh, String sdt, String diaChi,
+			String email, String soCCCD, String nguoiLienHeKhanCap, String sdtNguoiLienHe, LocalDate ngayDangKy,
+			String trangThai, String ghiChu) {
+		super();
+		this.maBN = maBN;
+		this.hoTen = hoTen;
+		this.ngaySinh = ngaySinh;
+		this.gioiTinh = gioiTinh;
+		this.sdt = sdt;
+		this.diaChi = diaChi;
+		this.email = email;
+		this.soCCCD = soCCCD;
+		this.nguoiLienHeKhanCap = nguoiLienHeKhanCap;
+		this.sdtNguoiLienHe = sdtNguoiLienHe;
+		this.ngayDangKy = ngayDangKy;
+		this.trangThai = trangThai;
+		this.ghiChu = ghiChu;
+	}
+
+	public String getMaBN() {
         return maBN;
     }
 
@@ -123,7 +164,7 @@ public class BenhNhan {
         this.ghiChu = ghiChu;
     }
 
-    // Tuổi của bệnh nhân tại ngày hôm nay (chưa biết ngày sinh thì trả về -1)
+    // Tuổi của bệnh nhân tại ngày hôm nay
     public int tinhTuoi() {
         if (ngaySinh == null) {
             return -1;
