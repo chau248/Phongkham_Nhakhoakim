@@ -1,13 +1,15 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HoSoBenhAn;
 import nhakhoakim.entity.LichHen;
 import java.time.LocalDate;
 import java.time.LocalTime;
-public class LichHenHoSoService {
+public class LichHenHoSoController {
     private LichHenDAO lhDAO;
     
-    public LichHenHoSoService() {
+    public LichHenHoSoController() {
         this.lhDAO = new LichHenDAO();
     }
     public HoSoBenhAn layHoSoCuaLichHen(LichHen lh) {

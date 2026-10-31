@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,23 +13,23 @@ import nhakhoakim.entity.NhanVien;
 
 // Nghiệp vụ bệnh nhân: tìm kiếm, thêm mới (kèm hồ sơ bệnh án rỗng), cập nhật thông tin hành chính
 // Ràng buộc BN-01 đến BN-05, BN-12 đến BN-14, BN-17, BN-18 trong tai_lieu/quy_dinh/RANG_BUOC_NGHIEP_VU.md
-// (phần hồ sơ bệnh án BN-06 đến BN-11, BN-15, BN-16 nằm ở HoSoBenhAnService và entity HoSoBenhAn)
-public class BenhNhanService {
+// (phần hồ sơ bệnh án BN-06 đến BN-11, BN-15, BN-16 nằm ở HoSoBenhAnController và entity HoSoBenhAn)
+public class BenhNhanController {
 
     private static final int TOI_DA_KET_QUA = 50;
 
     private BenhNhanDAO benhNhanDAO;
-    private HoSoBenhAnService hoSoService;
+    private HoSoBenhAnController hoSoService;
     private Supplier<NhanVien> nguoiDung; // cho biết ai đang đăng nhập (kiểm thử thì truyền người giả)
-    private NhatKyService nhatKyService = new NhatKyService();
+    private NhatKyController nhatKyService = new NhatKyController();
 
     // Dùng DAO thật và người đăng nhập thật của chương trình
-    public BenhNhanService() {
-        this(new BenhNhanDAO(), new HoSoBenhAnService(), PhienLamViec::getNhanVienHienTai);
+    public BenhNhanController() {
+        this(new BenhNhanDAO(), new HoSoBenhAnController(), PhienLamViec::getNhanVienHienTai);
     }
 
     // Dùng DAO và người dùng truyền vào (để kiểm thử không cần CSDL)
-    public BenhNhanService(BenhNhanDAO benhNhanDAO, HoSoBenhAnService hoSoService, Supplier<NhanVien> nguoiDung) {
+    public BenhNhanController(BenhNhanDAO benhNhanDAO, HoSoBenhAnController hoSoService, Supplier<NhanVien> nguoiDung) {
         this.benhNhanDAO = benhNhanDAO;
         this.hoSoService = hoSoService;
         this.nguoiDung = nguoiDung;

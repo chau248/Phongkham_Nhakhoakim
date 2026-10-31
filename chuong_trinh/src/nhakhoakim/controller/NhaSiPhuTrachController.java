@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,17 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 // Cho biết tên nha sĩ phụ trách để các màn hình hiện lên cho người dùng thấy ai đang khám, ai phụ trách liệu trình
-public class NhaSiPhuTrachService {
+public class NhaSiPhuTrachController {
 
     private NhaSiPhuTrachDAO dao;
 
     // Dùng DAO thật
-    public NhaSiPhuTrachService() {
+    public NhaSiPhuTrachController() {
         this(new NhaSiPhuTrachDAO());
     }
 
     // Dùng DAO truyền vào (để kiểm thử không cần CSDL)
-    public NhaSiPhuTrachService(NhaSiPhuTrachDAO dao) {
+    public NhaSiPhuTrachController(NhaSiPhuTrachDAO dao) {
         this.dao = dao;
     }
 

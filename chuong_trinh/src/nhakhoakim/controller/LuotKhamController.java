@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,7 +23,7 @@ import nhakhoakim.entity.RangDieuTri;
 
 // Nghiệp vụ lượt khám: bắt đầu khám, ghi nội dung, kê đơn, chọn dịch vụ, hoàn tất, tái khám và trao đổi với hóa đơn
 // Ràng buộc LK-01 đến LK-21 trong tai_lieu/quy_dinh/RANG_BUOC_NGHIEP_VU.md
-public class LuotKhamService {
+public class LuotKhamController {
 
     private static final int TOI_DA_SO_LUONG = 10;     // số lượng tối đa của một dịch vụ không gắn răng
     private static final int TOI_DA_NGAY_TAI_KHAM = 180; // hẹn tái khám tối đa 6 tháng sau
@@ -41,24 +43,24 @@ public class LuotKhamService {
     private final LuotKhamDichVuDAO dichVuLuotKhamDAO;
     private final RangDieuTriDAO rangDAO;
     private final BenhNhanDAO benhNhanDAO;
-    private final HoSoBenhAnService hoSoService;
-    private final DichVuService dichVuService;
-    private final NhanVienService nhanVienService;
-    private final LichHenService lichHenService;
-    private final CaTrucService caTrucService;
+    private final HoSoBenhAnController hoSoService;
+    private final DichVuController dichVuService;
+    private final NhanVienController nhanVienService;
+    private final LichHenController lichHenService;
+    private final CaTrucController caTrucService;
     private final Supplier<NhanVien> nguoiDung; // người đang đăng nhập
 
     // Dùng các lớp thật và người đăng nhập lấy từ PhienLamViec
-    public LuotKhamService() {
+    public LuotKhamController() {
         this(new LuotKhamDAO(), new LuotKhamDichVuDAO(), new RangDieuTriDAO(), new BenhNhanDAO(),
-                new HoSoBenhAnService(), new DichVuService(), new NhanVienService(), new LichHenService(),
-                new CaTrucService(), PhienLamViec::getNhanVienHienTai);
+                new HoSoBenhAnController(), new DichVuController(), new NhanVienController(), new LichHenController(),
+                new CaTrucController(), PhienLamViec::getNhanVienHienTai);
     }
 
     // Dùng các đối tượng truyền vào (để thay bản giả khi kiểm thử)
-    public LuotKhamService(LuotKhamDAO luotKhamDAO, LuotKhamDichVuDAO dichVuLuotKhamDAO, RangDieuTriDAO rangDAO,
-            BenhNhanDAO benhNhanDAO, HoSoBenhAnService hoSoService, DichVuService dichVuService,
-            NhanVienService nhanVienService, LichHenService lichHenService, CaTrucService caTrucService,
+    public LuotKhamController(LuotKhamDAO luotKhamDAO, LuotKhamDichVuDAO dichVuLuotKhamDAO, RangDieuTriDAO rangDAO,
+            BenhNhanDAO benhNhanDAO, HoSoBenhAnController hoSoService, DichVuController dichVuService,
+            NhanVienController nhanVienService, LichHenController lichHenService, CaTrucController caTrucService,
             Supplier<NhanVien> nguoiDung) {
         this.luotKhamDAO = luotKhamDAO;
         this.dichVuLuotKhamDAO = dichVuLuotKhamDAO;

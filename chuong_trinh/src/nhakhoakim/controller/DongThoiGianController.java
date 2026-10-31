@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -20,14 +22,14 @@ import nhakhoakim.entity.DongThoiGian.SuKienDieuTri;
 
 // Dòng thời gian điều trị: gom đăng ký, liệu trình, lượt khám (kèm răng, dịch vụ, đơn thuốc) và hẹn tái khám
 // của một bệnh nhân thành một trục thời gian, mới nhất trước. Chỉ đọc dữ liệu có sẵn, không ghi gì.
-public class DongThoiGianService {
+public class DongThoiGianController {
 
-    private BenhNhanService benhNhanService = new BenhNhanService();
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
-    private LuotKhamService luotKhamService = new LuotKhamService();
-    private RangDieuTriService rangService = new RangDieuTriService();
-    private DichVuService dichVuService = new DichVuService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
+    private BenhNhanController benhNhanService = new BenhNhanController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private LuotKhamController luotKhamService = new LuotKhamController();
+    private RangDieuTriController rangService = new RangDieuTriController();
+    private DichVuController dichVuService = new DichVuController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     // Dựng dòng thời gian của một bệnh nhân
     public DongThoiGian xayDung(String maBN) {
@@ -113,7 +115,7 @@ public class DongThoiGianService {
     // Nội dung chi tiết của một lượt khám: lý do, chẩn đoán, hướng điều trị, đơn thuốc, răng và dịch vụ đã làm
     private String moTaLuotKham(LuotKham lk, Map<String, DichVu> bangDichVu, Map<String, String> tenNhaSi) {
         StringBuilder sb = new StringBuilder();
-        them(sb, "Nha sĩ", NhaSiPhuTrachService.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()));
+        them(sb, "Nha sĩ", NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()));
         them(sb, "Lý do", lk.getLyDoKham());
         them(sb, "Chẩn đoán", lk.getChanDoan());
         them(sb, "Hướng điều trị", lk.getHuongDieuTri());
@@ -160,7 +162,7 @@ public class DongThoiGianService {
 
     // Đoạn chữ ghi tên nha sĩ để nối vào mô tả; không có mã nha sĩ thì không thêm gì
     private String dongNhaSi(String nhan, Map<String, String> tenNhaSi, String maNhaSi) {
-        return maNhaSi == null ? "" : "." + nhan + NhaSiPhuTrachService.tenHoacMa(tenNhaSi, maNhaSi);
+        return maNhaSi == null ? "" : "." + nhan + NhaSiPhuTrachController.tenHoacMa(tenNhaSi, maNhaSi);
     }
 
     // Chuỗi null thì đổi thành rỗng

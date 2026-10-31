@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,7 +11,7 @@ import nhakhoakim.entity.LichHen;
 // Lịch hẹn khám
 // Bản tạm do Hậu viết để chạy thử (dữ liệu nằm trong bộ nhớ).
 // Trường thay bằng bản đọc/ghi CSDL (giữ nguyên tên hàm).
-public class LichHenService {
+public class LichHenController {
 
     private static final List<LichHen> DANH_SACH = new ArrayList<>();
     private static int soThuTu = 2;

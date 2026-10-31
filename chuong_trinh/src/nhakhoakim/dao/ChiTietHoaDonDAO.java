@@ -31,7 +31,7 @@ public class ChiTietHoaDonDAO {
         return new ChiTietHoaDon(maHoaDon, soLuong, soFDIRang, maDichVu, ghiChu, maChiTiet, donGia, giamGia);
         
     }
-    List<ChiTietHoaDon> layDanhSachChiTietHoaDon(String maHoaDon) {
+    public List<ChiTietHoaDon> layDanhSachChiTietHoaDon(String maHoaDon) {
         List<ChiTietHoaDon> ds = new ArrayList<>();
         String sql = "SELECT * FROM dbo.ChiTietHoaDon WHERE maHoaDon = ?";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+import nhakhoakim.controller.NhanVienController;
 import nhakhoakim.entity.NhanVien;
 
 // Người đang đăng nhập (dùng chung cho cả chương trình)
@@ -18,7 +19,7 @@ public class PhienLamViec {
     // Lấy người đang đăng nhập; chưa có ai thì dùng nhân viên mặc định trong cấu hình
     public static NhanVien getNhanVienHienTai() {
         if (nhanVienHienTai == null) {
-            nhanVienHienTai = new NhanVienService().timTheoMa(docMaMacDinh());
+            nhanVienHienTai = new NhanVienController().timTheoMa(docMaMacDinh());
         }
         return nhanVienHienTai;
     }

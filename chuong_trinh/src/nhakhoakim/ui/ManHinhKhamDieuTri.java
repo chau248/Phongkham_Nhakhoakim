@@ -14,13 +14,13 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
-import nhakhoakim.dao.BenhNhanService;
-import nhakhoakim.dao.DichVuService;
-import nhakhoakim.dao.HoSoBenhAnService;
-import nhakhoakim.dao.LuotKhamService;
-import nhakhoakim.dao.NhaSiPhuTrachService;
+import nhakhoakim.controller.BenhNhanController;
+import nhakhoakim.controller.DichVuController;
+import nhakhoakim.controller.HoSoBenhAnController;
+import nhakhoakim.controller.LuotKhamController;
+import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.dao.PhienLamViec;
-import nhakhoakim.dao.RangDieuTriService;
+import nhakhoakim.controller.RangDieuTriController;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.HangSo;
@@ -34,12 +34,12 @@ import nhakhoakim.entity.LuotKhamDichVu;
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
 public class ManHinhKhamDieuTri extends JPanel {
 
-    private LuotKhamService luotKhamService = new LuotKhamService();
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
-    private BenhNhanService benhNhanService = new BenhNhanService();
-    private DichVuService dichVuService = new DichVuService();
-    private RangDieuTriService rangService = new RangDieuTriService();
+    private LuotKhamController luotKhamService = new LuotKhamController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
+    private BenhNhanController benhNhanService = new BenhNhanController();
+    private DichVuController dichVuService = new DichVuController();
+    private RangDieuTriController rangService = new RangDieuTriController();
 
     private LichHen lichHen;                                       // lịch hẹn đang khám (null nếu khám vãng lai)
     private LuotKham luotKham;                                     // lượt khám đang khám của nha sĩ

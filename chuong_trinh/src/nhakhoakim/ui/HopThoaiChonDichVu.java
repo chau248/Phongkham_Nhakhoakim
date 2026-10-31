@@ -13,7 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import nhakhoakim.MainApp;
-import nhakhoakim.dao.DichVuService;
+import nhakhoakim.controller.DichVuController;
 import nhakhoakim.entity.DichVu;
 
 // Hộp thoại chọn một dịch vụ điều trị (chỉ xem giá và thời gian, không sửa); lọc được theo loại dịch vụ
@@ -32,7 +32,7 @@ public class HopThoaiChonDichVu {
         if (GraphicsEnvironment.isHeadless()) {
             return traLoiTuDong;
         }
-        DichVuService dichVuService = new DichVuService();
+        DichVuController dichVuService = new DichVuController();
         List<DichVu> tatCa = dichVuService.layTatCa();
         Set<String> cacLoai = new LinkedHashSet<>();
         cacLoai.add(TAT_CA);

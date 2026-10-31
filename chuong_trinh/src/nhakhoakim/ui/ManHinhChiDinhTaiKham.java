@@ -8,11 +8,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import nhakhoakim.dao.BenhNhanService;
-import nhakhoakim.dao.DichVuService;
-import nhakhoakim.dao.HoSoBenhAnService;
-import nhakhoakim.dao.LuotKhamService;
-import nhakhoakim.dao.NhaSiPhuTrachService;
+import nhakhoakim.controller.BenhNhanController;
+import nhakhoakim.controller.DichVuController;
+import nhakhoakim.controller.HoSoBenhAnController;
+import nhakhoakim.controller.LuotKhamController;
+import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DichVu;
@@ -23,11 +23,11 @@ import nhakhoakim.entity.LuotKham;
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
 public class ManHinhChiDinhTaiKham extends JPanel {
 
-    private LuotKhamService luotKhamService = new LuotKhamService();
-    private DichVuService dichVuService = new DichVuService();
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
-    private BenhNhanService benhNhanService = new BenhNhanService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
+    private LuotKhamController luotKhamService = new LuotKhamController();
+    private DichVuController dichVuService = new DichVuController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private BenhNhanController benhNhanService = new BenhNhanController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private LuotKham luotKham;                                      // lượt khám đang khám
     private JTextField txtNgay = TienIch.oNhap(14);                 // ngày tái khám dd/MM/yyyy

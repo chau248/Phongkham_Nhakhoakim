@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
-import nhakhoakim.dao.BenhNhanService;
-import nhakhoakim.dao.NhaSiPhuTrachService;
+import nhakhoakim.controller.BenhNhanController;
+import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HangSo;
@@ -24,8 +24,8 @@ import nhakhoakim.entity.NhanVien;
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
 public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
 
-    private BenhNhanService benhNhanService = new BenhNhanService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
+    private BenhNhanController benhNhanService = new BenhNhanController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private JTextField txtTuKhoa = TienIch.oNhap(28);              // từ khóa tìm kiếm
     private JTable tblBenhNhan = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Ngày sinh", "Giới tính", "Số điện thoại", "Địa chỉ", "Nha sĩ khám gần nhất", "Trạng thái"},

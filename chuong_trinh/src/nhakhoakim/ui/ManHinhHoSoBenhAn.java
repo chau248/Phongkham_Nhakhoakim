@@ -12,8 +12,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
-import nhakhoakim.dao.HoSoBenhAnService;
-import nhakhoakim.dao.NhaSiPhuTrachService;
+import nhakhoakim.controller.HoSoBenhAnController;
+import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HangSo;
@@ -27,8 +27,8 @@ import nhakhoakim.entity.NhanVien;
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
 public class ManHinhHoSoBenhAn extends JPanel {
 
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();   // chọn bệnh nhân cần xem
     private JPanel khuBanner = new JPanel(new java.awt.BorderLayout());      // chỗ đặt banner dị ứng
@@ -149,14 +149,14 @@ public class ManHinhHoSoBenhAn extends JPanel {
         List<String[]> dongLieuTrinh = new ArrayList<>();
         for (LieuTrinh lt : dsLieuTrinh) {
             dongLieuTrinh.add(new String[] {lt.getLoaiDichVu(), String.valueOf(lt.getSoBuoiDuKien()),
-                TienIch.chu(lt.getGiaiDoanHienTai()), NhaSiPhuTrachService.tenHoacMa(tenNhaSi, lt.getMaNhaSiPhuTrach()),
+                TienIch.chu(lt.getGiaiDoanHienTai()), NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lt.getMaNhaSiPhuTrach()),
                 lt.getTrangThai(), TienIch.ngay(lt.getNgayDuKienKetThuc())});
         }
         TienIch.napBang(tblLieuTrinh, dongLieuTrinh);
 
         List<String[]> dongLichSu = new ArrayList<>();
         for (LuotKham lk : dsLichSu) {
-            dongLichSu.add(new String[] {TienIch.ngayGio(lk.getGioBatDau()), NhaSiPhuTrachService.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()),
+            dongLichSu.add(new String[] {TienIch.ngayGio(lk.getGioBatDau()), NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()),
                 TienIch.chu(lk.getLyDoKham()), TienIch.chu(lk.getChanDoan()), lk.getTrangThai()});
         }
         TienIch.napBang(tblLichSu, dongLichSu);

@@ -1,4 +1,6 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,7 +10,7 @@ import nhakhoakim.entity.NhanVien;
 // Thông tin nhân viên (chỉ đọc)
 // Bản tạm do Hậu viết để chạy thử, dữ liệu giống 02_seed.sql.
 // Tâm thay bằng bản đọc từ CSDL (giữ nguyên tên hàm).
-public class NhanVienService {
+public class NhanVienController {
 
     private static final List<NhanVien> DANH_SACH = new ArrayList<>();
 

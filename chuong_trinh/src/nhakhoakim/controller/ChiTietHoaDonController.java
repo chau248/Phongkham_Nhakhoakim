@@ -1,10 +1,12 @@
-package nhakhoakim.dao;
+package nhakhoakim.controller;
+
+import nhakhoakim.dao.*;
 import nhakhoakim.entity.ChiTietHoaDon;
 import java.math.BigDecimal;
 import java.util.List;
-public class ChiTietHoaDonService {
+public class ChiTietHoaDonController {
     private ChiTietHoaDonDAO cthdDAO;
-    public ChiTietHoaDonService() {
+    public ChiTietHoaDonController() {
         this.cthdDAO = new ChiTietHoaDonDAO();
     }
     public void taoChiTietHoaDon(String maHoaDon, int soLuong, int soFDIRang, String maDichVu, String ghiChu, String maChiTiet, BigDecimal donGia,

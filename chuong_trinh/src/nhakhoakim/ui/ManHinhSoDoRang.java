@@ -22,13 +22,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
-import nhakhoakim.dao.BenhNhanService;
-import nhakhoakim.dao.DichVuService;
-import nhakhoakim.dao.HoSoBenhAnService;
-import nhakhoakim.dao.LuotKhamService;
-import nhakhoakim.dao.NhaSiPhuTrachService;
+import nhakhoakim.controller.BenhNhanController;
+import nhakhoakim.controller.DichVuController;
+import nhakhoakim.controller.HoSoBenhAnController;
+import nhakhoakim.controller.LuotKhamController;
+import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.dao.PhienLamViec;
-import nhakhoakim.dao.RangDieuTriService;
+import nhakhoakim.controller.RangDieuTriController;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.HangSo;
@@ -92,12 +92,12 @@ public class ManHinhSoDoRang extends JPanel {
         }
     }
 
-    private RangDieuTriService rangService = new RangDieuTriService();
-    private LuotKhamService luotKhamService = new LuotKhamService();
-    private DichVuService dichVuService = new DichVuService();
-    private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
-    private BenhNhanService benhNhanService = new BenhNhanService();
-    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
+    private RangDieuTriController rangService = new RangDieuTriController();
+    private LuotKhamController luotKhamService = new LuotKhamController();
+    private DichVuController dichVuService = new DichVuController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private BenhNhanController benhNhanService = new BenhNhanController();
+    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private LuotKham luotKham;                                       // lượt khám đang khám
     private Map<Integer, NutRang> nutRang = new HashMap<>();         // nút của từng răng (cả hai bộ), khóa là số FDI
