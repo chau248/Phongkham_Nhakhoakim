@@ -1,7 +1,6 @@
 package nhakhoakim.entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 
 //- maNV : String   - hoTen : String   - vaiTro : String   - ngaySinh : LocalDate   - gioiTinh : String   - sdt : String   - email : String   - diaChi : String   - ngayVaoLam : LocalDate   - chuyenKhoa : String (// Áp dụng cho nha sĩ, nội nha...)   - trangThai : String   - soChungChiHanhNghe : String   - ngayHetHanChungChi : LocalDate   - danhSachLuotKham : LuotKham   - danhSachLichHen : LichHen
@@ -15,6 +14,9 @@ public class NhanVien {
     private LocalDate ngayHetHanChungChi; // ngày hết hạn chứng chỉ hành nghề
     private String chuyenKhoa; // chuyên khoa
     private String trangThai; // Đang làm việc hoặc Nghỉ việc
+    private String sdt; // số điện thoại (10 số)
+    private String gioiTinh; // Nam, Nữ hoặc Khác
+    private LocalDate ngayVaoLam; // ngày vào làm
     
     
     
@@ -94,6 +96,31 @@ public class NhanVien {
     // Kiểm tra chứng chỉ hành nghề còn hạn không (nhân viên không có chứng chỉ thì coi là không còn hạn)
     public boolean chungChiConHan() {
         return ngayHetHanChungChi != null && !ngayHetHanChungChi.isBefore(LocalDate.now());
+    }
+
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getGioiTinh() {
+        return gioiTinh;
+    }
+
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
+    }
+
+    public LocalDate getNgayVaoLam() {
+        return ngayVaoLam;
+    }
+
+    public void setNgayVaoLam(LocalDate ngayVaoLam) {
+        this.ngayVaoLam = ngayVaoLam;
     }
 
 }
