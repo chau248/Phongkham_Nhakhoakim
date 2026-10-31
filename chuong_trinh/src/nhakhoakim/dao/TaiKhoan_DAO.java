@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import nhakhoakim.Connection.jdbcutil;
+import nhakhoakim.connection.jdbcutil;
 import nhakhoakim.entity.TaiKhoan;
 
 public class TaiKhoan_DAO implements Dao_interface<TaiKhoan> {

@@ -2,159 +2,171 @@ package nhakhoakim.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 
 //- maLuotKham : String   - gioBatDau : LocalDateTime   - gioKetThuc : LocalDateTime   - lyDoKham : String   - huongDieuTri : String   - donThuoc : String   - ngayTaiKham : LocalDate   - trangThai : String   - chanDoan : String   - ghiChu : String   - danhSachRang : RangDieuTri   - hoaDon : HoaDon   - nhanVienPhuTrach : NhanVien   
 public class LuotKham {
-	
-	private String maLuotKham;
-	private LocalDateTime gioBatDau;
-	private LocalDateTime gioKetThuc;
-	
-	private String lyDoKham;
-	private String huongDieuTri;
-	private String donThuoc;
-	private LocalDate ngayTaiKham;
-	private String trangthai;
-	private String chanDoan;
-	private String ghiChu;
-	
-//	danhSachRang : RangDieuTri   - hoaDon : HoaDon   - nhanVienPhuTrach : NhanVien 
-	
-	private ArrayList<RangDieuTri> danhSachRang;
-	
-	private HoaDon hoaDon;
-	
-	private NhanVien nhanVienPhuTrach;
 
-	public LuotKham(String maLuotKham, LocalDateTime gioBatDau, LocalDateTime gioKetThuc, String lyDoKham,
-			String huongDieuTri, String donThuoc, LocalDate ngayTaiKham, String trangthai, String chanDoan,
-			String ghiChu, ArrayList<RangDieuTri> danhSachRang, HoaDon hoaDon, NhanVien nhanVienPhuTrach) {
+    private String maLuotKham; // mã lượt khám, dạng LK000001
+    private String maHoSo; // mã hồ sơ bệnh án
+    private String maNhanVienPhuTrach; // mã nha sĩ phụ trách
+    private String maLieuTrinh; // mã liệu trình (có thể rỗng)
+    private String maHoaDon; // mã hóa đơn, rỗng cho đến khi lập hóa đơn
+    private String maLichHen; // mã lịch hẹn của lượt khám (rỗng nếu khám vãng lai)
+    private LocalDateTime gioBatDau; // giờ bắt đầu khám
+    private LocalDateTime gioKetThuc; // giờ kết thúc khám
+    private String lyDoKham; // lý do khám
+    private String chanDoan; // chẩn đoán
+    private String huongDieuTri; // hướng điều trị
+    private String donThuoc; // đơn thuốc
+    private LocalDate ngayTaiKham; // ngày hẹn tái khám
+    private String trangThai; // Đang khám, Hoàn thành hoặc Đã hủy
+    private String ghiChu; // ghi chú
+    
+    
+    
+    
+    
+
+    public LuotKham(String maLuotKham, String maHoSo, String maNhanVienPhuTrach, String maLieuTrinh, String maHoaDon,
+			String maLichHen, LocalDateTime gioBatDau, LocalDateTime gioKetThuc, String lyDoKham, String chanDoan,
+			String huongDieuTri, String donThuoc, LocalDate ngayTaiKham, String trangThai, String ghiChu) {
 		super();
 		this.maLuotKham = maLuotKham;
+		this.maHoSo = maHoSo;
+		this.maNhanVienPhuTrach = maNhanVienPhuTrach;
+		this.maLieuTrinh = maLieuTrinh;
+		this.maHoaDon = maHoaDon;
+		this.maLichHen = maLichHen;
 		this.gioBatDau = gioBatDau;
 		this.gioKetThuc = gioKetThuc;
 		this.lyDoKham = lyDoKham;
+		this.chanDoan = chanDoan;
 		this.huongDieuTri = huongDieuTri;
 		this.donThuoc = donThuoc;
 		this.ngayTaiKham = ngayTaiKham;
-		this.trangthai = trangthai;
-		this.chanDoan = chanDoan;
+		this.trangThai = trangThai;
 		this.ghiChu = ghiChu;
-		this.danhSachRang = danhSachRang;
-		this.hoaDon = hoaDon;
-		this.nhanVienPhuTrach = nhanVienPhuTrach;
 	}
 
 	public String getMaLuotKham() {
-		return maLuotKham;
-	}
+        return maLuotKham;
+    }
 
-	public void setMaLuotKham(String maLuotKham) {
-		this.maLuotKham = maLuotKham;
-	}
+    public void setMaLuotKham(String maLuotKham) {
+        this.maLuotKham = maLuotKham;
+    }
 
-	public LocalDateTime getGioBatDau() {
-		return gioBatDau;
-	}
+    public String getMaHoSo() {
+        return maHoSo;
+    }
 
-	public void setGioBatDau(LocalDateTime gioBatDau) {
-		this.gioBatDau = gioBatDau;
-	}
+    public void setMaHoSo(String maHoSo) {
+        this.maHoSo = maHoSo;
+    }
 
-	public LocalDateTime getGioKetThuc() {
-		return gioKetThuc;
-	}
+    public String getMaNhanVienPhuTrach() {
+        return maNhanVienPhuTrach;
+    }
 
-	public void setGioKetThuc(LocalDateTime gioKetThuc) {
-		this.gioKetThuc = gioKetThuc;
-	}
+    public void setMaNhanVienPhuTrach(String maNhanVienPhuTrach) {
+        this.maNhanVienPhuTrach = maNhanVienPhuTrach;
+    }
 
-	public String getLyDoKham() {
-		return lyDoKham;
-	}
+    public String getMaLieuTrinh() {
+        return maLieuTrinh;
+    }
 
-	public void setLyDoKham(String lyDoKham) {
-		this.lyDoKham = lyDoKham;
-	}
+    public void setMaLieuTrinh(String maLieuTrinh) {
+        this.maLieuTrinh = maLieuTrinh;
+    }
 
-	public String getHuongDieuTri() {
-		return huongDieuTri;
-	}
+    public String getMaHoaDon() {
+        return maHoaDon;
+    }
 
-	public void setHuongDieuTri(String huongDieuTri) {
-		this.huongDieuTri = huongDieuTri;
-	}
+    public void setMaHoaDon(String maHoaDon) {
+        this.maHoaDon = maHoaDon;
+    }
 
-	public String getDonThuoc() {
-		return donThuoc;
-	}
+    public String getMaLichHen() {
+        return maLichHen;
+    }
 
-	public void setDonThuoc(String donThuoc) {
-		this.donThuoc = donThuoc;
-	}
+    public void setMaLichHen(String maLichHen) {
+        this.maLichHen = maLichHen;
+    }
 
-	public LocalDate getNgayTaiKham() {
-		return ngayTaiKham;
-	}
+    public LocalDateTime getGioBatDau() {
+        return gioBatDau;
+    }
 
-	public void setNgayTaiKham(LocalDate ngayTaiKham) {
-		this.ngayTaiKham = ngayTaiKham;
-	}
+    public void setGioBatDau(LocalDateTime gioBatDau) {
+        this.gioBatDau = gioBatDau;
+    }
 
-	public String getTrangthai() {
-		return trangthai;
-	}
+    public LocalDateTime getGioKetThuc() {
+        return gioKetThuc;
+    }
 
-	public void setTrangthai(String trangthai) {
-		this.trangthai = trangthai;
-	}
+    public void setGioKetThuc(LocalDateTime gioKetThuc) {
+        this.gioKetThuc = gioKetThuc;
+    }
 
-	public String getChanDoan() {
-		return chanDoan;
-	}
+    public String getLyDoKham() {
+        return lyDoKham;
+    }
 
-	public void setChanDoan(String chanDoan) {
-		this.chanDoan = chanDoan;
-	}
+    public void setLyDoKham(String lyDoKham) {
+        this.lyDoKham = lyDoKham;
+    }
 
-	public String getGhiChu() {
-		return ghiChu;
-	}
+    public String getChanDoan() {
+        return chanDoan;
+    }
 
-	public void setGhiChu(String ghiChu) {
-		this.ghiChu = ghiChu;
-	}
+    public void setChanDoan(String chanDoan) {
+        this.chanDoan = chanDoan;
+    }
 
-	public ArrayList<RangDieuTri> getDanhSachRang() {
-		return danhSachRang;
-	}
+    public String getHuongDieuTri() {
+        return huongDieuTri;
+    }
 
-	public void setDanhSachRang(ArrayList<RangDieuTri> danhSachRang) {
-		this.danhSachRang = danhSachRang;
-	}
+    public void setHuongDieuTri(String huongDieuTri) {
+        this.huongDieuTri = huongDieuTri;
+    }
 
-	public HoaDon getHoaDon() {
-		return hoaDon;
-	}
+    public String getDonThuoc() {
+        return donThuoc;
+    }
 
-	public void setHoaDon(HoaDon hoaDon) {
-		this.hoaDon = hoaDon;
-	}
+    public void setDonThuoc(String donThuoc) {
+        this.donThuoc = donThuoc;
+    }
 
-	public NhanVien getNhanVienPhuTrach() {
-		return nhanVienPhuTrach;
-	}
+    public LocalDate getNgayTaiKham() {
+        return ngayTaiKham;
+    }
 
-	public void setNhanVienPhuTrach(NhanVien nhanVienPhuTrach) {
-		this.nhanVienPhuTrach = nhanVienPhuTrach;
-	}
-	
-	
-	
-	
-	
-	
-	
+    public void setNgayTaiKham(LocalDate ngayTaiKham) {
+        this.ngayTaiKham = ngayTaiKham;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
 
 }
