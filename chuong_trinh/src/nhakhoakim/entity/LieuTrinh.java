@@ -22,6 +22,9 @@ public class LieuTrinh {
     
     
 
+    public LieuTrinh() {
+    }
+
     public LieuTrinh(String maLieuTrinh, String maBN, String loaiDichVu, int soBuoiDuKien, String giaiDoanHienTai,
 			LocalDate ngayBatDau, LocalDate ngayDuKienKetThuc, LocalDate ngayKetThucThucTe, long tongChiPhiDuKien,
 			String trangThai, String maNhaSiPhuTrach, String ghiChu) {

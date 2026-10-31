@@ -1,4 +1,5 @@
 package nhakhoakim.dao;
+import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HoSoBenhAn;
 import nhakhoakim.entity.LichHen;
 import java.time.LocalDate;
@@ -9,14 +10,11 @@ public class LichHenHoSoService {
     public LichHenHoSoService() {
         this.lhDAO = new LichHenDAO();
     }
-    public void themHoSoBenhAnVaoLichHen(HoSoBenhAn hs, LichHen lh) {
-        if(hs == null) {
-            throw new NghiepVuException("Hồ sơ bệnh án không được để trống");
-        }
+    public HoSoBenhAn layHoSoCuaLichHen(LichHen lh) {
         if(lh == null) {
             throw new NghiepVuException("Lịch hẹn không được để trống");
         }
-        lhDAO.themHoSoBenhAnVaoLichHen(hs, lh);
+        return lhDAO.layHoSoCuaLichHen(lh);
     }
     public void huyLichHen(String maLichHen, String lyDoHuy) {
         if(lyDoHuy == null || lyDoHuy.trim().isEmpty()) {
@@ -27,7 +25,7 @@ public class LichHenHoSoService {
         }
         lhDAO.huyLichHen(maLichHen, lyDoHuy);
     }
-    public HoSoBenhAn suaThongTinBenhNhan(LichHen lh, String ht, String gt, LocalDate ns, String sdt, String dc, String email, String cccd, String nguoiLH, String sdtNguoiLH) {
+    public BenhNhan suaThongTinBenhNhan(LichHen lh, String ht, String gt, LocalDate ns, String sdt, String dc, String email, String cccd, String nguoiLH, String sdtNguoiLH) {
         if(lh == null) {
             throw new NghiepVuException("Lịch hẹn không được để trống");
         }
@@ -64,7 +62,7 @@ public class LichHenHoSoService {
 
         return lhDAO.suaThongTinBenhNhan(lh, ht, gt, ns, sdt, dc, email, cccd, nguoiLH, sdtNguoiLH);
     }
-    public void capNhatLichHen(LocalTime ngayHen, LocalTime gioHen, String ghiChu, String maLichHen) {
+    public void capNhatLichHen(LocalDate ngayHen, LocalTime gioHen, String ghiChu, String maLichHen) {
         if(ngayHen == null) {
             throw new NghiepVuException("Ngày hẹn không được để trống");
         }

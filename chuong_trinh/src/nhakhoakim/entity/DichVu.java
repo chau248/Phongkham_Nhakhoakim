@@ -28,6 +28,9 @@ public class DichVu {
     
     
 
+    public DichVu() {
+    }
+
     public DichVu(String maDichVu, String tenDichVu, long gia, int thoiGianDuKien, String loaiDichVu,
 			boolean trangThaiHoatDong, boolean yeuCauLieuTrinh, boolean lienQuanImplantCauRang) {
 		super();

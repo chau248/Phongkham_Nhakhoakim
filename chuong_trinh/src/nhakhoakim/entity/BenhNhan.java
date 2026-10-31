@@ -41,6 +41,9 @@ public class BenhNhan {
     private String ghiChu; // ghi chú
     
 
+    public BenhNhan() {
+    }
+
     public BenhNhan(String maBN, String hoTen, LocalDate ngaySinh, String gioiTinh, String sdt, String diaChi,
 			String email, String soCCCD, String nguoiLienHeKhanCap, String sdtNguoiLienHe, LocalDate ngayDangKy,
 			String trangThai, String ghiChu) {

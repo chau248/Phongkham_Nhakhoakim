@@ -42,6 +42,9 @@ public class RangDieuTri {
     
     
 
+    public RangDieuTri() {
+    }
+
     public RangDieuTri(String maBanGhi, String maLuotKham, int soFDI, String matRang, String trangThai, String vatLieu,
 			LocalDateTime ngayGhiNhan, String maDichVu, boolean daNho, String mauHienThi, String ghiChu) {
 		super();

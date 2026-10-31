@@ -20,6 +20,9 @@ public class NhanVien {
     
     
     
+    public NhanVien() {
+    }
+
     public NhanVien(String maNV, String hoTen, String vaiTro, String soChungChiHanhNghe, LocalDate ngayHetHanChungChi,
 			String chuyenKhoa, String trangThai) {
 		super();
