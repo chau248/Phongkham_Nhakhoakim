@@ -14,18 +14,18 @@ public class DanhSachChucNang {
         List<ChucNang> ds = new ArrayList<>();
 
         // Bệnh nhân: tìm, tạo/sửa hồ sơ, xem bệnh án, tiền sử - dị ứng, liệu trình đang điều trị
-        ds.add(new ChucNang("Bệnh nhân", "Tìm kiếm bệnh nhân", "BenhNhan, HoSoBenhAn", "Nha sĩ, Lễ tân", "Hậu", "Tìm theo mã, họ tên, số điện thoại"));
-        ds.add(new ChucNang("Bệnh nhân", "Thêm / cập nhật hồ sơ bệnh nhân", "BenhNhan, HoSoBenhAn", "Y tá, Lễ tân", "Hậu", "Tạo mới và sửa; Y tá khai báo y tế/dị ứng ban đầu"));
-        ds.add(new ChucNang("Bệnh nhân", "Xem hồ sơ bệnh án", "BenhNhan, HoSoBenhAn", "Nha sĩ", "Hậu", "Cảnh báo dị ứng hiển thị nổi bật; lịch sử khám"));
+        ds.add(new ChucNang("Bệnh nhân", "Tìm kiếm bệnh nhân", "BenhNhan, HoSoBenhAn", "Nha sĩ, Y tá, Lễ tân, Quản lý", "Hậu", "Tìm theo mã, họ tên, số điện thoại"));
+        ds.add(new ChucNang("Bệnh nhân", "Thêm / cập nhật hồ sơ bệnh nhân", "BenhNhan, HoSoBenhAn", "Lễ tân, Quản lý", "Hậu", "Tạo mới và sửa; Y tá khai báo y tế/dị ứng ban đầu"));
+        ds.add(new ChucNang("Bệnh nhân", "Xem hồ sơ bệnh án", "BenhNhan, HoSoBenhAn", "Nha sĩ, Y tá, Quản lý", "Hậu", "Cảnh báo dị ứng hiển thị nổi bật; lịch sử khám"));
         ds.add(new ChucNang("Bệnh nhân", "Cập nhật tiền sử & dị ứng", "HoSoBenhAn", "Nha sĩ, Y tá", "Hậu", "Thay đổi phải ghi nhật ký hệ thống"));
-        ds.add(new ChucNang("Bệnh nhân", "Xem liệu trình đang thực hiện", "LieuTrinh", "Nha sĩ", "Hậu", "Hiển thị trong hồ sơ bệnh án"));
-        ds.add(new ChucNang("Bệnh nhân", "Dòng thời gian điều trị", "BenhNhan, LuotKham, LieuTrinh, RangDieuTri", "Nha sĩ, Y tá", "Hậu", "Gom đăng ký, liệu trình, lượt khám (răng, dịch vụ, đơn thuốc) và hẹn tái khám thành trục thời gian; tóm tắt lần khám gần nhất"));
+        ds.add(new ChucNang("Bệnh nhân", "Xem liệu trình đang thực hiện", "LieuTrinh", "Nha sĩ, Y tá, Quản lý", "Hậu", "Hiển thị trong hồ sơ bệnh án"));
+        ds.add(new ChucNang("Bệnh nhân", "Dòng thời gian điều trị", "BenhNhan, LuotKham, LieuTrinh, RangDieuTri", "Nha sĩ, Y tá, Quản lý", "Hậu", "Gom đăng ký, liệu trình, lượt khám (răng, dịch vụ, đơn thuốc) và hẹn tái khám thành trục thời gian; tóm tắt lần khám gần nhất"));
 
         // Lịch hẹn: xem, đặt, dời/hủy, xác nhận; riêng lịch làm việc là của Nha sĩ và Y tá
-        ds.add(new ChucNang("Lịch hẹn", "Xem lịch hẹn", "LichHen", "Lễ tân", "Trường", "Theo ngày/tuần, thấy khung giờ trống"));
-        ds.add(new ChucNang("Lịch hẹn", "Đặt lịch hẹn", "LichHen", "Lễ tân", "Trường", "Kiểm tra trùng lịch và thời gian dịch vụ"));
-        ds.add(new ChucNang("Lịch hẹn", "Dời / hủy lịch hẹn", "LichHen", "Lễ tân", "Trường", "Hủy phải có lý do"));
-        ds.add(new ChucNang("Lịch hẹn", "Xác nhận lịch hẹn", "LichHen", "Lễ tân", "Trường", "Từ Chờ xác nhận sang Đã xác nhận, kể cả lịch tái khám do Nha sĩ tạo"));
+        ds.add(new ChucNang("Lịch hẹn", "Xem lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Theo ngày/tuần, thấy khung giờ trống"));
+        ds.add(new ChucNang("Lịch hẹn", "Đặt lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Kiểm tra trùng lịch và thời gian dịch vụ"));
+        ds.add(new ChucNang("Lịch hẹn", "Dời / hủy lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Hủy phải có lý do"));
+        ds.add(new ChucNang("Lịch hẹn", "Xác nhận lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Từ Chờ xác nhận sang Đã xác nhận, kể cả lịch tái khám do Nha sĩ tạo"));
         ds.add(new ChucNang("Lịch hẹn", "Xem lịch làm việc", "LichHen", "Nha sĩ, Y tá", "Trường", "Chỉ xem; Nha sĩ thấy ca khám, Y tá thấy ca hỗ trợ"));
 
         // Lượt khám: khám, sơ đồ răng, kê đơn, tái khám
@@ -36,12 +36,12 @@ public class DanhSachChucNang {
         ds.add(new ChucNang("Lượt khám", "Gợi ý điều trị & ước tính chi phí", "LuotKham, RangDieuTri, DichVu", "Nha sĩ", "Hậu", "Gợi ý dịch vụ từ tình trạng răng và lịch sử khám; tạm tính chi phí lượt khám gồm VAT 8%"));
 
         // Hóa đơn: từ lượt khám đã hoàn tất đến thanh toán
-        ds.add(new ChucNang("Hóa đơn", "Danh sách chờ thanh toán", "HoaDon", "Lễ tân", "Trường", "Các lượt khám đã hoàn tất, chưa lập hóa đơn"));
-        ds.add(new ChucNang("Hóa đơn", "Lập hóa đơn", "HoaDon, ChiTietHoaDon", "Lễ tân", "Trường", "Tổng tiền = dịch vụ - giảm giá + thuế VAT"));
-        ds.add(new ChucNang("Hóa đơn", "Thanh toán & in hóa đơn", "HoaDon", "Lễ tân", "Trường", "Tiền mặt / Chuyển khoản / Thẻ / Ví điện tử"));
+        ds.add(new ChucNang("Hóa đơn", "Danh sách chờ thanh toán", "HoaDon", "Lễ tân, Quản lý", "Trường", "Các lượt khám đã hoàn tất, chưa lập hóa đơn"));
+        ds.add(new ChucNang("Hóa đơn", "Lập hóa đơn", "HoaDon, ChiTietHoaDon", "Lễ tân, Quản lý", "Trường", "Tổng tiền = dịch vụ - giảm giá + thuế VAT"));
+        ds.add(new ChucNang("Hóa đơn", "Thanh toán & in hóa đơn", "HoaDon", "Lễ tân, Quản lý", "Trường", "Tiền mặt / Chuyển khoản / Thẻ / Ví điện tử"));
 
         // Dịch vụ: ai cũng được xem bảng giá, chỉ Quản lý được thêm/sửa
-        ds.add(new ChucNang("Dịch vụ", "Xem danh mục dịch vụ & giá", "DichVu", "Nha sĩ, Lễ tân, Quản lý", "Tâm", "Bảng giá và thời gian dự kiến; Nha sĩ tra khi khám, chỉ xem không sửa"));
+        ds.add(new ChucNang("Dịch vụ", "Xem danh mục dịch vụ & giá", "DichVu", "Nha sĩ, Y tá, Lễ tân, Quản lý", "Tâm", "Bảng giá và thời gian dự kiến; Nha sĩ tra khi khám, chỉ xem không sửa"));
         ds.add(new ChucNang("Dịch vụ", "Thêm / sửa dịch vụ", "DichVu", "Quản lý", "Tâm", "Mọi thay đổi giá ghi nhật ký hệ thống"));
 
         // Nhân viên: hồ sơ (kèm chứng chỉ hành nghề) và phân công ca trực

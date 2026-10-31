@@ -32,16 +32,32 @@ import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import nhakhoakim.controller.TaiKhoanController;
+import nhakhoakim.dao.PhienLamViec;
+import nhakhoakim.entity.NhanVien;
 import nhakhoakim.ui.ChucNang;
 import nhakhoakim.ui.DanhSachChucNang;
+import nhakhoakim.ui.HopThoaiDangNhap;
 import nhakhoakim.ui.ManHinhChiDinhTaiKham;
+import nhakhoakim.ui.ManHinhChoThanhToan;
+import nhakhoakim.ui.ManHinhDanhMucDichVu;
+import nhakhoakim.ui.ManHinhDatLichHen;
+import nhakhoakim.ui.ManHinhDoiHuyLichHen;
 import nhakhoakim.ui.ManHinhDongThoiGian;
 import nhakhoakim.ui.ManHinhGoiYDieuTri;
 import nhakhoakim.ui.ManHinhHoSoBenhAn;
 import nhakhoakim.ui.ManHinhHoSoBenhNhan;
+import nhakhoakim.ui.ManHinhHoSoNhanVien;
 import nhakhoakim.ui.ManHinhKhamDieuTri;
+import nhakhoakim.ui.ManHinhLichLamViec;
+import nhakhoakim.ui.ManHinhPhanCongCaTruc;
 import nhakhoakim.ui.ManHinhSoDoRang;
+import nhakhoakim.ui.ManHinhTaiKhoan;
+import nhakhoakim.ui.ManHinhTaiKhoanCuaToi;
+import nhakhoakim.ui.ManHinhThanhToan;
 import nhakhoakim.ui.ManHinhTraCuuBenhNhan;
+import nhakhoakim.ui.ManHinhXacNhanLichHen;
+import nhakhoakim.ui.ManHinhXemLichHen;
 import nhakhoakim.ui.TienIch;
 
 @SuppressWarnings("serial") 
@@ -113,7 +129,31 @@ public class MainApp {
                 loi.printStackTrace();
                 SwingUtilities.invokeLater(() -> baoLoiChuaBat(loi));
             });
-            new MainApp().hienCuaSo();
+            batDau();
+        });
+    }
+
+    // Hiện hộp đăng nhập; đăng nhập xong mới mở cửa sổ chính (bấm Thoát ở hộp đăng nhập thì kết thúc chương trình)
+    private static void batDau() {
+        NhanVien nv = HopThoaiDangNhap.hien();
+        if (nv == null) {
+            System.exit(0);
+            return;
+        }
+        PhienLamViec.datNhanVien(nv);
+        new MainApp().hienCuaSo();
+    }
+
+    // Đăng xuất (TK-02): ghi nhật ký, xóa người dùng hiện tại, đóng cửa sổ chính rồi hiện lại hộp đăng nhập
+    public static void dangXuat() {
+        new TaiKhoanController().dangXuat();
+        JFrame cu = dangChay == null ? null : dangChay.cuaSo;
+        dangChay = null;
+        SwingUtilities.invokeLater(() -> {
+            if (cu != null) {
+                cu.dispose();
+            }
+            batDau();
         });
     }
 
@@ -162,9 +202,9 @@ public class MainApp {
         return noiDungChinh;
     }
 
-    // Thanh tiêu đề màu xanh phía trên cùng; bấm vào để về trang chủ
+    // Thanh tiêu đề màu xanh phía trên cùng; bấm vào để về trang chủ. Bên phải hiện người đang đăng nhập và nút Đăng xuất.
     private JComponent taoTieuDe() {
-        JPanel tieuDe = new JPanel(new GridLayout(2, 1, 0, 2)) {
+        JPanel tieuDe = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -180,8 +220,30 @@ public class MainApp {
         JLabel lblMoTa = new JLabel("Chương trình quản lý hệ thống phòng khám");
         lblMoTa.setForeground(new Color(0xCFE9EC));
         lblMoTa.setFont(TienIch.FONT);
-        tieuDe.add(lblTen);
-        tieuDe.add(lblMoTa);
+        JPanel trai = new JPanel(new GridLayout(2, 1, 0, 2));
+        trai.setOpaque(false);
+        trai.add(lblTen);
+        trai.add(lblMoTa);
+        tieuDe.add(trai, BorderLayout.WEST);
+        NhanVien nv = PhienLamViec.getNhanVienHienTai();
+        if (nv != null) {
+            JLabel lblNguoi = new JLabel(nv.getHoTen() + " - " + nv.getVaiTro());
+            lblNguoi.setForeground(Color.WHITE);
+            lblNguoi.setFont(TienIch.FONT_DAM);
+            JButton btnDangXuat = new JButton("<html><u>Đăng xuất</u></html>");
+            btnDangXuat.setForeground(new Color(0xCFE9EC));
+            btnDangXuat.setFont(TienIch.FONT);
+            btnDangXuat.setBorderPainted(false);
+            btnDangXuat.setContentAreaFilled(false);
+            btnDangXuat.setFocusPainted(false);
+            btnDangXuat.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            btnDangXuat.addActionListener(e -> dangXuat());
+            JPanel phai = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 0));
+            phai.setOpaque(false);
+            phai.add(lblNguoi);
+            phai.add(btnDangXuat);
+            tieuDe.add(phai, BorderLayout.EAST);
+        }
         tieuDe.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         tieuDe.addMouseListener(new MouseAdapter() {
             @Override
@@ -203,21 +265,34 @@ public class MainApp {
             menu.setFont(TienIch.FONT.deriveFont(Font.BOLD, CO_CHU_MENU));
             menu.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
             for (ChucNang cn : nhom.getValue()) {
+                if (!duocDung(cn)) {
+                    continue; // menu và chức năng chỉ hiện đúng vai trò (CH-01)
+                }
                 JMenuItem muc = new JMenuItem(cn.getTen());
                 muc.setFont(TienIch.FONT.deriveFont(CO_CHU_MUC_MENU));
                 muc.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 24));
                 muc.addActionListener(e -> hienChucNang(cn));
                 menu.add(muc);
             }
-            thanhMenu.add(menu);
+            if (menu.getItemCount() > 0) {
+                thanhMenu.add(menu);
+            }
         }
+    }
+
+    // Người đang đăng nhập có được dùng chức năng này không (theo cột vai trò dùng); chưa đăng nhập (chạy kiểm thử) thì cho dùng hết
+    private boolean duocDung(ChucNang cn) {
+        NhanVien nv = PhienLamViec.getNhanVienHienTai();
+        return nv == null || java.util.Arrays.asList(cn.getVaiTro().split(",\\s*")).contains(nv.getVaiTro());
     }
 
     // Trang chủ: chỉ có một dòng gợi ý, các chức năng chọn ở thanh menu phía trên
     void hienTrangChu() {
         lichSuManHinh.clear();
         JPanel trang = new JPanel();
-        TienIch.xepManHinh(trang, TienIch.doanChu("Chọn một mục trên thanh menu để bắt đầu.", TienIch.MAU_XAM));
+        NhanVien nv = PhienLamViec.getNhanVienHienTai();
+        TienIch.xepManHinh(trang, TienIch.tieuDe(nv == null ? "Xin chào" : "Xin chào, " + nv.getHoTen()),
+                TienIch.doanChu("Chọn một mục trên thanh menu để bắt đầu.", TienIch.MAU_XAM));
         datGiua(trang);
     }
 
@@ -237,9 +312,23 @@ public class MainApp {
         manHinh.put("Dòng thời gian điều trị", ManHinhDongThoiGian::new);
         manHinh.put("Gợi ý điều trị & ước tính chi phí", ManHinhGoiYDieuTri::new);
 
-        // ----- Trường: thêm các màn hình menu Lịch hẹn và menu Hóa đơn ở đây
+        // ----- Trường: menu Lịch hẹn và menu Hóa đơn
+        manHinh.put("Xem lịch hẹn", ManHinhXemLichHen::new);
+        manHinh.put("Đặt lịch hẹn", ManHinhDatLichHen::new);
+        manHinh.put("Dời / hủy lịch hẹn", ManHinhDoiHuyLichHen::new);
+        manHinh.put("Xác nhận lịch hẹn", ManHinhXacNhanLichHen::new);
+        manHinh.put("Xem lịch làm việc", ManHinhLichLamViec::new);
+        manHinh.put("Danh sách chờ thanh toán", ManHinhChoThanhToan::new);
+        manHinh.put("Lập hóa đơn", ManHinhChoThanhToan::new);                // chọn lượt khám chờ thanh toán rồi lập hóa đơn
+        manHinh.put("Thanh toán & in hóa đơn", ManHinhThanhToan::new);
 
-        // ----- Tâm: thêm các màn hình menu Dịch vụ, Nhân viên, Tài khoản ở đây
+        // ----- Tâm: menu Dịch vụ, Nhân viên, Tài khoản
+        manHinh.put("Xem danh mục dịch vụ & giá", ManHinhDanhMucDichVu::new);
+        manHinh.put("Thêm / sửa dịch vụ", ManHinhDanhMucDichVu::new);        // Quản lý thấy thêm nút Thêm và Sửa trên cùng màn hình
+        manHinh.put("Cập nhật hồ sơ nhân viên", ManHinhHoSoNhanVien::new);
+        manHinh.put("Phân công ca trực", ManHinhPhanCongCaTruc::new);
+        manHinh.put("Đăng nhập / Đăng xuất", ManHinhTaiKhoanCuaToi::new);
+        manHinh.put("Tạo tài khoản & gán vai trò", ManHinhTaiKhoan::new);
     }
 
     // Dựng màn hình của chức năng; chưa đăng ký màn hình thì trả về null
@@ -326,6 +415,11 @@ public class MainApp {
 
     JMenuBar thanhMenu() {
         return thanhMenu;
+    }
+
+    // Dựng lại menu theo vai trò của người đang đăng nhập (kiểm thử gọi sau khi đổi người đăng nhập)
+    void lamMoiMenu() {
+        taoMenu();
     }
 
     // Bấm nút Quay lại như người dùng
