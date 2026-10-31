@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import nhakhoakim.Connection.jdbcutil;
+import nhakhoakim.connection.jdbcutil;
 import nhakhoakim.entity.NhanVien;
 
 public class NhanVien_DAO implements Dao_interface<NhanVien>{
@@ -40,39 +40,39 @@ public class NhanVien_DAO implements Dao_interface<NhanVien>{
 			PreparedStatement st = con.prepareStatement(sql);
 			
 			
-			st.setString(1, t.getMaNV());
-			st.setString(2, t.getHoTen());
-			
-			st.setString(3,t.getVaiTro());
-			
-			st.setObject(4,t.getNgaySinh());
-			
-			
-			st.setString(5,t.getGioiTinh());
-			
-			st.setString(6, t.getSdt());
-			
-			st.setString(7, t.getEmail());
-			
-			st.setString(8,t.getDiaChi());
-			
-			st.setObject(9, t.getNgayVaoLam());
-			
-			
-			st.setString(10,t.getChuyenKhoa());
-			
-			st.setString(11,t.getTrangThai());
-			
-			
-			st.setString(12, t.getSoChungChiHanhNghe());
-			st.setObject(13,t.getNgayHetHanChungChi());
-			
-			
-			kq=st.executeUpdate();
-			
-			System.out.println("co" + kq +"bi thay doi");
-			
-			jdbcutil.closeconnection(con);
+//			st.setString(1, t.getMaNV());
+//			st.setString(2, t.getHoTen());
+//			
+//			st.setString(3,t.getVaiTro());
+//			
+//			st.setObject(4,t.getNgaySinh());
+//			
+//			
+//			st.setString(5,t.getGioiTinh());
+//			
+//			st.setString(6, t.getSdt());
+//			
+//			st.setString(7, t.getEmail());
+//			
+//			st.setString(8,t.getDiaChi());
+//			
+//			st.setObject(9, t.getNgayVaoLam());
+//			
+//			
+//			st.setString(10,t.getChuyenKhoa());
+//			
+//			st.setString(11,t.getTrangThai());
+//			
+//			
+//			st.setString(12, t.getSoChungChiHanhNghe());
+//			st.setObject(13,t.getNgayHetHanChungChi());
+//			
+//			
+//			kq=st.executeUpdate();
+//			
+//			System.out.println("co" + kq +"bi thay doi");
+//			
+//			jdbcutil.closeconnection(con);
 			
 			
 			
@@ -112,22 +112,22 @@ public class NhanVien_DAO implements Dao_interface<NhanVien>{
 			
 			
 			
-			st.setString(1, t.getHoTen());
-			
-			st.setString(2,t.getVaiTro());
-			
-			st.setObject(3,t.getNgaySinh());
-			
-			
-			st.setString(4,t.getGioiTinh());
-			
-			st.setString(5, t.getSdt());
-			
-			st.setString(6, t.getEmail());
-			
-			st.setString(7,t.getDiaChi());
-			
-			st.setObject(8, t.getNgayVaoLam());
+//			st.setString(1, t.getHoTen());
+//			
+//			st.setString(2,t.getVaiTro());
+//			
+//			st.setObject(3,t.getNgaySinh());
+//			
+//			
+//			st.setString(4,t.getGioiTinh());
+//			
+//			st.setString(5, t.getSdt());
+//			
+//			st.setString(6, t.getEmail());
+//			
+//			st.setString(7,t.getDiaChi());
+//			
+//			st.setObject(8, t.getNgayVaoLam());
 			
 			
 			st.setString(9,t.getChuyenKhoa());
@@ -220,8 +220,8 @@ public class NhanVien_DAO implements Dao_interface<NhanVien>{
 	            LocalDate NgayHetHan = rs.getDate("ngayHetHanChungChi").toLocalDate();
 	            
 	            
-	            NhanVien nv = new NhanVien(maNV, hoTen, vaiTro, NgaySinh, gioiTinh, sdt, email, diaChi, NgayVaoLam, chuyenKhoa, trangThai, soChungChiHanhNghe, NgayHetHan);
-				kq.add(nv);
+//	            NhanVien nv = new NhanVien(maNV, hoTen, vaiTro, NgaySinh, gioiTinh, sdt, email, diaChi, NgayVaoLam, chuyenKhoa, trangThai, soChungChiHanhNghe, NgayHetHan);
+//				kq.add(nv);
 			}
 			
 			jdbcutil.closeconnection(con);

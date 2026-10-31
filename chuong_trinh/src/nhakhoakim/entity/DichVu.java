@@ -13,108 +13,96 @@ import java.math.BigDecimal;
 //lienQuanImplantCauRang : boolean (// Dùng cho ràng buộc sơ đồ răng "đã nhổ") 
 
 public class DichVu {
-	
-	private String maDichVu;
-	private String tenDichVu;
-	private BigDecimal gia;
-	private int thoiGianDuKien;
-	
-	private String moTa;
-	private String donViTinh;
-	private boolean trangThaiHoatDong;
-	private boolean yeuCauLieuTrinh;
-	
-	private boolean lienQuanImplantCauRang;
 
-	public DichVu(String maDichVu, String tenDichVu, BigDecimal gia, int thoiGianDuKien, String moTa, String donViTinh,
+    private String maDichVu; // mã dịch vụ, dạng DV000001
+    private String tenDichVu; // tên dịch vụ
+    private long gia; // giá niêm yết (đồng)
+    private int thoiGianDuKien; // thời gian dự kiến (phút)
+    private String loaiDichVu; // loại dịch vụ
+    private boolean trangThaiHoatDong; // true nếu đang cung cấp
+    private boolean yeuCauLieuTrinh; // true nếu cần theo liệu trình
+    private boolean lienQuanImplantCauRang; // true nếu là dịch vụ Implant hoặc cầu răng
+    
+    
+    
+    
+    
+
+    public DichVu(String maDichVu, String tenDichVu, long gia, int thoiGianDuKien, String loaiDichVu,
 			boolean trangThaiHoatDong, boolean yeuCauLieuTrinh, boolean lienQuanImplantCauRang) {
 		super();
 		this.maDichVu = maDichVu;
 		this.tenDichVu = tenDichVu;
 		this.gia = gia;
 		this.thoiGianDuKien = thoiGianDuKien;
-		this.moTa = moTa;
-		this.donViTinh = donViTinh;
+		this.loaiDichVu = loaiDichVu;
 		this.trangThaiHoatDong = trangThaiHoatDong;
 		this.yeuCauLieuTrinh = yeuCauLieuTrinh;
 		this.lienQuanImplantCauRang = lienQuanImplantCauRang;
 	}
 
 	public String getMaDichVu() {
-		return maDichVu;
-	}
+        return maDichVu;
+    }
 
-	public void setMaDichVu(String maDichVu) {
-		this.maDichVu = maDichVu;
-	}
+    public void setMaDichVu(String maDichVu) {
+        this.maDichVu = maDichVu;
+    }
 
-	public String getTenDichVu() {
-		return tenDichVu;
-	}
+    public String getTenDichVu() {
+        return tenDichVu;
+    }
 
-	public void setTenDichVu(String tenDichVu) {
-		this.tenDichVu = tenDichVu;
-	}
+    public void setTenDichVu(String tenDichVu) {
+        this.tenDichVu = tenDichVu;
+    }
 
-	public BigDecimal getGia() {
-		return gia;
-	}
+    public long getGia() {
+        return gia;
+    }
 
-	public void setGia(BigDecimal gia) {
-		this.gia = gia;
-	}
+    public void setGia(long gia) {
+        this.gia = gia;
+    }
 
-	public int getThoiGianDuKien() {
-		return thoiGianDuKien;
-	}
+    public int getThoiGianDuKien() {
+        return thoiGianDuKien;
+    }
 
-	public void setThoiGianDuKien(int thoiGianDuKien) {
-		this.thoiGianDuKien = thoiGianDuKien;
-	}
+    public void setThoiGianDuKien(int thoiGianDuKien) {
+        this.thoiGianDuKien = thoiGianDuKien;
+    }
 
-	public String getMoTa() {
-		return moTa;
-	}
+    public String getLoaiDichVu() {
+        return loaiDichVu;
+    }
 
-	public void setMoTa(String moTa) {
-		this.moTa = moTa;
-	}
+    public void setLoaiDichVu(String loaiDichVu) {
+        this.loaiDichVu = loaiDichVu;
+    }
 
-	public String getDonViTinh() {
-		return donViTinh;
-	}
+    public boolean isTrangThaiHoatDong() {
+        return trangThaiHoatDong;
+    }
 
-	public void setDonViTinh(String donViTinh) {
-		this.donViTinh = donViTinh;
-	}
+    public void setTrangThaiHoatDong(boolean trangThaiHoatDong) {
+        this.trangThaiHoatDong = trangThaiHoatDong;
+    }
 
-	public boolean isTrangThaiHoatDong() {
-		return trangThaiHoatDong;
-	}
+    public boolean isYeuCauLieuTrinh() {
+        return yeuCauLieuTrinh;
+    }
 
-	public void setTrangThaiHoatDong(boolean trangThaiHoatDong) {
-		this.trangThaiHoatDong = trangThaiHoatDong;
-	}
+    public void setYeuCauLieuTrinh(boolean yeuCauLieuTrinh) {
+        this.yeuCauLieuTrinh = yeuCauLieuTrinh;
+    }
 
-	public boolean isYeuCauLieuTrinh() {
-		return yeuCauLieuTrinh;
-	}
+    public boolean isLienQuanImplantCauRang() {
+        return lienQuanImplantCauRang;
+    }
 
-	public void setYeuCauLieuTrinh(boolean yeuCauLieuTrinh) {
-		this.yeuCauLieuTrinh = yeuCauLieuTrinh;
-	}
-
-	public boolean isLienQuanImplantCauRang() {
-		return lienQuanImplantCauRang;
-	}
-
-	public void setLienQuanImplantCauRang(boolean lienQuanImplantCauRang) {
-		this.lienQuanImplantCauRang = lienQuanImplantCauRang;
-	}
-	
-	
-	
-	
-	
+    public void setLienQuanImplantCauRang(boolean lienQuanImplantCauRang) {
+        this.lienQuanImplantCauRang = lienQuanImplantCauRang;
+    }
 
 }

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import nhakhoakim.Connection.jdbcutil;
+import nhakhoakim.connection.jdbcutil;
 import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.NhanVien;
 
@@ -35,13 +35,13 @@ public class DichVu_DAO implements Dao_interface<DichVu>{
 			st.setString(1,t.getMaDichVu());
 			
 			st.setString(2,t.getTenDichVu());
-			
-			st.setBigDecimal(3,t.getGia());
-			
-			st.setObject(4, t.getThoiGianDuKien());
-			
-			st.setString(5,t.getMoTa());
-			st.setString(6, t.getDonViTinh());
+//			
+//			st.setBigDecimal(3,t.getGia());
+//			
+//			st.setObject(4, t.getThoiGianDuKien());
+//			
+//			st.setString(5,t.getMoTa());
+//			st.setString(6, t.getDonViTinh());
 			
 			st.setBoolean(7, t.isTrangThaiHoatDong());
 			
@@ -82,13 +82,13 @@ public class DichVu_DAO implements Dao_interface<DichVu>{
 			
 			st.setString(1,t.getTenDichVu());
 			
-			st.setBigDecimal(2,t.getGia());
-			
-			st.setObject(3, t.getThoiGianDuKien());
-			
-			st.setString(4,t.getMoTa());
-			st.setString(5, t.getDonViTinh());
-			
+//			st.setBigDecimal(2,t.getGia());
+//			
+//			st.setObject(3, t.getThoiGianDuKien());
+//			
+//			st.setString(4,t.getMoTa());
+//			st.setString(5, t.getDonViTinh());
+//			
 			st.setBoolean(6, t.isTrangThaiHoatDong());
 			
 			st.setBoolean(7,t.isYeuCauLieuTrinh());
@@ -152,8 +152,8 @@ public class DichVu_DAO implements Dao_interface<DichVu>{
 			    boolean lienQuanImplantCauRang = rs.getBoolean("lienQuanImplantCauRang");
 
 			    // Khởi tạo đối tượng DichVu và đưa vào danh sách
-			    DichVu dv = new DichVu(maDichVu, tenDichVu, gia, thoiGianDuKien, moTa, donViTinh, trangThaiHoatDong, yeuCauLieuTrinh, lienQuanImplantCauRang);
-			    kq.add(dv);
+//			    DichVu dv = new DichVu(maDichVu, tenDichVu, gia, thoiGianDuKien, moTa, donViTinh, trangThaiHoatDong, yeuCauLieuTrinh, lienQuanImplantCauRang);
+//			    kq.add(dv);
 			}
 			
 			jdbcutil.closeconnection(con);
