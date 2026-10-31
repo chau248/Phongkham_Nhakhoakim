@@ -7,7 +7,7 @@ GO
 
 /* ---------- Bộ đếm mã: đặt bằng số bản ghi mẫu bên dưới (chỉ tăng, không bao giờ giảm) ---------- */
 MERGE dbo.BoDemMa AS t
-USING (VALUES ('NV', 12), ('DV', 12), ('BN', 12), ('HS', 12), ('LH', 12), ('CA', 12), ('TK', 12),
+USING (VALUES ('NV', 12), ('DV', 12), ('BN', 12), ('HS', 12), ('LH', 12), ('CA', 84), ('TK', 12),
               ('LT', 5), ('LK', 12), ('BG', 11), ('HD', 10), ('CT', 12)) AS s(tienTo, giaTri)
 ON t.tienTo = s.tienTo
 WHEN NOT MATCHED THEN INSERT (tienTo, giaTriHienTai) VALUES (s.tienTo, s.giaTri)
@@ -34,21 +34,21 @@ SELECT v.* FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.NhanVien n WHERE n.maNV = v.maNV);
 GO
 
-/* ---------- Tài khoản mẫu (mật khẩu 123456, không băm; mỗi nhân viên một tài khoản, TK000012 bị khóa) ---------- */
+/* ---------- Tài khoản mẫu: mật khẩu của mọi tài khoản là 123456 (lưu dạng băm PBKDF2, xem MatKhau.java); mỗi nhân viên một tài khoản, TK000012 bị khóa ---------- */
 INSERT INTO dbo.TaiKhoan (maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa)
 SELECT v.* FROM (VALUES
-    (N'TK000001', N'NV000001', 'quanly',  '123456', N'Quản lý', 0),
-    (N'TK000002', N'NV000002', 'nhasi1',  '123456', N'Nha sĩ',  0),
-    (N'TK000003', N'NV000003', 'nhasi2',  '123456', N'Nha sĩ',  0),
-    (N'TK000004', N'NV000004', 'yta1',    '123456', N'Y tá',    0),
-    (N'TK000005', N'NV000005', 'yta2',    '123456', N'Y tá',    0),
-    (N'TK000006', N'NV000006', 'letan1',  '123456', N'Lễ tân',  0),
-    (N'TK000007', N'NV000007', 'nhasi3',  '123456', N'Nha sĩ',  0),
-    (N'TK000008', N'NV000008', 'nhasi4',  '123456', N'Nha sĩ',  0),
-    (N'TK000009', N'NV000009', 'yta3',    '123456', N'Y tá',    0),
-    (N'TK000010', N'NV000010', 'letan2',  '123456', N'Lễ tân',  0),
-    (N'TK000011', N'NV000011', 'yta4',    '123456', N'Y tá',    0),
-    (N'TK000012', N'NV000012', 'nhasi5',  '123456', N'Nha sĩ',  1)
+    (N'TK000001', N'NV000001', 'quanly', 's1$5eed0000a2c3d4e5$a04d546f626688a5b882b8c63fae96edf77838ff43c361b6442d1c9179876bb1', N'Quản lý', 0),
+    (N'TK000002', N'NV000002', 'nhasi1', 's1$5eed0000a3d4e5f6$137616b70a4a14a5c48178a852830bc2390cb438aa3c52980a79be759d34ccfc', N'Nha sĩ',  0),
+    (N'TK000003', N'NV000003', 'nhasi2', 's1$5eed0000a4e5f707$2174ea0f5c029fa4f294091f197834be145e601980d89ef52c9e101f9b1b5516', N'Nha sĩ',  0),
+    (N'TK000004', N'NV000004', 'yta1', 's1$5eed0000a5f70818$426b03b6819b0176a26dbee80eb519b777d7fcbf4b3e09746b1a925f14788f5c', N'Y tá',    0),
+    (N'TK000005', N'NV000005', 'yta2', 's1$5eed0000a7081929$d7eabb0ab0dc3ba2b4cea9f040cf247a4cd27ead3e0841cd9514d881ccfd2d99', N'Y tá',    0),
+    (N'TK000006', N'NV000006', 'letan1', 's1$5eed0000a8192a3a$7785fa9cd41f24d38fd3ffdf49fa6bd7153fcf3f21f4c97f49996f0ccfae2e2e', N'Lễ tân',  0),
+    (N'TK000007', N'NV000007', 'nhasi3', 's1$5eed0000a92a3b4b$5aeae0a9bb1f69aecc97cddc943d4c280b1786585fc7d9a47c89ae7e74d13609', N'Nha sĩ',  0),
+    (N'TK000008', N'NV000008', 'nhasi4', 's1$5eed0000aa3b4c5c$da72cf62b33e0be0531f1b843ce7339530429dc4a9fb9243cc88d096a4e2b464', N'Nha sĩ',  0),
+    (N'TK000009', N'NV000009', 'yta3', 's1$5eed0000ab4c5d6d$e59924842b5fe528ddc330225703090954b0235fe6fae1c0050db89469c183bb', N'Y tá',    0),
+    (N'TK000010', N'NV000010', 'letan2', 's1$5eed0000ac5d6e7e$2b9c6d957da9049627e6b4bef6ec0b02fdff8a672350adcce49c6fa21241b4ec', N'Lễ tân',  0),
+    (N'TK000011', N'NV000011', 'yta4', 's1$5eed0000ad6e7f8f$31b371c28d87771175574bfab38075d41e445183a02b217ce1b9d6f15f4909f5', N'Y tá',    0),
+    (N'TK000012', N'NV000012', 'nhasi5', 's1$5eed0000ae7f90a0$04b08276dfa6a9c9df3c2b54ff5b76c88b16e3252eb9f04f6908fb3ce0c182ce', N'Nha sĩ',  1)
 ) AS v(maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.TaiKhoan t WHERE t.maTaiKhoan = v.maTaiKhoan);
 GO
@@ -72,23 +72,25 @@ SELECT v.* FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.DichVu d WHERE d.maDichVu = v.maDichVu);
 GO
 
-/* ---------- Ca trực hôm nay ---------- */
+/* ---------- Ca trực: 7 ngày liên tiếp từ hôm nay, mỗi ngày cùng một mẫu 12 ca (mã CA000001-CA000084) ---------- */
 INSERT INTO dbo.CaTruc (maCaTruc, maNV, ngay, caLam, phong)
-SELECT v.maCaTruc, v.maNV, CAST(GETDATE() AS DATE), v.caLam, v.phong FROM (VALUES
-    (N'CA000001', N'NV000002', N'Sáng',   N'Phòng 1'),
-    (N'CA000002', N'NV000002', N'Chiều',  N'Phòng 1'),
-    (N'CA000003', N'NV000003', N'Sáng',   N'Phòng 2'),
-    (N'CA000004', N'NV000004', N'Sáng',   N'Phòng 1'),
-    (N'CA000005', N'NV000005', N'Chiều',  N'Phòng 2'),
-    (N'CA000006', N'NV000006', N'Sáng',   N'Quầy lễ tân'),
-    (N'CA000007', N'NV000003', N'Chiều',  N'Phòng 2'),
-    (N'CA000008', N'NV000007', N'Sáng',   N'Phòng 3'),
-    (N'CA000009', N'NV000008', N'Chiều',  N'Phòng 3'),
-    (N'CA000010', N'NV000009', N'Sáng',   N'Phòng 3'),
-    (N'CA000011', N'NV000010', N'Chiều',  N'Quầy lễ tân'),
-    (N'CA000012', N'NV000011', N'Chiều',  N'Phòng 3')
-) AS v(maCaTruc, maNV, caLam, phong)
-WHERE NOT EXISTS (SELECT 1 FROM dbo.CaTruc c WHERE c.maCaTruc = v.maCaTruc);
+SELECT N'CA' + RIGHT('000000' + CAST(d.lech * 12 + m.stt AS VARCHAR(6)), 6), m.maNV, DATEADD(DAY, d.lech, CAST(GETDATE() AS DATE)), m.caLam, m.phong
+FROM (VALUES (0), (1), (2), (3), (4), (5), (6)) AS d(lech)
+CROSS JOIN (VALUES
+    (1,  N'NV000002', N'Sáng',   N'Phòng 1'),
+    (2,  N'NV000002', N'Chiều',  N'Phòng 1'),
+    (3,  N'NV000003', N'Sáng',   N'Phòng 2'),
+    (4,  N'NV000004', N'Sáng',   N'Phòng 1'),
+    (5,  N'NV000005', N'Chiều',  N'Phòng 2'),
+    (6,  N'NV000006', N'Sáng',   N'Quầy lễ tân'),
+    (7,  N'NV000003', N'Chiều',  N'Phòng 2'),
+    (8,  N'NV000007', N'Sáng',   N'Phòng 3'),
+    (9,  N'NV000008', N'Chiều',  N'Phòng 3'),
+    (10, N'NV000009', N'Sáng',   N'Phòng 3'),
+    (11, N'NV000010', N'Chiều',  N'Quầy lễ tân'),
+    (12, N'NV000011', N'Chiều',  N'Phòng 3')
+) AS m(stt, maNV, caLam, phong)
+WHERE NOT EXISTS (SELECT 1 FROM dbo.CaTruc c WHERE c.maNV = m.maNV AND c.ngay = DATEADD(DAY, d.lech, CAST(GETDATE() AS DATE)) AND c.caLam = m.caLam);
 GO
 
 /* ---------- Bệnh nhân (BN000008 là trẻ em có người liên hệ khẩn cấp, BN000011 đã ngừng theo dõi) ---------- */
@@ -139,12 +141,12 @@ INSERT INTO dbo.LichHen (maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen,
 SELECT v.maLichHen, v.maBN, v.maNhanVien, v.maDichVu, DATEADD(DAY, v.lech, CAST(GETDATE() AS DATE)), v.gioHen, v.trangThai,
        v.phong, v.hinhThucDat, v.lyDoHuy FROM (VALUES
     (N'LH000001', N'BN000001', N'NV000002', N'DV000002',  0, '09:00', N'Đã xác nhận',  N'Phòng 1', N'Trực tiếp', NULL),
-    (N'LH000002', N'BN000002', N'NV000002', N'DV000008',  0, '10:30', N'Chờ xác nhận', N'Phòng 1', N'Điện thoại', NULL),
+    (N'LH000002', N'BN000002', N'NV000002', N'DV000008',  0, '09:30', N'Chờ xác nhận', N'Phòng 1', N'Điện thoại', NULL),
     (N'LH000003', N'BN000004', N'NV000003', N'DV000001',  0, '08:30', N'Đã xác nhận',  N'Phòng 2', N'Online',     NULL),
     (N'LH000004', N'BN000005', N'NV000003', N'DV000007',  0, '14:00', N'Đã xác nhận',  N'Phòng 2', N'Trực tiếp',  NULL),
     (N'LH000005', N'BN000006', N'NV000007', N'DV000006',  0, '09:30', N'Chờ xác nhận', N'Phòng 3', N'Online',     NULL),
     (N'LH000006', N'BN000009', N'NV000002', N'DV000005',  0, '15:00', N'Đã xác nhận',  N'Phòng 1', N'Điện thoại', NULL),
-    (N'LH000007', N'BN000007', N'NV000008', N'DV000010',  1, '08:00', N'Chờ xác nhận', N'Phòng 3', N'Điện thoại', NULL),
+    (N'LH000007', N'BN000007', N'NV000008', N'DV000010',  1, '14:00', N'Chờ xác nhận', N'Phòng 3', N'Điện thoại', NULL),
     (N'LH000008', N'BN000008', N'NV000003', N'DV000003',  1, '10:00', N'Đã xác nhận',  N'Phòng 2', N'Trực tiếp',  NULL),
     (N'LH000009', N'BN000010', N'NV000007', N'DV000002',  2, '09:00', N'Chờ xác nhận', N'Phòng 3', N'Online',     NULL),
     (N'LH000010', N'BN000003', N'NV000002', N'DV000001', -1, '08:30', N'Hoàn thành',   N'Phòng 1', N'Trực tiếp',  NULL),
