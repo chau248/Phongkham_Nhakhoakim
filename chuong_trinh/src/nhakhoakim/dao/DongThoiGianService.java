@@ -3,6 +3,7 @@ package nhakhoakim.dao;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class DongThoiGianService {
     private LuotKhamService luotKhamService = new LuotKhamService();
     private RangDieuTriService rangService = new RangDieuTriService();
     private DichVuService dichVuService = new DichVuService();
+    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
 
     // Dựng dòng thời gian của một bệnh nhân
     public DongThoiGian xayDung(String maBN) {
@@ -37,15 +39,26 @@ public class DongThoiGianService {
         DongThoiGian ketQua = new DongThoiGian();
         List<SuKienDieuTri> ds = ketQua.getSuKien();
         Map<String, DichVu> bangDichVu = layBangDichVu(); // nạp danh mục dịch vụ một lần rồi tra, không gọi lại trong vòng lặp
+        List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(maBN);
+        List<LuotKham> dsLuotKham = hoSoService.layLichSuKham(hs.getMaHoSo());
+        List<String> dsMaNhaSi = new ArrayList<>(); // hỏi tên nha sĩ một lần cho cả liệu trình lẫn lượt khám
+        for (LieuTrinh lt : dsLieuTrinh) {
+            dsMaNhaSi.add(lt.getMaNhaSiPhuTrach());
+        }
+        for (LuotKham lk : dsLuotKham) {
+            dsMaNhaSi.add(lk.getMaNhanVienPhuTrach());
+        }
+        Map<String, String> tenNhaSi = nhaSiService.layTen(dsMaNhaSi);
 
         if (bn.getNgayDangKy() != null) {
             ds.add(new SuKienDieuTri(bn.getNgayDangKy().atStartOfDay(), SuKienDieuTri.LOAI_DANG_KY, "Đăng ký bệnh nhân",
                     "Mã bệnh nhân " + bn.getMaBN() + ", mã hồ sơ " + hs.getMaHoSo()));
         }
-        for (LieuTrinh lt : hoSoService.layLieuTrinh(maBN)) {
+        for (LieuTrinh lt : dsLieuTrinh) {
             if (lt.getNgayBatDau() != null) {
                 ds.add(new SuKienDieuTri(lt.getNgayBatDau().atStartOfDay(), SuKienDieuTri.LOAI_LIEU_TRINH, "Bắt đầu liệu trình " + lt.getLoaiDichVu(),
-                        "Dự kiến " + lt.getSoBuoiDuKien() + " buổi. Giai đoạn: " + chu(lt.getGiaiDoanHienTai()) + ". Trạng thái: " + lt.getTrangThai()));
+                        "Dự kiến " + lt.getSoBuoiDuKien() + " buổi. Giai đoạn: " + chu(lt.getGiaiDoanHienTai()) + ". Trạng thái: " + lt.getTrangThai()
+                        + dongNhaSi(" Nha sĩ phụ trách: ", tenNhaSi, lt.getMaNhaSiPhuTrach())));
             }
             if (lt.getNgayKetThucThucTe() != null) {
                 ds.add(new SuKienDieuTri(lt.getNgayKetThucThucTe().atStartOfDay(), SuKienDieuTri.LOAI_LIEU_TRINH, "Kết thúc liệu trình " + lt.getLoaiDichVu(),
@@ -56,9 +69,9 @@ public class DongThoiGianService {
         LocalDate homNay = LocalDate.now();
         LocalDate ganNhat = null;
         int soLuotKham = 0;
-        for (LuotKham lk : hoSoService.layLichSuKham(hs.getMaHoSo())) {
+        for (LuotKham lk : dsLuotKham) {
             ds.add(new SuKienDieuTri(lk.getGioBatDau(), SuKienDieuTri.LOAI_KHAM,
-                    "Lượt khám " + lk.getMaLuotKham() + " (" + lk.getTrangThai() + ")", moTaLuotKham(lk, bangDichVu)));
+                    "Lượt khám " + lk.getMaLuotKham() + " (" + lk.getTrangThai() + ")", moTaLuotKham(lk, bangDichVu, tenNhaSi)));
             if (lk.getNgayTaiKham() != null) {
                 // Hẹn tái khám chỉ có ngày: so theo ngày để hẹn hôm nay vẫn là "sắp tới" chứ không bị coi là đã qua
                 boolean daQua = lk.getNgayTaiKham().isBefore(homNay);
@@ -98,8 +111,9 @@ public class DongThoiGianService {
     }
 
     // Nội dung chi tiết của một lượt khám: lý do, chẩn đoán, hướng điều trị, đơn thuốc, răng và dịch vụ đã làm
-    private String moTaLuotKham(LuotKham lk, Map<String, DichVu> bangDichVu) {
+    private String moTaLuotKham(LuotKham lk, Map<String, DichVu> bangDichVu, Map<String, String> tenNhaSi) {
         StringBuilder sb = new StringBuilder();
+        them(sb, "Nha sĩ", NhaSiPhuTrachService.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()));
         them(sb, "Lý do", lk.getLyDoKham());
         them(sb, "Chẩn đoán", lk.getChanDoan());
         them(sb, "Hướng điều trị", lk.getHuongDieuTri());
@@ -142,6 +156,11 @@ public class DongThoiGianService {
             }
             sb.append(nhan).append(": ").append(giaTri.trim());
         }
+    }
+
+    // Đoạn chữ ghi tên nha sĩ để nối vào mô tả; không có mã nha sĩ thì không thêm gì
+    private String dongNhaSi(String nhan, Map<String, String> tenNhaSi, String maNhaSi) {
+        return maNhaSi == null ? "" : "." + nhan + NhaSiPhuTrachService.tenHoacMa(tenNhaSi, maNhaSi);
     }
 
     // Chuỗi null thì đổi thành rỗng

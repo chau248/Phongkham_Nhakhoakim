@@ -26,6 +26,7 @@ import nhakhoakim.dao.BenhNhanService;
 import nhakhoakim.dao.DichVuService;
 import nhakhoakim.dao.HoSoBenhAnService;
 import nhakhoakim.dao.LuotKhamService;
+import nhakhoakim.dao.NhaSiPhuTrachService;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.dao.RangDieuTriService;
 import nhakhoakim.entity.BenhNhan;
@@ -96,6 +97,7 @@ public class ManHinhSoDoRang extends JPanel {
     private DichVuService dichVuService = new DichVuService();
     private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
     private BenhNhanService benhNhanService = new BenhNhanService();
+    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
 
     private LuotKham luotKham;                                       // lượt khám đang khám
     private Map<Integer, NutRang> nutRang = new HashMap<>();         // nút của từng răng (cả hai bộ), khóa là số FDI
@@ -139,6 +141,10 @@ public class ManHinhSoDoRang extends JPanel {
 
     // Dựng công tắc răng vĩnh viễn / răng sữa, hai sơ đồ và form ghi nhận
     private void dung(List<Component> cacKhoi) {
+        HoSoBenhAn hoSoKham = hoSoService.timTheoMa(luotKham.getMaHoSo());
+        BenhNhan benhNhanKham = benhNhanService.timTheoMa(hoSoKham.getMaBN());
+        cacKhoi.add(DongThongTinLuotKham.tao(benhNhanKham == null ? hoSoKham.getMaBN() : benhNhanKham.getHoTen(),
+                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
         // răng vĩnh viễn, hàm trên: 18..11 | 21..28 ; hàm dưới: 48..41 | 31..38
         khungVinhVien.setOpaque(false);
         TienIch.xep(khungVinhVien, 8, taoHang(new int[] {18, 17, 16, 15, 14, 13, 12, 11}, new int[] {21, 22, 23, 24, 25, 26, 27, 28}),

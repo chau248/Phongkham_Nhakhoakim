@@ -14,6 +14,7 @@ import nhakhoakim.dao.BenhNhanService;
 import nhakhoakim.dao.GoiYDieuTriService;
 import nhakhoakim.dao.HoSoBenhAnService;
 import nhakhoakim.dao.LuotKhamService;
+import nhakhoakim.dao.NhaSiPhuTrachService;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.GoiYDieuTri;
@@ -30,6 +31,7 @@ public class ManHinhGoiYDieuTri extends JPanel {
     private LuotKhamService luotKhamService = new LuotKhamService();
     private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
     private BenhNhanService benhNhanService = new BenhNhanService();
+    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
 
     private LuotKham luotKham;                                  // lượt khám đang khám
     private List<GoiYDieuTri> dsGoiY = new ArrayList<>();       // dữ liệu bảng gợi ý
@@ -63,7 +65,8 @@ public class ManHinhGoiYDieuTri extends JPanel {
     private void dung(List<Component> cacKhoi) {
         HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
         BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
-        cacKhoi.add(TienIch.chuThuong("Bệnh nhân: " + (bn == null ? hs.getMaBN() : bn.getHoTen()) + "   |   Lượt khám " + luotKham.getMaLuotKham(), true));
+        cacKhoi.add(DongThongTinLuotKham.tao(bn == null ? hs.getMaBN() : bn.getHoTen(),
+                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
         cacKhoi.add(TienIch.doanChu("Gợi ý chỉ để tham khảo, nha sĩ quyết định. Chọn các dòng muốn thêm (giữ Ctrl để chọn nhiều) rồi bấm Thêm vào lượt khám.",
                 TienIch.MAU_XAM));
 

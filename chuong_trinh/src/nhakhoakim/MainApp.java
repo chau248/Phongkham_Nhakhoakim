@@ -44,9 +44,7 @@ import nhakhoakim.ui.ManHinhSoDoRang;
 import nhakhoakim.ui.ManHinhTraCuuBenhNhan;
 import nhakhoakim.ui.TienIch;
 
-// Chương trình chính (Java Swing): cửa sổ có thanh tiêu đề, thanh menu theo nhóm đối tượng (mỗi menu là một đối tượng,
-// mỗi mục là một chức năng) và vùng nội dung ở giữa. Chạy chương trình: chuột phải file này > Run As > Java Application.
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+@SuppressWarnings("serial") 
 public class MainApp {
 
     // Màn hình nào cần nạp lại dữ liệu khi người dùng bấm Quay lại về nó thì cài đặt interface này
@@ -88,6 +86,9 @@ public class MainApp {
             return false;
         }
     }
+
+    private static final float CO_CHU_MENU = 18f;      // cỡ chữ tên menu (Bệnh nhân, Lượt khám...), to để dễ nhìn khi mở rộng màn hình
+    private static final float CO_CHU_MUC_MENU = 17f;  // cỡ chữ các mục trong menu
 
     private static MainApp dangChay; // chương trình đang chạy, để các màn hình chuyển sang màn hình khác
     private static boolean dangBaoLoi = false; // đang hiện hộp báo lỗi chưa bắt được, để không hiện chồng nhiều hộp
@@ -199,11 +200,12 @@ public class MainApp {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, TienIch.MAU_VIEN), BorderFactory.createEmptyBorder(2, 18, 2, 18)));
         for (Map.Entry<String, List<ChucNang>> nhom : DanhSachChucNang.layTheoNhom().entrySet()) {
             JMenu menu = new JMenu(nhom.getKey());
-            menu.setFont(TienIch.FONT.deriveFont(Font.BOLD, 14f));
-            menu.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
+            menu.setFont(TienIch.FONT.deriveFont(Font.BOLD, CO_CHU_MENU));
+            menu.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
             for (ChucNang cn : nhom.getValue()) {
                 JMenuItem muc = new JMenuItem(cn.getTen());
-                muc.setFont(TienIch.FONT);
+                muc.setFont(TienIch.FONT.deriveFont(CO_CHU_MUC_MENU));
+                muc.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 24));
                 muc.addActionListener(e -> hienChucNang(cn));
                 menu.add(muc);
             }

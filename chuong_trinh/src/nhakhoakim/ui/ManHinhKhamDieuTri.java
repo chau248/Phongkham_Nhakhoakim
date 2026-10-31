@@ -18,6 +18,7 @@ import nhakhoakim.dao.BenhNhanService;
 import nhakhoakim.dao.DichVuService;
 import nhakhoakim.dao.HoSoBenhAnService;
 import nhakhoakim.dao.LuotKhamService;
+import nhakhoakim.dao.NhaSiPhuTrachService;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.dao.RangDieuTriService;
 import nhakhoakim.entity.BenhNhan;
@@ -35,6 +36,7 @@ public class ManHinhKhamDieuTri extends JPanel {
 
     private LuotKhamService luotKhamService = new LuotKhamService();
     private HoSoBenhAnService hoSoService = new HoSoBenhAnService();
+    private NhaSiPhuTrachService nhaSiService = new NhaSiPhuTrachService();
     private BenhNhanService benhNhanService = new BenhNhanService();
     private DichVuService dichVuService = new DichVuService();
     private RangDieuTriService rangService = new RangDieuTriService();
@@ -145,8 +147,8 @@ public class ManHinhKhamDieuTri extends JPanel {
         HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
         BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
 
-        cacKhoi.add(TienIch.chuThuong("Bệnh nhân: " + (bn == null ? hs.getMaBN() : bn.getHoTen()) + "   |   Lượt khám " + luotKham.getMaLuotKham()
-                + "   |   Bắt đầu " + TienIch.ngayGio(luotKham.getGioBatDau()), true));
+        cacKhoi.add(DongThongTinLuotKham.tao(bn == null ? hs.getMaBN() : bn.getHoTen(),
+                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
 
         if (luotKham.getGioBatDau().toLocalDate().isBefore(LocalDate.now())) {
             cacKhoi.add(nhanCanhBao("Lượt khám này mở từ ngày " + TienIch.ngay(luotKham.getGioBatDau().toLocalDate())
