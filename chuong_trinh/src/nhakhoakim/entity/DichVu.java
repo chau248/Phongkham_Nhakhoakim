@@ -22,6 +22,8 @@ public class DichVu {
     private boolean trangThaiHoatDong; // true nếu đang cung cấp
     private boolean yeuCauLieuTrinh; // true nếu cần theo liệu trình
     private boolean lienQuanImplantCauRang; // true nếu là dịch vụ Implant hoặc cầu răng
+    private String moTa; // mô tả ngắn
+    private String donViTinh; // Lần, Răng hoặc Hàm
     
     
     
@@ -106,6 +108,23 @@ public class DichVu {
 
     public void setLienQuanImplantCauRang(boolean lienQuanImplantCauRang) {
         this.lienQuanImplantCauRang = lienQuanImplantCauRang;
+    }
+
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
+    }
+
+    public String getDonViTinh() {
+        return donViTinh;
+    }
+
+    public void setDonViTinh(String donViTinh) {
+        this.donViTinh = donViTinh;
     }
 
 }

@@ -1,61 +1,63 @@
 package nhakhoakim.dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import nhakhoakim.entity.ChiTietHoaDon;
 
+// Truy cập bảng ChiTietHoaDon (chỉ lớp DAO được viết SQL). Dòng chi tiết được thêm cùng hóa đơn trong HoaDonDAO.themKemChiTiet.
 public class ChiTietHoaDonDAO {
-    public ChiTietHoaDon taoChiTietHoaDon(String maHoaDon, int soLuong, int soFDIRang, String maDichVu, String ghiChu, String maChiTiet, java.math.BigDecimal donGia,
-            java.math.BigDecimal giamGia) {
-        String sql = "INSERT INTO dbo.ChiTietHoaDon (maHoaDon, soLuong, soFDIRang, maDichVu, ghiChu, maChiTiet, donGia, giamGia) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, maHoaDon);
-            ps.setInt(2, soLuong);
-            ps.setInt(3, soFDIRang);
-            ps.setString(4, maDichVu);
-            ps.setString(5, ghiChu);
-            ps.setString(6, maChiTiet);
-            ps.setBigDecimal(7, donGia);
-            ps.setBigDecimal(8, giamGia);
-            int n = ps.executeUpdate();
-            if (n != 1) {
-                throw new LoiCSDL("Không thêm được chi tiết hóa đơn", new SQLException());
+
+    static final String CAC_COT = "maChiTiet, maHoaDon, maDichVu, soLuong, donGia, giamGia, soFDIRang, ghiChu";
+    static final String SQL_THEM = "INSERT INTO dbo.ChiTietHoaDon (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    static final String SQL_THEO_HOA_DON = "SELECT " + CAC_COT + " FROM dbo.ChiTietHoaDon WHERE maHoaDon = ? ORDER BY maChiTiet";
+
+    // Thêm một dòng chi tiết bằng kết nối có sẵn (để nằm trong cùng transaction với hóa đơn); soFDIRang = 0 nghĩa là không gắn răng
+    void them(Connection c, ChiTietHoaDon ct) throws SQLException {
+        try (PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
+            ps.setString(1, ct.getMaChiTiet());
+            ps.setString(2, ct.getMaHoaDon());
+            ps.setString(3, ct.getMaDichVu());
+            ps.setInt(4, ct.getSoLuong());
+            ps.setBigDecimal(5, ct.getDonGia());
+            ps.setBigDecimal(6, ct.getGiamGia() == null ? BigDecimal.ZERO : ct.getGiamGia());
+            if (ct.getSoFDIRang() > 0) {
+                ps.setInt(7, ct.getSoFDIRang());
+            } else {
+                ps.setNull(7, Types.INTEGER);
             }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không thêm được chi tiết hóa đơn: " + e.getMessage(), e);
+            ps.setString(8, ct.getGhiChu());
+            ps.executeUpdate();
         }
-        return new ChiTietHoaDon(maHoaDon, soLuong, soFDIRang, maDichVu, ghiChu, maChiTiet, donGia, giamGia);
-        
     }
-    public List<ChiTietHoaDon> layDanhSachChiTietHoaDon(String maHoaDon) {
+
+    // Các dòng chi tiết của một hóa đơn
+    public List<ChiTietHoaDon> layTheoHoaDon(String maHoaDon) {
         List<ChiTietHoaDon> ds = new ArrayList<>();
-        String sql = "SELECT * FROM dbo.ChiTietHoaDon WHERE maHoaDon = ?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEO_HOA_DON)) {
             ps.setString(1, maHoaDon);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    ds.add(docChiTiet(rs));
+                    ChiTietHoaDon ct = new ChiTietHoaDon();
+                    ct.setMaChiTiet(rs.getString("maChiTiet"));
+                    ct.setMaHoaDon(rs.getString("maHoaDon"));
+                    ct.setMaDichVu(rs.getString("maDichVu"));
+                    ct.setSoLuong(rs.getInt("soLuong"));
+                    ct.setDonGia(rs.getBigDecimal("donGia"));
+                    ct.setGiamGia(rs.getBigDecimal("giamGia"));
+                    ct.setSoFDIRang(rs.getInt("soFDIRang")); // NULL đọc thành 0 (không gắn răng)
+                    ct.setGhiChu(rs.getString("ghiChu"));
+                    ds.add(ct);
                 }
             }
         } catch (SQLException e) {
             throw new LoiCSDL("Không đọc được chi tiết hóa đơn: " + e.getMessage(), e);
         }
         return ds;
-    }
-    private ChiTietHoaDon docChiTiet(ResultSet rs) throws SQLException {
-        ChiTietHoaDon ct = new ChiTietHoaDon();
-        ct.setMaHoaDon(rs.getString("maHoaDon"));
-        ct.setMaDichVu(rs.getString("maDichVu"));
-        ct.setSoLuong(rs.getInt("soLuong"));
-        ct.setDonGia(rs.getBigDecimal("donGia"));
-        ct.setGiamGia(rs.getBigDecimal("giamGia"));
-        ct.setGhiChu(rs.getString("ghiChu"));
-        ct.setMaChiTiet(rs.getString("maChiTiet"));
-        ct.setSoFDIRang(rs.getInt("soFDIRang"));
-        return ct;
     }
 }

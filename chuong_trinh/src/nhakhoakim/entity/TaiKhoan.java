@@ -1,6 +1,5 @@
 package nhakhoakim.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TaiKhoan {
@@ -18,6 +17,9 @@ public class TaiKhoan {
 	  private LocalDateTime thoiGianKhoaDen;
 	  private LocalDateTime ngayDoiMatKhauCuoi;
 	  private boolean yeuCauDoiMatKhau;
+	  public TaiKhoan() {
+	  }
+
 	  public TaiKhoan(String maTaiKhoan, String tenDangNhap, NhanVien maNV, String matKhauHash, String vaiTro,
 			boolean trangThaiKhoa, LocalDateTime ngayTao, LocalDateTime lanDangNhapCuoi, int soLanDangNhapSai,
 			LocalDateTime thoiGianKhoaDen, LocalDateTime ngayDoiMatKhauCuoi, boolean yeuCauDoiMatKhau) {

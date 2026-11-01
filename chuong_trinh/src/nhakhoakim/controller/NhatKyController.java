@@ -1,16 +1,18 @@
 package nhakhoakim.controller;
 
-import nhakhoakim.dao.*;
+import nhakhoakim.dao.NhatKyDAO;
 
-import java.time.LocalDateTime;
-
-// Ghi nhật ký các thao tác nhạy cảm (sửa giá, sửa dị ứng, gán vai trò...)
-// Bản tạm do Hậu viết để chạy thử: chỉ in ra màn hình Console.
-// Tâm thay bằng bản ghi vào bảng NhatKyHeThong (giữ nguyên tên hàm ghiNhatKy).
+// Ghi nhật ký các thao tác nhạy cảm (sửa giá, sửa dị ứng, gán vai trò, hủy hóa đơn, hủy lịch...) vào bảng NhatKyHeThong (CH-03)
 public class NhatKyController {
 
+    private NhatKyDAO dao = new NhatKyDAO();
+
+    // Ghi một dòng nhật ký. Ghi nhật ký lỗi thì chỉ báo ở Console, không làm hỏng thao tác chính người dùng vừa làm xong.
     public void ghiNhatKy(String maNV, String hanhDong, String doiTuong, String maDoiTuong, String chiTiet) {
-        System.out.println("[Nhật ký tạm] " + LocalDateTime.now() + " | " + maNV + " | " + hanhDong + " | "
-                + doiTuong + " " + maDoiTuong + " | " + chiTiet);
+        try {
+            dao.them(maNV, hanhDong, doiTuong, maDoiTuong, chiTiet);
+        } catch (RuntimeException e) {
+            System.err.println("Không ghi được nhật ký (" + hanhDong + " " + doiTuong + " " + maDoiTuong + "): " + e.getMessage());
+        }
     }
 }
