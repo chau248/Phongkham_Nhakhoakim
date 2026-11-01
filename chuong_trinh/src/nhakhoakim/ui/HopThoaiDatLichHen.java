@@ -8,10 +8,12 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.awt.Dialog;
 import nhakhoakim.MainApp;
 import nhakhoakim.controller.DichVuController;
 import nhakhoakim.controller.LichHenController;
@@ -22,8 +24,10 @@ import nhakhoakim.entity.NhanVien;
 
 // Màn hình đặt lịch hẹn (LH-02 đến LH-04): chọn bệnh nhân, dịch vụ, ngày, nha sĩ có ca trực và một giờ còn trống
 @SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
-public class ManHinhDatLichHen extends JPanel {
+public class HopThoaiDatLichHen extends JPanel {
 
+    private final Dialog dialog;
+    private boolean daDatLich;
     private LichHenController lichHenController = new LichHenController();
     private DichVuController dichVuController = new DichVuController();
 
@@ -35,7 +39,8 @@ public class ManHinhDatLichHen extends JPanel {
     private JComboBox<String> cmbHinhThuc = new JComboBox<>(LichHenController.HINH_THUC.toArray(new String[0]));
     private JLabel lblThongTin = new JLabel(" ");
 
-    public ManHinhDatLichHen() {
+    public HopThoaiDatLichHen(Dialog dialog) {
+        this.dialog = dialog;
         cmbDichVu = TienIch.taoChonDichVu(dichVuController.layDangHoatDong(), "Chọn dịch vụ");
         txtNgay.setText(TienIch.ngay(LocalDate.now().plusDays(1)));
         cmbNhaSi.setFont(TienIch.FONT);
@@ -65,6 +70,8 @@ public class ManHinhDatLichHen extends JPanel {
                 TienIch.doanChu("Chọn bệnh nhân, dịch vụ và ngày, bấm Tìm nha sĩ có ca trực, rồi chọn nha sĩ và giờ còn trống. Giờ hẹn tròn 30 phút trong ca Sáng 08:00-12:00 "
                         + "hoặc ca Chiều 13:00-17:00. Lịch mới ở trạng thái Chờ xác nhận.", TienIch.MAU_XAM),
                 TienIch.the(form, lblThongTin, TienIch.dong(btnDat)));
+        napNhaSi();
+        napGio();
     }
 
     // Đổ danh sách nha sĩ có ca trực Có mặt trong ngày đang chọn
@@ -124,9 +131,24 @@ public class ManHinhDatLichHen extends JPanel {
                     LocalTime.parse(gioChu), (String) cmbHinhThuc.getSelectedItem());
             TienIch.thongTin("Đã đặt lịch " + lh.getMaLichHen() + " cho " + bn.getHoTen() + " lúc " + TienIch.gio(lh.getGioHen()) + " ngày "
                     + TienIch.ngay(lh.getNgayHen()) + " (" + lh.getPhong() + "). Lịch đang Chờ xác nhận.");
-            MainApp.thayNoiDung(new ManHinhXemLichHen());
+            daDatLich = true;
+            dialog.dispose();
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }
+    }
+
+    public static boolean moPopupDatLich() {
+        JDialog dialog = new JDialog(
+                MainApp.cuaSo(),
+                "Tạo lịch hẹn",
+                Dialog.ModalityType.APPLICATION_MODAL);
+
+        HopThoaiDatLichHen form = new HopThoaiDatLichHen(dialog);
+        dialog.setContentPane(form);
+        dialog.pack();
+        dialog.setLocationRelativeTo(MainApp.cuaSo());
+        dialog.setVisible(true);
+        return form.daDatLich;
     }
 }

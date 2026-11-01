@@ -35,13 +35,14 @@ import javax.swing.UIManager;
 import nhakhoakim.controller.TaiKhoanController;
 import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.NhanVien;
+import nhakhoakim.entity.VaiTro;
 import nhakhoakim.ui.ChucNang;
 import nhakhoakim.ui.DanhSachChucNang;
 import nhakhoakim.ui.HopThoaiDangNhap;
 import nhakhoakim.ui.ManHinhChiDinhTaiKham;
 import nhakhoakim.ui.ManHinhChoThanhToan;
 import nhakhoakim.ui.ManHinhDanhMucDichVu;
-import nhakhoakim.ui.ManHinhDatLichHen;
+import nhakhoakim.ui.HopThoaiDatLichHen;
 import nhakhoakim.ui.ManHinhDoiHuyLichHen;
 import nhakhoakim.ui.ManHinhDongThoiGian;
 import nhakhoakim.ui.ManHinhGoiYDieuTri;
@@ -181,12 +182,16 @@ public class MainApp {
         cuaSo = new JFrame("Quản lý phòng khám Nha khoa Kim");
         cuaSo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cuaSo.setContentPane(noiDungChinh);
+        cuaSo.setExtendedState(cuaSo.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         cuaSo.setSize(1200, 760);
         cuaSo.setLocationRelativeTo(null);
         cuaSo.setVisible(true);
     }
 
-    // Dựng giao diện: tiêu đề, menu và trang chủ (tách riêng khỏi cửa sổ để có thể kiểm thử không cần màn hình)
+    // Dựng giao diện: tiêu đề, menu và trang chủ 
+    // Từng chức vụ sẽ mở một màn hình khác nhau khi mới đăng nhập vào 
+    // (Lễ tân: xem lịch hẹn; Nha sĩ: khám điều trị; Y tá: tra cứu bệnh nhân; Quản lý: trang chủ rỗng, chọn chức năng ở menu)
+
     JPanel taoNoiDung() {
         dangChay = this;
         dangKyManHinh();
@@ -198,7 +203,16 @@ public class MainApp {
         noiDungChinh.add(phanDau, BorderLayout.NORTH);
         vungGiua.setBackground(TienIch.MAU_NEN);
         noiDungChinh.add(vungGiua, BorderLayout.CENTER);
-        hienTrangChu();
+        NhanVien nv = PhienLamViec.getNhanVienHienTai();
+        if (nv != null && VaiTro.LE_TAN.equals(nv.getVaiTro())) {
+            datGiua(new ManHinhXemLichHen());
+        } else if (nv != null && VaiTro.NHA_SI.equals(nv.getVaiTro())) {
+            datGiua(new ManHinhKhamDieuTri());
+        } else if (nv != null && VaiTro.Y_TA.equals(nv.getVaiTro())) {
+            datGiua(new ManHinhTraCuuBenhNhan());
+        } else {
+            hienTrangChu();
+        }
         return noiDungChinh;
     }
 
@@ -314,7 +328,6 @@ public class MainApp {
 
         // ----- Trường: menu Lịch hẹn và menu Hóa đơn
         manHinh.put("Xem lịch hẹn", ManHinhXemLichHen::new);
-        manHinh.put("Đặt lịch hẹn", ManHinhDatLichHen::new);
         manHinh.put("Dời / hủy lịch hẹn", ManHinhDoiHuyLichHen::new);
         manHinh.put("Xác nhận lịch hẹn", ManHinhXacNhanLichHen::new);
         manHinh.put("Xem lịch làm việc", ManHinhLichLamViec::new);
@@ -339,6 +352,17 @@ public class MainApp {
 
     // Hiện chức năng được chọn: có màn hình thật thì hiện, chưa làm thì để trống
     void hienChucNang(ChucNang cn) {
+        if ("Đặt lịch hẹn".equals(cn.getTen())) {
+            try {
+                if (HopThoaiDatLichHen.moPopupDatLich() && manHinhHienTai instanceof LamMoiDuoc) {
+                    ((LamMoiDuoc) manHinhHienTai).lamMoi();
+                }
+            } catch (RuntimeException e) {
+                TienIch.baoLoi(e);
+            }
+            return;
+        }
+
         JComponent noiDung = null;
         try {
             noiDung = taoManHinh(cn);
