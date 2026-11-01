@@ -43,6 +43,15 @@ public class HopThoaiDatLichHen extends JPanel {
         this.dialog = dialog;
         cmbDichVu = TienIch.taoChonDichVu(dichVuController.layDangHoatDong(), "Chọn dịch vụ");
         txtNgay.setText(TienIch.ngay(LocalDate.now().plusDays(1)));
+        cmbDichVu.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> ds, Object v, int vt, boolean chon, boolean coFocus) {
+                JLabel l = (JLabel) super.getListCellRendererComponent(ds, v, vt, chon, coFocus);
+                DichVu dv = (DichVu) v;
+                l.setText(dv == null ? "Chọn dịch vụ" : dv.getMaDichVu() + " - " + dv.getTenDichVu());
+                return l;
+            }
+        });
         cmbNhaSi.setFont(TienIch.FONT);
         cmbGio.setFont(TienIch.FONT);
         cmbHinhThuc.setFont(TienIch.FONT);
@@ -50,7 +59,8 @@ public class HopThoaiDatLichHen extends JPanel {
             @Override
             public Component getListCellRendererComponent(JList<?> ds, Object v, int vt, boolean chon, boolean coFocus) {
                 JLabel l = (JLabel) super.getListCellRendererComponent(ds, v, vt, chon, coFocus);
-                l.setText(v == null ? "Chọn nha sĩ" : ((NhanVien) v).getHoTen());
+                NhanVien nv = (NhanVien) v;
+                l.setText(nv == null ? "Chọn nha sĩ" : nv.getMaNV() + " - " + nv.getHoTen());
                 return l;
             }
         });
