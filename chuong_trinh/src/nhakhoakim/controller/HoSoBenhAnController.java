@@ -17,11 +17,10 @@ import nhakhoakim.entity.LieuTrinh;
 import nhakhoakim.entity.LuotKham;
 import nhakhoakim.entity.NhanVien;
 
-// Nghiệp vụ hồ sơ bệnh án: xem, cập nhật tiền sử - dị ứng (BN-06 đến BN-09, BN-15), tạo hồ sơ rỗng (BN-04),
-// xem liệu trình (BN-10, BN-11) và lịch sử khám. Chặn thuốc cùng nhóm dị ứng (BN-16) nằm ở entity HoSoBenhAn.
+// Nghiệp vụ hồ sơ bệnh án
 public class HoSoBenhAnController {
 
-    // Các danh sách từ khóa dùng cho canhBaoYTe (viết thường, có dấu); muốn thêm từ khóa thì sửa ở đây
+    // Các danh sách từ khóa dùng
     private static final String[] THUOC_CHONG_DONG = {"warfarin", "aspirin", "clopidogrel", "plavix", "heparin", "rivaroxaban",
         "xarelto", "apixaban", "acenocoumarol", "dabigatran", "ticagrelor", "enoxaparin", "chống đông", "loãng máu"};
     private static final String[] TU_KHOA_ROI_LOAN_DONG_MAU = {"đông máu", "khó đông", "hemophilia", "máu loãng"};
@@ -36,15 +35,15 @@ public class HoSoBenhAnController {
     private LuotKhamDAO luotKhamDAO;
     private BenhNhanDAO benhNhanDAO;
     private NhatKyController nhatKyService;
-    private Supplier<NhanVien> nguoiDung; // cho biết ai đang đăng nhập (kiểm thử thì truyền người giả)
+    private Supplier<NhanVien> nguoiDung; // Cho biết ai đang đăng nhập
 
-    // Dùng DAO thật và người đăng nhập thật của chương trình
+    // Dùng DAO thật
     public HoSoBenhAnController() {
         this(new HoSoBenhAnDAO(), new LieuTrinhDAO(), new LuotKhamDAO(), new BenhNhanDAO(), new NhatKyController(),
                 PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng DAO và người dùng truyền vào (để kiểm thử không cần CSDL)
+    // Dùng DAO và người dùng truyền vào
     public HoSoBenhAnController(HoSoBenhAnDAO hoSoDAO, LieuTrinhDAO lieuTrinhDAO, LuotKhamDAO luotKhamDAO, BenhNhanDAO benhNhanDAO,
             NhatKyController nhatKyService, Supplier<NhanVien> nguoiDung) {
         this.hoSoDAO = hoSoDAO;
@@ -55,7 +54,7 @@ public class HoSoBenhAnController {
         this.nguoiDung = nguoiDung;
     }
 
-    // Lấy hồ sơ của một bệnh nhân; chưa có hồ sơ thì báo lỗi
+    // Lấy hồ sơ của một bệnh nhân
     public HoSoBenhAn timTheoBenhNhan(String maBN) {
         HoSoBenhAn hs = hoSoDAO.timTheoBenhNhan(maBN);
         if (hs == null) {
@@ -64,7 +63,7 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // Lấy hồ sơ theo mã hồ sơ; không có thì báo lỗi
+    // Lấy hồ sơ theo mã hồ sơ
     public HoSoBenhAn timTheoMa(String maHoSo) {
         HoSoBenhAn hs = hoSoDAO.timTheoMa(maHoSo);
         if (hs == null) {
@@ -73,15 +72,11 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // Cập nhật tiền sử bệnh, dị ứng và thông tin y tế: chỉ Nha sĩ hoặc Y tá (BN-08, BN-15), hồ sơ Đã đóng thì không sửa (BN-07).
-    // Dị ứng được chuẩn hóa (BN-09); mỗi giá trị thực sự thay đổi được ghi nhật ký vì đây là thông tin nhạy cảm.
+    // Cập nhật tiền sử bệnh, dị ứng
     public void capNhatThongTinYTe(HoSoBenhAn hs) {
         capNhatThongTinYTe(hs, null);
     }
 
-    // Như trên nhưng có thêm bản hồ sơ lúc người dùng mở form (banDau). Chỉ những trường người dùng thực sự đổi mới được ghi,
-    // các trường còn lại giữ giá trị hiện có trong CSDL; nếu một trường đã bị người khác sửa từ lúc mở form thì báo lỗi (tránh ghi đè mất dữ liệu).
-    // banDau = null thì ghi đè toàn bộ như bản cũ.
     public void capNhatThongTinYTe(HoSoBenhAn hs, HoSoBenhAn banDau) {
         NhanVien nv = nguoiDung.get();
         if (nv == null) {
@@ -93,7 +88,7 @@ public class HoSoBenhAnController {
             throw new NghiepVuException("Hồ sơ đã đóng, không thể sửa thông tin y tế");
         }
 
-        // Chuẩn hóa: ô trống thành null, cắt khoảng trắng; dị ứng tách theo dấu phẩy, bỏ mục rỗng và trùng
+        // Chuẩn hóa
         String nhomMau = rongThanhNull(hs.getNhomMau());
         if (nhomMau != null && !List.of("A", "B", "AB", "O").contains(nhomMau)) {
             throw new NghiepVuException("Nhóm máu chỉ có thể là A, B, AB hoặc O");
@@ -130,7 +125,7 @@ public class HoSoBenhAnController {
         moi.setGhiChuDacBiet(ghiChu);
         hoSoDAO.capNhatThongTinYTe(moi);
 
-        // Ghi nhật ký những giá trị thực sự đổi (so sánh sau chuẩn hóa, null và rỗng coi như nhau)
+        // Ghi nhật ký những giá trị thực sự đổi
         String maNV = nv.getMaNV();
         ghiNhatKyNeuDoi(maNV, "Sửa dị ứng", cu.getMaHoSo(), "Dị ứng", chuanHoaDiUng(cu.getCanhBaoDiUng()), diUng);
         ghiNhatKyNeuDoi(maNV, "Sửa thông tin y tế", cu.getMaHoSo(), "Tiền sử bệnh", cu.getTienSuBenh(), tienSu);
@@ -139,7 +134,7 @@ public class HoSoBenhAnController {
         ghiNhatKyNeuDoi(maNV, "Sửa thông tin y tế", cu.getMaHoSo(), "Thuốc đang sử dụng", cu.getThuocDangSuDung(), thuoc);
         ghiNhatKyNeuDoi(maNV, "Sửa thông tin y tế", cu.getMaHoSo(), "Ghi chú đặc biệt", cu.getGhiChuDacBiet(), ghiChu);
 
-        // Trả giá trị đã chuẩn hóa về đối tượng truyền vào
+        // Trả giá trị đã chuẩn hóa
         hs.setTienSuBenh(tienSu);
         hs.setCanhBaoDiUng(diUng);
         hs.setNhomMau(nhomMau);
@@ -148,8 +143,7 @@ public class HoSoBenhAnController {
         hs.setGhiChuDacBiet(ghiChu);
     }
 
-    // Gộp một trường khi hai người cùng sửa: người dùng không đổi thì giữ giá trị hiện có; người dùng đổi mà không ai khác đổi thì lấy giá trị mới;
-    // cả hai cùng đổi (khác nhau) thì báo lỗi để người dùng xem lại hồ sơ
+    // Gộp một trường khi hai người cùng sửa
     private String gopTruong(String banDau, String moi, String hienCo, String tenTruong) {
         if (Objects.equals(moi, banDau)) {
             return hienCo;
@@ -160,7 +154,7 @@ public class HoSoBenhAnController {
         throw new NghiepVuException("Trường \"" + tenTruong + "\" đã được người khác sửa từ lúc bạn mở hồ sơ. Hãy xem lại hồ sơ rồi sửa lại.");
     }
 
-    // Đóng hoặc mở lại hồ sơ bệnh án (BN-07, BN-19): chỉ Quản lý; không đóng khi còn lượt khám đang dở; có ghi nhật ký
+    // Đóng hoặc mở lại hồ sơ bệnh án
     public void doiTrangThaiHoSo(String maHoSo, String trangThaiMoi) {
         NhanVien nv = nguoiDung.get();
         if (nv == null) {
@@ -188,7 +182,7 @@ public class HoSoBenhAnController {
                 "Từ [" + hs.getTrangThaiHoSo() + "] sang [" + trangThaiMoi + "]");
     }
 
-    // Chỉ Nha sĩ hoặc Y tá được sửa thông tin y tế; vai trò khác báo lỗi
+    // Chỉ Nha sĩ hoặc Y tá
     private void kiemTraQuyenSuaYTe(String vaiTro) {
         if (HangSo.VAI_TRO_NHA_SI.equals(vaiTro) || HangSo.VAI_TRO_Y_TA.equals(vaiTro)) {
             return;
@@ -199,8 +193,7 @@ public class HoSoBenhAnController {
         throw new NghiepVuException("Vai trò " + vaiTro + " không được sửa thông tin y tế, chỉ nha sĩ hoặc y tá mới được sửa");
     }
 
-    // Chuẩn hóa danh sách dị ứng: tách theo dấu phẩy, cắt khoảng trắng, bỏ mục rỗng và trùng (không phân biệt hoa thường),
-    // ghép lại bằng ", "; không còn mục nào thì trả về null
+    // Chuẩn hóa danh sách dị ứng
     private String chuanHoaDiUng(String diUng) {
         if (diUng == null) {
             return null;
@@ -209,7 +202,7 @@ public class HoSoBenhAnController {
         for (String muc : diUng.split("[,;]")) {
             String m = muc.trim().replaceAll("\\s+", " ");
             if (HoSoBenhAn.laGiaTriKhongDiUng(m)) {
-                continue; // bỏ mục rỗng và các giá trị kiểu "Không", "Không có"
+                continue; // Bỏ mục rỗng
             }
             boolean trung = false;
             for (String da : ds) {
@@ -224,7 +217,7 @@ public class HoSoBenhAnController {
         return ds.isEmpty() ? null : String.join(", ", ds);
     }
 
-    // Ghi nhật ký nếu giá trị cũ và mới khác nhau (null và rỗng coi như nhau); chi tiết cắt tối đa 500 ký tự
+    // Ghi nhật ký nếu giá trị cũ
     private void ghiNhatKyNeuDoi(String maNV, String hanhDong, String maHoSo, String tenTruong, String cu, String moi) {
         String a = rongThanhNull(cu);
         String b = rongThanhNull(moi);
@@ -238,7 +231,7 @@ public class HoSoBenhAnController {
         nhatKyService.ghiNhatKy(maNV, hanhDong, "HoSoBenhAn", maHoSo, chiTiet);
     }
 
-    // Tạo hồ sơ rỗng cho bệnh nhân đã có (ghi vào CSDL); mỗi bệnh nhân chỉ có một hồ sơ
+    // Tạo hồ sơ rỗng cho bệnh nhân đã
     public HoSoBenhAn taoHoSoRong(String maBN) {
         if (hoSoDAO.timTheoBenhNhan(maBN) != null) {
             throw new NghiepVuException("Bệnh nhân " + maBN + " đã có hồ sơ bệnh án");
@@ -248,14 +241,13 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // Như trên nhưng dùng kết nối có sẵn, để tạo bệnh nhân và hồ sơ trong cùng một transaction
     public HoSoBenhAn taoHoSoRong(Connection c, String maBN) throws SQLException {
         HoSoBenhAn hs = taoDoiTuongHoSoRong(maBN);
         hoSoDAO.them(c, hs);
         return hs;
     }
 
-    // Dựng đối tượng hồ sơ rỗng đã có mã mới, chưa ghi vào CSDL (BenhNhanController ghi cùng lúc với bệnh nhân)
+    // Dựng đối tượng hồ sơ rỗng đã có mã mới
     public HoSoBenhAn taoDoiTuongHoSoRong(String maBN) {
         HoSoBenhAn hs = new HoSoBenhAn();
         hs.setMaHoSo(MaGenerator.taoMa("HS"));
@@ -265,12 +257,12 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // Tất cả liệu trình của bệnh nhân (đang thực hiện xếp trước)
+    // Tất cả liệu trình của bệnh nhân
     public List<LieuTrinh> layLieuTrinh(String maBN) {
         return lieuTrinhDAO.layTheoBenhNhan(maBN);
     }
 
-    // Chỉ các liệu trình đang thực hiện
+    // Chỉ các liệu trình đang thực
     public List<LieuTrinh> layLieuTrinhDangThucHien(String maBN) {
         List<LieuTrinh> kq = new ArrayList<>();
         for (LieuTrinh lt : lieuTrinhDAO.layTheoBenhNhan(maBN)) {
@@ -281,7 +273,7 @@ public class HoSoBenhAnController {
         return kq;
     }
 
-    // Cảnh báo (không chặn) khi dịch vụ cần liệu trình mà bệnh nhân chưa có liệu trình đang thực hiện; không cần cảnh báo thì trả về null
+    // Cảnh báo khi dịch vụ cần liệu trình
     public String canhBaoLieuTrinh(String maBN, DichVu dv) {
         if (dv == null || !dv.isYeuCauLieuTrinh() || !layLieuTrinhDangThucHien(maBN).isEmpty()) {
             return null;
@@ -289,8 +281,7 @@ public class HoSoBenhAnController {
         return "Dịch vụ \"" + dv.getTenDichVu() + "\" cần theo liệu trình nhưng bệnh nhân chưa có liệu trình đang thực hiện.";
     }
 
-    // Cảnh báo (không chặn) về tình trạng sức khỏe và tuổi của bệnh nhân khi làm dịch vụ này; không có gì cần cảnh báo thì trả về null.
-    // Chỉ xét thủ thuật có chảy máu hoặc xâm lấn (nhổ răng, nội nha, implant), riêng tuổi còn xét implant và thẩm mỹ.
+    // Cảnh báo về tình trạng sức khỏe
     public String canhBaoYTe(String maBN, DichVu dv) {
         if (dv == null) {
             return null;
@@ -316,7 +307,7 @@ public class HoSoBenhAnController {
             if (timTuKhoa(benhNen, TU_KHOA_ROI_LOAN_DONG_MAU) != null) {
                 ds.add("Bệnh nhân bị rối loạn đông máu: cần hội chẩn bác sĩ chuyên khoa trước khi làm thủ thuật chảy máu.");
             }
-            // Dị ứng thuốc tê: so với danh sách dị ứng của hồ sơ (kể cả thuốc cùng nhóm)
+            // Dị ứng thuốc tê
             List<String> thuocTeDiUng = new ArrayList<>();
             for (String t : THUOC_TE) {
                 if (hs.kiemTraCanhBaoDiUng(t)) {
@@ -341,8 +332,7 @@ public class HoSoBenhAnController {
         return ds.isEmpty() ? null : String.join("\n", ds);
     }
 
-    // Từ khóa đầu tiên trong danh sách mà chuỗi (đã viết thường) có chứa; không có thì trả về null
-    // Bỏ qua chỗ từ khóa đứng ngay sau chữ phủ định ("không tim mạch", "chưa bị tiểu đường")
+    // Từ khóa đầu tiên trong danh sách
     private String timTuKhoa(String chuoi, String[] tuKhoa) {
         for (String t : tuKhoa) {
             int vt = chuoi.indexOf(t);
@@ -357,12 +347,12 @@ public class HoSoBenhAnController {
         return null;
     }
 
-    // Lịch sử các lượt khám của hồ sơ, mới nhất trước
+    // Lịch sử các lượt khám của hồ sơ
     public List<LuotKham> layLichSuKham(String maHoSo) {
         return luotKhamDAO.layTheoHoSo(maHoSo);
     }
 
-    // Chuỗi không được dài hơn độ dài cột trong CSDL, nếu không SQL Server báo lỗi cắt chuỗi khó hiểu
+    // Chuỗi không được dài hơn độ dài cột
     private static void doDai(String giaTri, int toiDa, String tenTruong) {
         if (giaTri != null && giaTri.length() > toiDa) {
             throw new NghiepVuException(tenTruong + " dài tối đa " + toiDa + " ký tự (hiện đang " + giaTri.length() + " ký tự)");
@@ -370,7 +360,7 @@ public class HoSoBenhAnController {
     }
 
 
-    // Chuỗi rỗng hoặc toàn khoảng trắng thì trả về null, ngược lại cắt khoảng trắng hai đầu
+    // Chuỗi rỗng hoặc toàn khoảng trắng
     private static String rongThanhNull(String s) {
         return s == null || s.trim().isEmpty() ? null : s.trim();
     }

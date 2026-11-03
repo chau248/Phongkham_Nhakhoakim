@@ -4,24 +4,24 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
-//- maLuotKham : String   - gioBatDau : LocalDateTime   - gioKetThuc : LocalDateTime   - lyDoKham : String   - huongDieuTri : String   - donThuoc : String   - ngayTaiKham : LocalDate   - trangThai : String   - chanDoan : String   - ghiChu : String   - danhSachRang : RangDieuTri   - hoaDon : HoaDon   - nhanVienPhuTrach : NhanVien   
+// MaLuotKham : String
 public class LuotKham {
 
-    private String maLuotKham; // mã lượt khám, dạng LK000001
-    private String maHoSo; // mã hồ sơ bệnh án
-    private String maNhanVienPhuTrach; // mã nha sĩ phụ trách
-    private String maLieuTrinh; // mã liệu trình (có thể rỗng)
-    private String maHoaDon; // mã hóa đơn, rỗng cho đến khi lập hóa đơn
-    private String maLichHen; // mã lịch hẹn của lượt khám (rỗng nếu khám vãng lai)
-    private LocalDateTime gioBatDau; // giờ bắt đầu khám
-    private LocalDateTime gioKetThuc; // giờ kết thúc khám
-    private String lyDoKham; // lý do khám
-    private String chanDoan; // chẩn đoán
-    private String huongDieuTri; // hướng điều trị
-    private String donThuoc; // đơn thuốc
-    private LocalDate ngayTaiKham; // ngày hẹn tái khám
-    private String trangThai; // Đang khám, Hoàn thành hoặc Đã hủy
-    private String ghiChu; // ghi chú
+    private String maLuotKham; // Mã lượt khám, dạng LK000001
+    private String maHoSo; // Mã hồ sơ bệnh án
+    private String maNhanVienPhuTrach; // Mã nha sĩ phụ trách
+    private String maLieuTrinh; // Mã liệu trình
+    private String maHoaDon; // Mã hóa đơn, rỗng
+    private String maLichHen; // Mã lịch hẹn của lượt khám
+    private LocalDateTime gioBatDau; // Giờ bắt đầu khám
+    private LocalDateTime gioKetThuc; // Giờ kết thúc khám
+    private String lyDoKham; // Lý do khám
+    private String chanDoan; // Chẩn đoán
+    private String huongDieuTri; // Hướng điều trị
+    private String donThuoc; // Đơn thuốc
+    private LocalDate ngayTaiKham; // Ngày hẹn tái khám
+    private String trangThai; // Đang khám, Hoàn thành hoặc Đã
+    private String ghiChu; // Ghi chú
     
     
     

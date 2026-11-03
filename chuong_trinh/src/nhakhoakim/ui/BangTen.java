@@ -8,7 +8,7 @@ import nhakhoakim.controller.NhaSiPhuTrachController;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DichVu;
 
-// Tra tên từ mã (bệnh nhân, nha sĩ, dịch vụ) để hiện lên bảng; mỗi mã chỉ hỏi CSDL một lần trong suốt đời của đối tượng này
+// Tra tên từ mã để hiện lên bảng
 class BangTen {
 
     private BenhNhanController benhNhanController = new BenhNhanController();
@@ -18,7 +18,7 @@ class BangTen {
     private Map<String, String> nhaSi = new HashMap<>();
     private Map<String, String> dichVu;
 
-    // Họ tên bệnh nhân; không tìm thấy thì trả về chính mã
+    // Họ tên bệnh nhân
     String benhNhan(String ma) {
         if (ma == null) {
             return "";
@@ -30,7 +30,7 @@ class BangTen {
         return benhNhan.get(ma);
     }
 
-    // Họ tên nhân viên (nha sĩ); không tìm thấy thì trả về chính mã
+    // Họ tên nhân viên
     String nhaSi(String ma) {
         if (ma == null) {
             return "";
@@ -41,7 +41,7 @@ class BangTen {
         return nhaSi.get(ma);
     }
 
-    // Tên dịch vụ; không tìm thấy thì trả về chính mã
+    // Tên dịch vụ
     String dichVu(String ma) {
         if (ma == null) {
             return "";

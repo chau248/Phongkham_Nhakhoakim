@@ -11,7 +11,7 @@ import java.util.List;
 import nhakhoakim.entity.ChiTietHoaDon;
 import nhakhoakim.entity.HoaDon;
 
-// Truy cập bảng HoaDon (chỉ lớp DAO được viết SQL). Hóa đơn được lập cùng dòng chi tiết và gắn vào lượt khám trong một transaction.
+// Truy cập bảng HoaDon
 public class HoaDonDAO {
 
     private ChiTietHoaDonDAO chiTietDAO = new ChiTietHoaDonDAO();
@@ -28,8 +28,7 @@ public class HoaDonDAO {
     static final String SQL_HUY = "UPDATE dbo.HoaDon SET trangThaiThanhToan = N'Đã hủy', ghiChu = ? WHERE maHoaDon = ? AND trangThaiThanhToan = N'Chưa thanh toán'";
     static final String SQL_GO_LUOT_KHAM = "UPDATE dbo.LuotKham SET maHoaDon = NULL WHERE maHoaDon = ?";
 
-    // Lưu hóa đơn, các dòng chi tiết và gắn hóa đơn vào lượt khám trong một transaction.
-    // Lượt khám đã có hóa đơn (người khác vừa lập) thì hủy tất cả và báo lỗi nghiệp vụ.
+    // Lưu hóa đơn, các dòng chi tiết
     public void themKemChiTiet(HoaDon hd, List<ChiTietHoaDon> dsChiTiet, String maLuotKham) {
         try (Connection c = DatabaseConnection.getConnection()) {
             c.setAutoCommit(false);
@@ -68,18 +67,18 @@ public class HoaDonDAO {
         }
     }
 
-    // Tìm hóa đơn theo mã (chưa kèm dòng chi tiết); không có thì trả về null
+    // Tìm hóa đơn theo mã
     public HoaDon timTheoMa(String maHoaDon) {
         List<HoaDon> ds = layDanhSach(SQL_THEO_MA, maHoaDon);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Tất cả hóa đơn, mới nhất trước (chưa kèm dòng chi tiết)
+    // Tất cả hóa đơn, mới nhất trước
     public List<HoaDon> layTatCa() {
         return layDanhSach(SQL_TAT_CA, null);
     }
 
-    // Ghi nhận thanh toán cho hóa đơn Chưa thanh toán; trả về false nếu hóa đơn không còn ở trạng thái đó
+    // Ghi nhận thanh toán
     public boolean thanhToan(String maHoaDon, String hinhThuc, LocalDateTime luc, String maNhanVien) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THANH_TOAN)) {
             ps.setString(1, hinhThuc);
@@ -92,7 +91,7 @@ public class HoaDonDAO {
         }
     }
 
-    // Hủy hóa đơn Chưa thanh toán và trả lượt khám về danh sách chờ thanh toán (cùng một transaction); trả về false nếu hóa đơn không hủy được
+    // Hủy hóa đơn Chưa thanh toán
     public boolean huy(String maHoaDon, String ghiChu) {
         try (Connection c = DatabaseConnection.getConnection()) {
             c.setAutoCommit(false);
@@ -120,7 +119,7 @@ public class HoaDonDAO {
         }
     }
 
-    // Chạy câu SELECT (có hoặc không có một tham số chuỗi) và đọc tất cả dòng
+    // Chạy câu SELECT và đọc tất cả dòng
     private List<HoaDon> layDanhSach(String sql, String thamSo) {
         List<HoaDon> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

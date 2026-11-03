@@ -5,15 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// Danh sách chức năng của chương trình (25 chức năng), xếp theo từng đối tượng.
-// Mỗi nhóm là một menu; thêm hoặc đổi chức năng chỉ cần sửa ở đây.
+// Danh sách chức năng của chương trình
 public class DanhSachChucNang {
 
-    // Lấy toàn bộ chức năng, theo thứ tự các menu hiện trên màn hình
+    // Lấy toàn bộ chức năng
     public static List<ChucNang> layTatCa() {
         List<ChucNang> ds = new ArrayList<>();
 
-        // Bệnh nhân: tìm, tạo/sửa hồ sơ, xem bệnh án, tiền sử - dị ứng, liệu trình đang điều trị
+        // Bệnh nhân
         ds.add(new ChucNang("Bệnh nhân", "Tìm kiếm bệnh nhân", "BenhNhan, HoSoBenhAn", "Nha sĩ, Y tá, Lễ tân, Quản lý", "Hậu", "Tìm theo mã, họ tên, số điện thoại"));
         ds.add(new ChucNang("Bệnh nhân", "Thêm / cập nhật hồ sơ bệnh nhân", "BenhNhan, HoSoBenhAn", "Lễ tân, Quản lý", "Hậu", "Tạo mới và sửa; Y tá khai báo y tế/dị ứng ban đầu"));
         ds.add(new ChucNang("Bệnh nhân", "Xem hồ sơ bệnh án", "BenhNhan, HoSoBenhAn", "Nha sĩ, Y tá, Quản lý", "Hậu", "Cảnh báo dị ứng hiển thị nổi bật; lịch sử khám"));
@@ -21,30 +20,30 @@ public class DanhSachChucNang {
         ds.add(new ChucNang("Bệnh nhân", "Xem liệu trình đang thực hiện", "LieuTrinh", "Nha sĩ, Y tá, Quản lý", "Hậu", "Hiển thị trong hồ sơ bệnh án"));
         ds.add(new ChucNang("Bệnh nhân", "Dòng thời gian điều trị", "BenhNhan, LuotKham, LieuTrinh, RangDieuTri", "Nha sĩ, Y tá, Quản lý", "Hậu", "Gom đăng ký, liệu trình, lượt khám (răng, dịch vụ, đơn thuốc) và hẹn tái khám thành trục thời gian; tóm tắt lần khám gần nhất"));
 
-        // Lịch hẹn: xem, đặt, dời/hủy, xác nhận; riêng lịch làm việc là của Nha sĩ và Y tá
+        // Lịch hẹn: xem, đặt, dời/hủy, xác nhận
         ds.add(new ChucNang("Lịch hẹn", "Xem lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Theo ngày/tuần, thấy khung giờ trống"));
         ds.add(new ChucNang("Lịch hẹn", "Đặt lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Kiểm tra trùng lịch và thời gian dịch vụ"));
         ds.add(new ChucNang("Lịch hẹn", "Dời / hủy lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Hủy phải có lý do"));
         ds.add(new ChucNang("Lịch hẹn", "Xác nhận lịch hẹn", "LichHen", "Lễ tân, Quản lý", "Trường", "Từ Chờ xác nhận sang Đã xác nhận, kể cả lịch tái khám do Nha sĩ tạo"));
         ds.add(new ChucNang("Lịch hẹn", "Xem lịch làm việc", "LichHen", "Nha sĩ, Y tá", "Trường", "Chỉ xem; Nha sĩ thấy ca khám, Y tá thấy ca hỗ trợ"));
 
-        // Lượt khám: khám, sơ đồ răng, kê đơn, tái khám
+        // Lượt khám
         ds.add(new ChucNang("Lượt khám", "Khám & ghi nhận điều trị", "LuotKham", "Nha sĩ", "Hậu", "Lý do khám, chẩn đoán, hướng điều trị, dịch vụ thực hiện"));
         ds.add(new ChucNang("Lượt khám", "Sơ đồ răng điều trị", "RangDieuTri", "Nha sĩ", "Hậu", "32 răng theo FDI; răng đã nhổ chỉ chọn dịch vụ implant/cầu răng"));
         ds.add(new ChucNang("Lượt khám", "Kê đơn thuốc", "LuotKham", "Nha sĩ", "Hậu", "Không cho kê thuốc trùng cảnh báo dị ứng"));
         ds.add(new ChucNang("Lượt khám", "Chỉ định tái khám", "LuotKham, LichHen", "Nha sĩ", "Hậu", "Tạo lịch hẹn trạng thái Chờ xác nhận"));
         ds.add(new ChucNang("Lượt khám", "Gợi ý điều trị & ước tính chi phí", "LuotKham, RangDieuTri, DichVu", "Nha sĩ", "Hậu", "Gợi ý dịch vụ từ tình trạng răng và lịch sử khám; tạm tính chi phí lượt khám gồm VAT 8%"));
 
-        // Hóa đơn: từ lượt khám đã hoàn tất đến thanh toán
+        // Hóa đơn: từ lượt khám đã
         ds.add(new ChucNang("Hóa đơn", "Danh sách chờ thanh toán", "HoaDon", "Lễ tân, Quản lý", "Trường", "Các lượt khám đã hoàn tất, chưa lập hóa đơn"));
         ds.add(new ChucNang("Hóa đơn", "Lập hóa đơn", "HoaDon, ChiTietHoaDon", "Lễ tân, Quản lý", "Trường", "Tổng tiền = dịch vụ - giảm giá + thuế VAT"));
         ds.add(new ChucNang("Hóa đơn", "Thanh toán & in hóa đơn", "HoaDon", "Lễ tân, Quản lý", "Trường", "Tiền mặt / Chuyển khoản / Thẻ / Ví điện tử"));
 
-        // Dịch vụ: ai cũng được xem bảng giá, chỉ Quản lý được thêm/sửa
+        // Dịch vụ: ai cũng được xem bảng giá
         ds.add(new ChucNang("Dịch vụ", "Xem danh mục dịch vụ & giá", "DichVu", "Nha sĩ, Y tá, Lễ tân, Quản lý", "Tâm", "Bảng giá và thời gian dự kiến; Nha sĩ tra khi khám, chỉ xem không sửa"));
         ds.add(new ChucNang("Dịch vụ", "Thêm / sửa dịch vụ", "DichVu", "Quản lý", "Tâm", "Mọi thay đổi giá ghi nhật ký hệ thống"));
 
-        // Nhân viên: hồ sơ (kèm chứng chỉ hành nghề) và phân công ca trực
+        // Nhân viên: hồ sơ và phân công ca trực
         ds.add(new ChucNang("Nhân viên", "Cập nhật hồ sơ nhân viên", "NhanVien", "Quản lý", "Tâm", "Gồm chứng chỉ hành nghề và ngày hết hạn"));
         ds.add(new ChucNang("Nhân viên", "Phân công ca trực", "NhanVien, CaTruc", "Quản lý", "Tâm", "Lập bảng phân công theo tuần"));
 
@@ -55,7 +54,7 @@ public class DanhSachChucNang {
         return ds;
     }
 
-    // Gom chức năng theo nhóm đối tượng, mỗi nhóm là một menu
+    // Gom chức năng theo nhóm đối tượng
     public static Map<String, List<ChucNang>> layTheoNhom() {
         Map<String, List<ChucNang>> theoNhom = new LinkedHashMap<>();
         for (ChucNang cn : layTatCa()) {

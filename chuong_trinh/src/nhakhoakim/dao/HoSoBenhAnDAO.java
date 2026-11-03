@@ -7,17 +7,17 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import nhakhoakim.entity.HoSoBenhAn;
 
-// Truy cập bảng HoSoBenhAn (chỉ lớp DAO được viết SQL)
+// Truy cập bảng HoSoBenhAn
 public class HoSoBenhAnDAO {
 
     private static final String CAC_COT = "maHoSo, maBN, ngayTao, tienSuBenh, canhBaoDiUng, nhomMau, benhNen, thuocDangSuDung, ghiChuDacBiet, trangThaiHoSo";
 
-    // Tìm hồ sơ theo mã hồ sơ; không có thì trả về null
+    // Tìm hồ sơ theo mã hồ sơ
     public HoSoBenhAn timTheoMa(String maHoSo) {
         return timMot("SELECT " + CAC_COT + " FROM dbo.HoSoBenhAn WHERE maHoSo = ?", maHoSo);
     }
 
-    // Tìm hồ sơ theo mã bệnh nhân (mỗi bệnh nhân một hồ sơ); không có thì trả về null
+    // Tìm hồ sơ theo mã bệnh nhân
     public HoSoBenhAn timTheoBenhNhan(String maBN) {
         return timMot("SELECT " + CAC_COT + " FROM dbo.HoSoBenhAn WHERE maBN = ?", maBN);
     }
@@ -31,7 +31,7 @@ public class HoSoBenhAnDAO {
         }
     }
 
-    // Thêm hồ sơ mới bằng kết nối có sẵn (để BenhNhanDAO.themKemHoSo tạo bệnh nhân và hồ sơ cùng một transaction)
+    // Thêm hồ sơ mới bằng kết nối có sẵn
     public void them(Connection c, HoSoBenhAn hs) throws SQLException {
         String sql = "INSERT INTO dbo.HoSoBenhAn (maHoSo, maBN, ngayTao, tienSuBenh, canhBaoDiUng, nhomMau, benhNen, thuocDangSuDung, ghiChuDacBiet, trangThaiHoSo)"
                 + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -50,7 +50,7 @@ public class HoSoBenhAnDAO {
         }
     }
 
-    // Cập nhật tiền sử bệnh, dị ứng và các thông tin y tế của hồ sơ
+    // Cập nhật tiền sử bệnh, dị ứng
     public void capNhatThongTinYTe(HoSoBenhAn hs) {
         String sql = "UPDATE dbo.HoSoBenhAn SET tienSuBenh = ?, canhBaoDiUng = ?, nhomMau = ?, benhNen = ?, thuocDangSuDung = ?, ghiChuDacBiet = ? WHERE maHoSo = ?";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -67,7 +67,7 @@ public class HoSoBenhAnDAO {
         }
     }
 
-    // Đổi trạng thái hồ sơ (Đang mở / Đã đóng)
+    // Đổi trạng thái hồ sơ
     public void capNhatTrangThaiHoSo(String maHoSo, String trangThai) {
         try (Connection c = DatabaseConnection.getConnection();
                 PreparedStatement ps = c.prepareStatement("UPDATE dbo.HoSoBenhAn SET trangThaiHoSo = ? WHERE maHoSo = ?")) {
@@ -79,7 +79,7 @@ public class HoSoBenhAnDAO {
         }
     }
 
-    // Chạy câu SELECT có một tham số và đọc dòng đầu tiên
+    // Chạy câu SELECT có một tham số
     private HoSoBenhAn timMot(String sql, String giaTri) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, giaTri);
@@ -91,7 +91,7 @@ public class HoSoBenhAnDAO {
         }
     }
 
-    // Đổi một dòng kết quả thành đối tượng HoSoBenhAn
+    // Đổi một dòng kết quả thành
     private HoSoBenhAn doc(ResultSet rs) throws SQLException {
         HoSoBenhAn hs = new HoSoBenhAn();
         hs.setMaHoSo(rs.getString("maHoSo"));

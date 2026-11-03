@@ -18,22 +18,22 @@ import nhakhoakim.entity.LichHen;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.controller.DichVuController;
 
-// Màn hình xem lịch hẹn theo ngày hoặc theo tuần của mọi nha sĩ (LH-01), kèm khung giờ trống của một nha sĩ cho một dịch vụ
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình xem lịch hẹn theo ngày
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private LichHenController lichHenController = new LichHenController();
     private DichVuController dichVuController = new DichVuController();
     private BangTen ten = new BangTen();
 
-    private JTextField txtNgay = TienIch.oNhap(10);                 // ngày xem (dd/MM/yyyy)
+    private JTextField txtNgay = TienIch.oNhap(10); // Ngày xem
     private JComboBox<String> cmbKieu = new JComboBox<>(new String[] {"Theo ngày", "Theo tuần"});
     private JTable tblLich = TienIch.taoBang(new String[] {"Ngày", "Giờ", "Bệnh nhân", "Dịch vụ", "Nha sĩ", "Phòng", "Trạng thái", "Mã lịch"},
             new int[] {90, 60, 190, 180, 160, 90, 110, 90}, "Không có lịch hẹn nào trong khoảng này.");
     private List<LichHen> dsLich = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
-    private JComboBox<NhanVien> cmbNhaSi = new JComboBox<>();       // nha sĩ có ca trực trong ngày
-    private JComboBox<DichVu> cmbDichVu;                            // dịch vụ cần đặt
+    private JComboBox<NhanVien> cmbNhaSi = new JComboBox<>(); // Nha sĩ có ca trực trong ngày
+    private JComboBox<DichVu> cmbDichVu; // Dịch vụ cần đặt
     private JLabel lblGioTrong = new JLabel(" ");
 
     public ManHinhXemLichHen() {
@@ -60,7 +60,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         lblKetQua.setForeground(TienIch.MAU_XAM);
         TienIch.cotXuongDong(tblLich, 3);
 
-        // Khung giờ trống: chọn nha sĩ (đã có ca trực trong ngày) và dịch vụ rồi xem các giờ còn trống
+        // Khung giờ trống
         cmbDichVu = TienIch.taoChonDichVu(dichVuController.layDangHoatDong(), "Chọn dịch vụ");
         cmbNhaSi.setFont(TienIch.FONT);
         cmbNhaSi.setPreferredSize(new java.awt.Dimension(220, 30));
@@ -93,13 +93,13 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         xem();
     }
 
-    // Đọc ngày ở ô nhập; ô trống thì lấy hôm nay
+    // Đọc ngày ở ô nhập
     private LocalDate ngayDangChon() {
         LocalDate d = TienIch.docNgay(txtNgay.getText());
         return d == null ? LocalDate.now() : d;
     }
 
-    // Lùi hoặc tiến một ngày (hoặc một tuần khi xem theo tuần)
+    // Lùi hoặc tiến một ngày
     private void doi(int huong) {
         try {
             long soNgay = cmbKieu.getSelectedIndex() == 1 ? 7L * huong : huong;
@@ -110,7 +110,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Tải lịch của ngày hoặc tuần đang chọn (tuần tính từ thứ hai đến chủ nhật)
+    // Tải lịch của ngày hoặc tuần đang chọn
     private void xem() {
         try {
             LocalDate ngay = ngayDangChon();
@@ -134,7 +134,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Đổ danh sách nha sĩ có ca trực Có mặt trong ngày đang chọn vào ô chọn
+    // Đổ danh sách nha sĩ có ca trực Có mặt
     private void napNhaSi() {
         try {
             List<NhanVien> ds = lichHenController.layNhaSiCoCaTruc(ngayDangChon());
@@ -146,7 +146,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Hiện các giờ còn trống của nha sĩ đang chọn cho dịch vụ đang chọn
+    // Hiện các giờ còn trống của nha sĩ đang chọn
     private void xemGioTrong() {
         NhanVien nv = (NhanVien) cmbNhaSi.getSelectedItem();
         DichVu dv = (DichVu) cmbDichVu.getSelectedItem();
@@ -170,7 +170,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Đánh dấu lịch đang chọn là bệnh nhân không đến
+    // Đánh dấu lịch đang chọn
     private void danhDauKhongDen() {
         int vt = tblLich.getSelectedRow();
         if (vt < 0 || vt >= dsLich.size()) {

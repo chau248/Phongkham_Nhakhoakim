@@ -9,12 +9,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-// Kết nối SQL Server, đọc thông tin từ file config/database.properties (file này không commit lên Git)
+// Kết nối SQL Server
 public class DatabaseConnection {
 
     private static final String FILE_CAU_HINH = "config/database.properties";
 
-    // Mở một kết nối mới; nơi gọi tự đóng bằng try-with-resources
+    // Mở một kết nối mới
     public static Connection getConnection() {
         Properties p = new Properties();
         try (InputStreamReader in = new InputStreamReader(new FileInputStream(FILE_CAU_HINH), StandardCharsets.UTF_8)) {

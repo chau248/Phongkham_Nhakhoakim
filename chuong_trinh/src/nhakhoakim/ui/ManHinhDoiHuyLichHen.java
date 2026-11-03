@@ -13,20 +13,20 @@ import nhakhoakim.MainApp;
 import nhakhoakim.controller.LichHenController;
 import nhakhoakim.entity.LichHen;
 
-// Màn hình dời hoặc hủy lịch hẹn (LH-05, LH-06): chọn lịch Chờ xác nhận hoặc Đã xác nhận, dời sang ngày giờ khác hoặc hủy kèm lý do
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình dời hoặc hủy lịch hẹn
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private LichHenController lichHenController = new LichHenController();
     private BangTen ten = new BangTen();
 
-    private JTextField txtTu = TienIch.oNhap(10);                   // lọc từ ngày
-    private JTextField txtDen = TienIch.oNhap(10);                  // lọc đến ngày
+    private JTextField txtTu = TienIch.oNhap(10); // Lọc từ ngày
+    private JTextField txtDen = TienIch.oNhap(10); // Lọc đến ngày
     private JTable tblLich = TienIch.taoBang(new String[] {"Ngày", "Giờ", "Bệnh nhân", "Dịch vụ", "Nha sĩ", "Trạng thái", "Mã lịch"},
             new int[] {90, 60, 200, 190, 170, 110, 90}, "Không có lịch nào có thể dời hoặc hủy trong khoảng này.");
     private List<LichHen> dsLich = new ArrayList<>();
-    private JTextField txtNgayMoi = TienIch.oNhap(10);              // ngày mới khi dời
-    private JComboBox<String> cmbGioMoi = new JComboBox<>(cacGio()); // giờ mới khi dời
+    private JTextField txtNgayMoi = TienIch.oNhap(10); // Ngày mới khi dời
+    private JComboBox<String> cmbGioMoi = new JComboBox<>(cacGio()); // Giờ mới khi dời
 
     public ManHinhDoiHuyLichHen() {
         txtTu.setText(TienIch.ngay(LocalDate.now()));
@@ -54,7 +54,7 @@ public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
         tai();
     }
 
-    // Các giờ hẹn hợp lệ: mỗi 30 phút trong ca Sáng và ca Chiều
+    // Các giờ hẹn hợp lệ
     private static String[] cacGio() {
         List<String> kq = new ArrayList<>();
         for (LocalTime g = LocalTime.of(8, 0); g.isBefore(LocalTime.of(17, 0)); g = g.plusMinutes(LichHenController.BUOC_PHUT)) {
@@ -65,7 +65,7 @@ public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
         return kq.toArray(new String[0]);
     }
 
-    // Tải các lịch Chờ xác nhận và Đã xác nhận trong khoảng ngày đang chọn
+    // Tải các lịch Chờ xác nhận và Đã xác nhận
     private void tai() {
         try {
             LocalDate tu = TienIch.docNgay(txtTu.getText());
@@ -118,7 +118,7 @@ public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Hủy lịch đang chọn, hỏi lý do
+    // Hủy lịch đang chọn, hỏi lý
     private void huy() {
         LichHen lh = dangChon();
         if (lh == null) {

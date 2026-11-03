@@ -5,18 +5,18 @@ import java.util.ArrayList;
 
 public class LieuTrinh {
 
-    private String maLieuTrinh; // mã liệu trình, dạng LT000001
-    private String maBN; // mã bệnh nhân
-    private String loaiDichVu; // loại dịch vụ của liệu trình
-    private int soBuoiDuKien; // số buổi dự kiến
-    private String giaiDoanHienTai; // giai đoạn hiện tại
-    private LocalDate ngayBatDau; // ngày bắt đầu
-    private LocalDate ngayDuKienKetThuc; // ngày dự kiến kết thúc
-    private LocalDate ngayKetThucThucTe; // ngày kết thúc thực tế
-    private long tongChiPhiDuKien; // tổng chi phí dự kiến
-    private String trangThai; // Đang thực hiện, Hoàn thành hoặc Đã hủy
-    private String maNhaSiPhuTrach; // mã nha sĩ phụ trách
-    private String ghiChu; // ghi chú
+    private String maLieuTrinh; // Mã liệu trình, dạng LT000001
+    private String maBN; // Mã bệnh nhân
+    private String loaiDichVu; // Loại dịch vụ của liệu trình
+    private int soBuoiDuKien; // Số buổi dự kiến
+    private String giaiDoanHienTai; // Giai đoạn
+    private LocalDate ngayBatDau; // Ngày bắt đầu
+    private LocalDate ngayDuKienKetThuc; // Ngày dự kiến kết thúc
+    private LocalDate ngayKetThucThucTe; // Ngày kết thúc thực tế
+    private long tongChiPhiDuKien; // Tổng chi phí dự kiến
+    private String trangThai; // Đang thực
+    private String maNhaSiPhuTrach; // Mã nha sĩ phụ trách
+    private String ghiChu; // Ghi chú
     
     
     

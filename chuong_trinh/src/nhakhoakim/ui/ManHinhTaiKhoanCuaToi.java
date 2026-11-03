@@ -10,8 +10,8 @@ import nhakhoakim.dao.PhienLamViec;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.TaiKhoan;
 
-// Màn hình "Đăng nhập / Đăng xuất" (TK-01, TK-02): cho biết ai đang đăng nhập, đổi mật khẩu của mình và đăng xuất
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình "Đăng nhập / Đăng xuất"
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhTaiKhoanCuaToi extends JPanel {
 
     private TaiKhoanController taiKhoanController = new TaiKhoanController();

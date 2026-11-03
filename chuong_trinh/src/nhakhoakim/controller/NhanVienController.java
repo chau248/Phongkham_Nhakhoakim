@@ -14,41 +14,41 @@ import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.TaiKhoan;
 import nhakhoakim.entity.VaiTro;
 
-// Nghiệp vụ hồ sơ nhân viên (NV-01 đến NV-03): xem, thêm, sửa; không xóa, chỉ chuyển sang Nghỉ việc
+// Nghiệp vụ hồ sơ nhân viên
 public class NhanVienController {
 
     public static final String DANG_LAM = "Đang làm việc";
     public static final String NGHI_VIEC = "Nghỉ việc";
-    public static final int SO_NGAY_CANH_BAO_CHUNG_CHI = 30; // báo trước khi chứng chỉ hành nghề hết hạn (NV-02)
+    public static final int SO_NGAY_CANH_BAO_CHUNG_CHI = 30; // Báo trước khi chứng chỉ hành
 
     private NhanVienDAO nhanVienDAO;
     private TaiKhoanDAO taiKhoanDAO;
     private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
-    // Dùng DAO thật và người đăng nhập thật của chương trình
+    // Dùng DAO thật
     public NhanVienController() {
         this(new NhanVienDAO(), new TaiKhoanDAO(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng DAO và người dùng truyền vào (để kiểm thử)
+    // Dùng DAO và người dùng truyền vào
     public NhanVienController(NhanVienDAO nhanVienDAO, TaiKhoanDAO taiKhoanDAO, Supplier<NhanVien> nguoiDung) {
         this.nhanVienDAO = nhanVienDAO;
         this.taiKhoanDAO = taiKhoanDAO;
         this.nguoiDung = nguoiDung;
     }
 
-    // Tìm nhân viên theo mã; không có thì trả về null
+    // Tìm nhân viên theo mã
     public NhanVien timTheoMa(String ma) {
         return ma == null ? null : nhanVienDAO.timTheoMa(ma);
     }
 
-    // Tất cả nhân viên (kể cả đã nghỉ việc), theo mã
+    // Tất cả nhân viên, theo mã
     public List<NhanVien> layTatCa() {
         return nhanVienDAO.layTatCa();
     }
 
-    // Nhân viên đang làm việc theo vai trò (Nha sĩ, Y tá, Lễ tân, Quản lý)
+    // Nhân viên đang làm việc theo vai trò
     public List<NhanVien> layTheoVaiTro(String vaiTro) {
         List<NhanVien> kq = new ArrayList<>();
         for (NhanVien nv : nhanVienDAO.layTatCa()) {
@@ -59,13 +59,13 @@ public class NhanVienController {
         return kq;
     }
 
-    // Nhân viên có chứng chỉ hành nghề còn hạn tại ngày đó không (NV-02); không có chứng chỉ thì coi là không còn hạn
+    // Nhân viên có chứng chỉ hành
     public boolean chungChiConHan(String maNV, LocalDate ngay) {
         NhanVien nv = timTheoMa(maNV);
         return nv != null && nv.getNgayHetHanChungChi() != null && !nv.getNgayHetHanChungChi().isBefore(ngay);
     }
 
-    // Nha sĩ đang làm việc có chứng chỉ đã hết hạn hoặc sắp hết hạn trong 30 ngày (để cảnh báo quản lý), sắp theo ngày hết hạn
+    // Nha sĩ đang làm việc
     public List<NhanVien> layCanhBaoChungChi() {
         List<NhanVien> kq = new ArrayList<>();
         LocalDate han = LocalDate.now().plusDays(SO_NGAY_CANH_BAO_CHUNG_CHI);
@@ -79,7 +79,7 @@ public class NhanVienController {
         return kq;
     }
 
-    // Thêm nhân viên mới (chỉ Quản lý); mã do hệ thống sinh; trả về nhân viên đã có mã
+    // Thêm nhân viên mới
     public NhanVien them(NhanVien nv) {
         Quyen.yeuCau(nguoiDung, "thêm hoặc sửa hồ sơ nhân viên", VaiTro.QUAN_LY);
         chuanHoa(nv);
@@ -91,7 +91,7 @@ public class NhanVienController {
         return nv;
     }
 
-    // Cập nhật hồ sơ nhân viên (chỉ Quản lý). Đổi vai trò thì đổi luôn vai trò tài khoản; chuyển sang Nghỉ việc thì khóa tài khoản (NV-03).
+    // Cập nhật hồ sơ nhân viên
     public void capNhat(NhanVien nv) {
         Quyen.yeuCau(nguoiDung, "thêm hoặc sửa hồ sơ nhân viên", VaiTro.QUAN_LY);
         NhanVien cu = nhanVienDAO.timTheoMa(nv.getMaNV());
@@ -103,7 +103,7 @@ public class NhanVienController {
         boolean doiVaiTro = !cu.getVaiTro().equals(nv.getVaiTro());
         boolean nghiViec = NGHI_VIEC.equals(nv.getTrangThai()) && !NGHI_VIEC.equals(cu.getTrangThai());
         TaiKhoan tk = taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
-        // Luôn còn ít nhất một Quản lý hoạt động (TK-04): không cho đổi vai trò hay cho nghỉ việc người quản lý cuối cùng
+        // Luôn còn ít nhất một Quản lý hoạt động
         boolean laQuanLyHoatDong = tk != null && VaiTro.QUAN_LY.equals(tk.getVaiTro()) && !tk.isTrangThaiKhoa();
         if (laQuanLyHoatDong && (doiVaiTro || nghiViec) && taiKhoanDAO.demQuanLyHoatDong() <= 1) {
             throw new NghiepVuException("Đây là Quản lý hoạt động cuối cùng, không thể đổi vai trò hoặc cho nghỉ việc (hệ thống phải luôn có một Quản lý)");
@@ -124,7 +124,7 @@ public class NhanVienController {
         }
     }
 
-    // Cắt khoảng trắng thừa; ô để trống thì đổi thành null để lưu NULL vào CSDL
+    // Cắt khoảng trắng thừa
     private void chuanHoa(NhanVien nv) {
         nv.setHoTen(nv.getHoTen() == null ? null : nv.getHoTen().trim().replaceAll("\\s+", " "));
         nv.setSdt(KiemTraNhap.rongThanhNull(nv.getSdt()));
@@ -132,12 +132,12 @@ public class NhanVienController {
         nv.setChuyenKhoa(KiemTraNhap.rongThanhNull(nv.getChuyenKhoa()));
         nv.setSoChungChiHanhNghe(KiemTraNhap.rongThanhNull(nv.getSoChungChiHanhNghe()));
         if (!VaiTro.NHA_SI.equals(nv.getVaiTro())) {
-            nv.setSoChungChiHanhNghe(null); // chỉ nha sĩ có chứng chỉ hành nghề
+            nv.setSoChungChiHanhNghe(null); // Chỉ nha sĩ có chứng
             nv.setNgayHetHanChungChi(null);
         }
     }
 
-    // Kiểm tra thông tin nhập vào (NV-01); sai thì báo lỗi bằng câu tiếng Việt
+    // Kiểm tra thông tin nhập vào
     public void kiemTra(NhanVien nv) {
         if (nv.getHoTen() == null || nv.getHoTen().isEmpty()) {
             throw new NghiepVuException("Họ tên không được để trống");

@@ -1,14 +1,14 @@
 package nhakhoakim.ui;
 
-// Một chức năng của chương trình (một mục trong menu)
+// Một chức năng của chương trình
 public class ChucNang {
 
-    private String nhom;          // nhóm đối tượng, cũng là tên menu
-    private String ten;           // tên chức năng
-    private String lop;           // các lớp liên quan
-    private String vaiTro;        // vai trò được dùng chức năng
-    private String nguoiPhuTrach; // thành viên làm chức năng này
-    private String ghiChu;        // quy tắc nghiệp vụ cần nhớ
+    private String nhom; // Nhóm đối tượng
+    private String ten; // Tên chức năng
+    private String lop; // Các lớp liên quan
+    private String vaiTro; // Vai trò được dùng chức năng
+    private String nguoiPhuTrach; // Thành viên làm chức năng này
+    private String ghiChu; // Quy tắc nghiệp vụ cần nhớ
 
     public ChucNang(String nhom, String ten, String lop, String vaiTro, String nguoiPhuTrach, String ghiChu) {
         this.nhom = nhom;

@@ -19,22 +19,21 @@ import nhakhoakim.entity.CaTruc;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.VaiTro;
 
-// Màn hình phân công ca trực theo tuần (NV-04, NV-05): chỉ Quản lý; ca Sáng 08:00-12:00, ca Chiều 13:00-17:00;
-// mỗi phòng và ca tối đa một nha sĩ, lễ tân xếp ở quầy lễ tân
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình phân công ca trực theo tuần
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhPhanCongCaTruc extends JPanel {
 
     private CaTrucController caTrucController = new CaTrucController();
     private NhanVienController nhanVienController = new NhanVienController();
 
-    private JTextField txtTuan = TienIch.oNhap(10);                  // một ngày bất kỳ trong tuần cần xem
+    private JTextField txtTuan = TienIch.oNhap(10); // Một ngày bất kỳ
     private JTable tblCa = TienIch.taoBang(new String[] {"Ngày", "Ca", "Phòng", "Nhân viên", "Vai trò", "Trạng thái", "Mã ca"},
             new int[] {110, 70, 110, 200, 90, 110, 90}, "Tuần này chưa xếp ca nào.");
     private List<CaTruc> dsCa = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
 
-    private JComboBox<NhanVien> cmbNhanVien = new JComboBox<>();     // nhân viên đang làm (trừ Quản lý)
-    private JTextField txtNgay = TienIch.oNhap(10);                  // ngày cần xếp
+    private JComboBox<NhanVien> cmbNhanVien = new JComboBox<>(); // Nhân viên đang làm
+    private JTextField txtNgay = TienIch.oNhap(10); // Ngày cần xếp
     private JComboBox<String> cmbCa = new JComboBox<>(new String[] {CaTrucController.SANG, CaTrucController.CHIEU});
     private JComboBox<String> cmbPhong = new JComboBox<>(new String[] {"Phòng 1", "Phòng 2", "Phòng 3", CaTrucController.QUAY_LE_TAN});
 
@@ -98,7 +97,7 @@ public class ManHinhPhanCongCaTruc extends JPanel {
         }
     }
 
-    // Tải các ca của tuần chứa ngày đang chọn (thứ hai đến chủ nhật)
+    // Tải các ca của tuần chứa ngày đang chọn
     private void xem() {
         try {
             LocalDate ngay = TienIch.docNgay(txtTuan.getText());

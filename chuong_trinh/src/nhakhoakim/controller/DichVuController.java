@@ -12,7 +12,7 @@ import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.VaiTro;
 
-// Nghiệp vụ danh mục dịch vụ và bảng giá (DV-01 đến DV-03): ai cũng xem được, chỉ Quản lý thêm và sửa; không xóa, chỉ ngừng hoạt động
+// Nghiệp vụ danh mục dịch vụ và bảng giá
 public class DichVuController {
 
     public static final List<String> DON_VI_TINH = List.of("Lần", "Răng", "Hàm");
@@ -21,18 +21,18 @@ public class DichVuController {
     private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
-    // Dùng DAO thật và người đăng nhập thật của chương trình
+    // Dùng DAO thật
     public DichVuController() {
         this(new DichVuDAO(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng DAO và người dùng truyền vào (để kiểm thử)
+    // Dùng DAO và người dùng truyền vào
     public DichVuController(DichVuDAO dao, Supplier<NhanVien> nguoiDung) {
         this.dao = dao;
         this.nguoiDung = nguoiDung;
     }
 
-    // Tất cả dịch vụ, kể cả đã ngừng (các màn hình cũ của Hậu tự lọc theo trạng thái khi cần)
+    // Tất cả dịch vụ, kể cả đã ngừng
     public List<DichVu> layTatCa() {
         return dao.layTatCa();
     }
@@ -48,12 +48,12 @@ public class DichVuController {
         return kq;
     }
 
-    // Danh mục dịch vụ theo vai trò (DV-01): Quản lý thấy cả dịch vụ đã ngừng, các vai trò khác chỉ thấy dịch vụ đang hoạt động
+    // Danh mục dịch vụ theo vai trò
     public List<DichVu> layChoVaiTro(String vaiTro) {
         return VaiTro.QUAN_LY.equals(vaiTro) ? layTatCa() : layDangHoatDong();
     }
 
-    // Dịch vụ cùng một loại (Khám, Trám, Nội nha...), kể cả đã ngừng
+    // Dịch vụ cùng một loại, kể cả đã ngừng
     public List<DichVu> timTheoLoai(String loai) {
         List<DichVu> kq = new ArrayList<>();
         for (DichVu dv : dao.layTatCa()) {
@@ -64,12 +64,12 @@ public class DichVuController {
         return kq;
     }
 
-    // Tìm dịch vụ theo mã; không có thì trả về null
+    // Tìm dịch vụ theo mã
     public DichVu timTheoMa(String ma) {
         return ma == null ? null : dao.timTheoMa(ma);
     }
 
-    // Thêm dịch vụ mới (chỉ Quản lý); mã do hệ thống sinh; trả về dịch vụ đã có mã
+    // Thêm dịch vụ mới
     public DichVu them(DichVu dv) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
         chuanHoa(dv);
@@ -80,7 +80,7 @@ public class DichVuController {
         return dv;
     }
 
-    // Sửa dịch vụ (chỉ Quản lý). Đổi giá thì chỉ áp dụng cho lịch và hóa đơn lập sau đó (hóa đơn cũ đã lưu giá cố định) và được ghi nhật ký (DV-03).
+    // Sửa dịch vụ
     public void capNhat(DichVu dv) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
         DichVu cu = dao.timTheoMa(dv.getMaDichVu());
@@ -99,7 +99,7 @@ public class DichVuController {
         }
     }
 
-    // Cắt khoảng trắng thừa; ô để trống thì đổi thành null
+    // Cắt khoảng trắng thừa
     private void chuanHoa(DichVu dv) {
         dv.setTenDichVu(dv.getTenDichVu() == null ? null : dv.getTenDichVu().trim().replaceAll("\\s+", " "));
         dv.setLoaiDichVu(KiemTraNhap.rongThanhNull(dv.getLoaiDichVu()));
@@ -107,7 +107,7 @@ public class DichVuController {
         dv.setDonViTinh(KiemTraNhap.rongThanhNull(dv.getDonViTinh()));
     }
 
-    // Kiểm tra thông tin dịch vụ (DV-02); maDangSua là mã dịch vụ đang sửa (để tên không bị coi là trùng với chính nó), thêm mới thì null
+    // Kiểm tra thông tin dịch vụ
     public void kiemTra(DichVu dv, String maDangSua) {
         if (dv.getTenDichVu() == null || dv.getTenDichVu().isEmpty()) {
             throw new NghiepVuException("Tên dịch vụ không được để trống");

@@ -10,8 +10,8 @@ import nhakhoakim.MainApp;
 import nhakhoakim.controller.HoaDonController;
 import nhakhoakim.controller.HoaDonController.DongChoThanhToan;
 
-// Màn hình danh sách chờ thanh toán (HD-01): các lượt khám đã hoàn thành nhưng chưa lập hóa đơn
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình danh sách chờ thanh toán
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
 
     private HoaDonController hoaDonController = new HoaDonController();
@@ -39,7 +39,7 @@ public class ManHinhChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         tai();
     }
 
-    // Tải danh sách lượt khám đang chờ lập hóa đơn
+    // Tải danh sách lượt khám
     private void tai() {
         try {
             dsCho = hoaDonController.layChoThanhToan();
@@ -55,7 +55,7 @@ public class ManHinhChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Mở màn hình lập hóa đơn cho lượt khám đang chọn
+    // Mở màn hình lập hóa đơn
     private void lap() {
         int vt = tblCho.getSelectedRow();
         if (vt < 0 || vt >= dsCho.size()) {

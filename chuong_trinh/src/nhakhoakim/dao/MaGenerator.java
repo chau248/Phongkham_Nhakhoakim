@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-// Sinh mã dạng tiền tố + 6 chữ số (BN000001, HS000001...) dựa vào bảng BoDemMa
+// Sinh mã dạng tiền tố +
 public class MaGenerator {
 
-    // Tăng bộ đếm của tiền tố lên 1 và trả về mã mới
+    // Tăng bộ đếm của tiền tố lên 1
     public static String taoMa(String tienTo) {
         String sql = "UPDATE dbo.BoDemMa SET giaTriHienTai = giaTriHienTai + 1 OUTPUT INSERTED.giaTriHienTai WHERE tienTo = ?";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

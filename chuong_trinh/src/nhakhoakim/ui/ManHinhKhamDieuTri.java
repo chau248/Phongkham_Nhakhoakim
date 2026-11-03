@@ -29,9 +29,8 @@ import nhakhoakim.entity.LichHen;
 import nhakhoakim.entity.LuotKham;
 import nhakhoakim.entity.LuotKhamDichVu;
 
-// Màn hình khám và ghi nhận điều trị (gồm kê đơn thuốc): bắt đầu khám, ghi nội dung, chọn dịch vụ, hoàn tất khám.
-// Hai chức năng "Khám & ghi nhận điều trị" và "Kê đơn thuốc" dùng chung màn hình này.
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình khám và ghi nhận điều trị
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhKhamDieuTri extends JPanel {
 
     private LuotKhamController luotKhamService = new LuotKhamController();
@@ -41,29 +40,29 @@ public class ManHinhKhamDieuTri extends JPanel {
     private DichVuController dichVuService = new DichVuController();
     private RangDieuTriController rangService = new RangDieuTriController();
 
-    private LichHen lichHen;                                       // lịch hẹn đang khám (null nếu khám vãng lai)
-    private LuotKham luotKham;                                     // lượt khám đang khám của nha sĩ
-    private TienIch.ChonBenhNhan chonBenhNhan;                     // chọn bệnh nhân khám vãng lai (tạo mới mỗi lần dựng phần bắt đầu khám)
-    private JTextField txtLyDo = TienIch.oNhap(50);                // lý do khám
-    private JTextArea txaChanDoan = TienIch.oNhieuDong(2, 50);     // chẩn đoán
-    private JTextArea txaHuongDieuTri = TienIch.oNhieuDong(2, 50); // hướng điều trị
-    private JTextArea txaDonThuoc = TienIch.oNhieuDong(3, 50);     // đơn thuốc, mỗi dòng một thuốc
-    private JTextField txtGhiChu = TienIch.oNhap(50);              // ghi chú
+    private LichHen lichHen; // Lịch hẹn đang khám
+    private LuotKham luotKham; // Lượt khám đang khám của nha sĩ
+    private TienIch.ChonBenhNhan chonBenhNhan; // Chọn bệnh nhân khám vãng lai
+    private JTextField txtLyDo = TienIch.oNhap(50); // Lý do khám
+    private JTextArea txaChanDoan = TienIch.oNhieuDong(2, 50); // Chẩn đoán
+    private JTextArea txaHuongDieuTri = TienIch.oNhieuDong(2, 50); // Hướng điều trị
+    private JTextArea txaDonThuoc = TienIch.oNhieuDong(3, 50); // Đơn thuốc, mỗi dòng một thuốc
+    private JTextField txtGhiChu = TienIch.oNhap(50); // Ghi chú
     private JTable tblDichVu = TienIch.taoBang(new String[] {"Mã", "Dịch vụ", "Số lượng", "Đơn giá (đồng)"},
-            new int[] {90, 260, 80, 120}, "Chưa chọn dịch vụ nào.");  // dịch vụ đã chọn
-    private List<LuotKhamDichVu> dichVuDaChon = new ArrayList<>(); // dữ liệu của bảng dịch vụ
+            new int[] {90, 260, 80, 120}, "Chưa chọn dịch vụ nào."); // Dịch vụ đã chọn
+    private List<LuotKhamDichVu> dichVuDaChon = new ArrayList<>(); // Dữ liệu của bảng dịch vụ
 
     public ManHinhKhamDieuTri() {
         this(null);
     }
 
-    // Mở màn hình khám cho một lịch hẹn (bấm "Bắt đầu khám" ở chi tiết lịch hẹn); lichHen có thể null
+    // Mở màn hình khám cho một lịch hẹn
     public ManHinhKhamDieuTri(LichHen lichHen) {
         this.lichHen = lichHen;
         dung();
     }
 
-    // Dựng lại màn hình: có lượt khám đang khám thì hiện form khám, chưa có thì hiện phần bắt đầu khám
+    // Dựng lại màn hình
     private void dung() {
         removeAll();
         List<Component> cacKhoi = new ArrayList<>();
@@ -73,7 +72,7 @@ public class ManHinhKhamDieuTri extends JPanel {
             if (luotKham == null) {
                 dungPhanBatDau(cacKhoi);
             } else {
-                // Mở theo một lịch hẹn nhưng nha sĩ đang khám người khác: lịch hẹn chưa được bắt đầu
+                // Mở theo một lịch hẹn
                 if (lichHen != null && !lichHen.getMaLichHen().equals(luotKham.getMaLichHen())) {
                     cacKhoi.add(nhanCanhBao("Bạn đang khám bệnh nhân khác; lịch hẹn này chưa được bắt đầu"));
                 }
@@ -87,14 +86,14 @@ public class ManHinhKhamDieuTri extends JPanel {
         repaint();
     }
 
-    // Khối cảnh báo nền vàng (không chặn thao tác)
+    // Khối cảnh báo nền vàng
     private JComponent nhanCanhBao(String noiDung) {
         return TienIch.thongBao(noiDung, TienIch.MAU_VANG_NEN, TienIch.MAU_VANG_CHU, false);
     }
 
-    // Phần bắt đầu khám: theo lịch hẹn hoặc khám vãng lai (chọn bệnh nhân + lý do); chỉ nha sĩ mới bắt đầu khám được
+    // Phần bắt đầu khám
     private void dungPhanBatDau(List<Component> cacKhoi) {
-        txtLyDo.setText("");                      // không giữ lại lý do của lượt khám trước
+        txtLyDo.setText(""); // Không giữ lại lý
         boolean laNhaSi = HangSo.VAI_TRO_NHA_SI.equals(PhienLamViec.getNhanVienHienTai().getVaiTro());
 
         List<Component> trongThe = new ArrayList<>();
@@ -115,7 +114,7 @@ public class ManHinhKhamDieuTri extends JPanel {
             });
             trongThe.add(TienIch.dong(btnTheoLich));
         } else {
-            chonBenhNhan = new TienIch.ChonBenhNhan(); // tạo mới để không còn chọn sẵn người cũ và nạp lại danh sách
+            chonBenhNhan = new TienIch.ChonBenhNhan(); // Tạo mới để không còn chọn sẵn người cũ
             trongThe.add(TienIch.doanChu("Chưa có lượt khám đang khám. Chọn bệnh nhân (khám vãng lai) rồi bấm Bắt đầu khám.", Color.BLACK));
             trongThe.add(TienIch.dong(TienIch.nhan("Bệnh nhân"), chonBenhNhan));
             trongThe.add(TienIch.dong(TienIch.nhan("Lý do khám"), txtLyDo));
@@ -194,7 +193,7 @@ public class ManHinhKhamDieuTri extends JPanel {
         cacKhoi.add(TienIch.dong(btnLuu, btnSoDo, btnTaiKham, btnHoanTat, btnHuy));
     }
 
-    // Nạp lại bảng dịch vụ của lượt khám (lấy danh mục dịch vụ một lần rồi tra theo mã)
+    // Nạp lại bảng dịch vụ của lượt khám
     private void napBangDichVu() {
         dichVuDaChon = luotKhamService.layDichVuKhongGanRang(luotKham.getMaLuotKham());
         Map<String, DichVu> danhMuc = new HashMap<>();
@@ -210,7 +209,7 @@ public class ManHinhKhamDieuTri extends JPanel {
         TienIch.napBang(tblDichVu, dong);
     }
 
-    // Mở hộp thoại chọn dịch vụ rồi thêm vào lượt khám; có cảnh báo (liệu trình, bệnh nền, thuốc đang dùng, tuổi) thì hỏi lại, không chặn
+    // Mở hộp thoại chọn dịch vụ
     private void themDichVu() {
         DichVu dv = HopThoaiChonDichVu.chon();
         if (dv == null) {
@@ -243,8 +242,7 @@ public class ManHinhKhamDieuTri extends JPanel {
         }
     }
 
-    // Lưu lý do, chẩn đoán, hướng điều trị, đơn thuốc và ghi chú trong một lần (đơn thuốc để trống nghĩa là xóa đơn);
-    // trả về true nếu lưu thành công
+    // Lưu lý do, chẩn đoán, hướng điều trị
     private boolean luuNoiDung(boolean hienThongBao) {
         try {
             luotKhamService.luuNoiDungKham(luotKham.getMaLuotKham(), txtLyDo.getText().trim(), txaChanDoan.getText().trim(),
@@ -259,14 +257,13 @@ public class ManHinhKhamDieuTri extends JPanel {
         }
     }
 
-    // Lượt khám đã ghi nhận dịch vụ hoặc răng điều trị chưa (lấy mới từ CSDL vì răng được ghi ở màn hình Sơ đồ răng)
+    // Lượt khám đã ghi nhận dịch
     private boolean daGhiDichVuHoacRang() {
         String maLuotKham = luotKham.getMaLuotKham();
         return !luotKhamService.layDichVuKhongGanRang(maLuotKham).isEmpty() || !rangService.layTheoLuotKham(maLuotKham).isEmpty();
     }
 
-    // Hủy lượt khám: kiểm tra trước, rồi hỏi lý do và chuyển lượt khám sang Đã hủy
-    // (chỉ hủy được khi chưa ghi dịch vụ hay răng nào)
+    // Hủy lượt khám
     private void huyLuotKham() {
         String maLuotKham = luotKham.getMaLuotKham();
         try {
@@ -292,7 +289,7 @@ public class ManHinhKhamDieuTri extends JPanel {
         }
     }
 
-    // Hoàn tất khám: báo ngay nếu thiếu chẩn đoán hoặc chưa ghi dịch vụ, rồi hỏi xác nhận, lưu nội dung và khóa lượt khám
+    // Hoàn tất khám
     private void hoanTat() {
         if (txaChanDoan.getText().trim().isEmpty()) {
             TienIch.thongTin("Phải nhập chẩn đoán trước khi hoàn tất khám.");

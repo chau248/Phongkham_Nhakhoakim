@@ -14,15 +14,15 @@ import javax.swing.JTextField;
 import nhakhoakim.controller.TaiKhoanController;
 import nhakhoakim.entity.NhanVien;
 
-// Hộp đăng nhập hiện khi mở chương trình và sau khi đăng xuất (TK-01): sai 5 lần liên tiếp thì tài khoản bị khóa
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Hộp đăng nhập hiện khi mở chương trình
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class HopThoaiDangNhap extends JDialog {
 
     private TaiKhoanController taiKhoanController = new TaiKhoanController();
     private JTextField txtTen = TienIch.oNhap(20);
     private JPasswordField txtMatKhau = new JPasswordField(20);
     private JLabel lblLoi = new JLabel(" ");
-    private NhanVien ketQua; // người đăng nhập thành công; bấm Thoát thì null
+    private NhanVien ketQua; // Người đăng nhập thành công
 
     private HopThoaiDangNhap() {
         super((java.awt.Frame) null, "Đăng nhập - Nha khoa Kim", true);
@@ -68,7 +68,7 @@ public class HopThoaiDangNhap extends JDialog {
         }
     }
 
-    // Hiện hộp đăng nhập (chờ tới khi đăng nhập xong hoặc bấm Thoát); trả về người đăng nhập hoặc null nếu thoát
+    // Hiện hộp đăng nhập
     public static NhanVien hien() {
         HopThoaiDangNhap hop = new HopThoaiDangNhap();
         hop.setVisible(true);

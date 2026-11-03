@@ -11,7 +11,7 @@ import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.TaiKhoan;
 import nhakhoakim.entity.VaiTro;
 
-// Nghiệp vụ tài khoản (TK-01 đến TK-04): đăng nhập, khóa sau 5 lần sai, tạo tài khoản, đổi và cấp lại mật khẩu, khóa và mở khóa
+// Nghiệp vụ tài khoản
 public class TaiKhoanController {
 
     public static final int SO_LAN_SAI_TOI_DA = 5;
@@ -23,20 +23,19 @@ public class TaiKhoanController {
     private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
-    // Dùng DAO thật và người đăng nhập thật của chương trình
+    // Dùng DAO thật
     public TaiKhoanController() {
         this(new TaiKhoanDAO(), new NhanVienDAO(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng DAO và người dùng truyền vào (để kiểm thử)
+    // Dùng DAO và người dùng truyền vào
     public TaiKhoanController(TaiKhoanDAO taiKhoanDAO, NhanVienDAO nhanVienDAO, Supplier<NhanVien> nguoiDung) {
         this.taiKhoanDAO = taiKhoanDAO;
         this.nhanVienDAO = nhanVienDAO;
         this.nguoiDung = nguoiDung;
     }
 
-    // Đăng nhập (TK-01, TK-02): trả về nhân viên đăng nhập; sai thì báo lỗi. Sai 5 lần liên tiếp thì khóa tài khoản.
-    // Câu báo "sai tên đăng nhập hoặc mật khẩu" không cho biết tên đăng nhập có tồn tại hay không.
+    // Đăng nhập: trả về nhân viên đăng nhập
     public NhanVien dangNhap(String tenDangNhap, String matKhau) {
         if (tenDangNhap == null || tenDangNhap.trim().isEmpty() || matKhau == null || matKhau.isEmpty()) {
             throw new NghiepVuException("Hãy nhập tên đăng nhập và mật khẩu");
@@ -69,14 +68,14 @@ public class TaiKhoanController {
             throw new NghiepVuException("Sai tên đăng nhập hoặc mật khẩu (còn " + (SO_LAN_SAI_TOI_DA - soLanSai) + " lần thử)");
         }
         if (!MatKhau.daBam(tk.getMatKhauHash())) {
-            taiKhoanDAO.nangCapBam(tk.getMaTaiKhoan(), MatKhau.bam(matKhau)); // mật khẩu cũ chữ thường được băm lại ngay lần đăng nhập đầu
+            taiKhoanDAO.nangCapBam(tk.getMaTaiKhoan(), MatKhau.bam(matKhau)); // Mật khẩu cũ chữ thường
         }
         taiKhoanDAO.ghiNhanDangNhapDung(tk.getMaTaiKhoan());
         nhatKy.ghiNhatKy(maNV, "Đăng nhập", "TaiKhoan", tk.getMaTaiKhoan(), null);
         return nv;
     }
 
-    // Đăng xuất: ghi nhật ký rồi xóa người dùng hiện tại (TK-02)
+    // Đăng xuất
     public void dangXuat() {
         NhanVien nv = nguoiDung.get();
         if (nv != null) {
@@ -85,19 +84,19 @@ public class TaiKhoanController {
         PhienLamViec.dangXuat();
     }
 
-    // Tất cả tài khoản (chỉ Quản lý)
+    // Tất cả tài khoản
     public List<TaiKhoan> layTatCa() {
         Quyen.yeuCau(nguoiDung, "xem danh sách tài khoản", VaiTro.QUAN_LY);
         return taiKhoanDAO.layTatCa();
     }
 
-    // Tài khoản của người đang đăng nhập (để hiện thông tin và đổi mật khẩu); không có thì trả về null
+    // Tài khoản của người đang đăng nhập
     public TaiKhoan layTaiKhoanCuaToi() {
         NhanVien nv = Quyen.yeuCau(nguoiDung, "xem tài khoản của mình", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
         return taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
     }
 
-    // Tạo tài khoản cho một nhân viên (chỉ Quản lý, TK-03, TK-04): mỗi nhân viên một tài khoản, vai trò tài khoản bằng vai trò nhân viên
+    // Tạo tài khoản cho một nhân viên
     public TaiKhoan taoTaiKhoan(String maNV, String tenDangNhap, String matKhau) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "tạo tài khoản", VaiTro.QUAN_LY);
         NhanVien nv = maNV == null ? null : nhanVienDAO.timTheoMa(maNV);
@@ -129,7 +128,7 @@ public class TaiKhoanController {
         return tk;
     }
 
-    // Người đang đăng nhập đổi mật khẩu của chính mình: phải nhập đúng mật khẩu cũ
+    // Người đang đăng nhập đổi mật
     public void doiMatKhauCuaToi(String matKhauCu, String matKhauMoi) {
         NhanVien nv = Quyen.yeuCau(nguoiDung, "đổi mật khẩu", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
         TaiKhoan tk = taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
@@ -147,7 +146,7 @@ public class TaiKhoanController {
         nhatKy.ghiNhatKy(nv.getMaNV(), "Đổi mật khẩu", "TaiKhoan", tk.getMaTaiKhoan(), null);
     }
 
-    // Quản lý cấp lại mật khẩu cho một tài khoản (quên mật khẩu)
+    // Quản lý cấp lại mật khẩu
     public void capLaiMatKhau(String maTaiKhoan, String matKhauMoi) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "cấp lại mật khẩu", VaiTro.QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
@@ -156,7 +155,7 @@ public class TaiKhoanController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Cấp lại mật khẩu", "TaiKhoan", tk.getMaTaiKhoan(), tk.getTenDangNhap());
     }
 
-    // Khóa tài khoản (chỉ Quản lý): không tự khóa chính mình và luôn còn ít nhất một Quản lý hoạt động (TK-04)
+    // Khóa tài khoản
     public void khoa(String maTaiKhoan) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "khóa tài khoản", VaiTro.QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
@@ -173,7 +172,7 @@ public class TaiKhoanController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
     }
 
-    // Mở khóa tài khoản và xóa bộ đếm đăng nhập sai (chỉ Quản lý); không mở khóa cho nhân viên đã nghỉ việc
+    // Mở khóa tài khoản
     public void moKhoa(String maTaiKhoan) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "mở khóa tài khoản", VaiTro.QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
@@ -195,7 +194,7 @@ public class TaiKhoanController {
         return tk;
     }
 
-    // Tên đăng nhập từ 4 ký tự, không có khoảng trắng, chỉ gồm chữ, số, dấu chấm, gạch dưới, gạch ngang (TK-03)
+    // Tên đăng nhập từ 4 ký tự
     private void kiemTraTenDangNhap(String ten) {
         if (ten.length() < DO_DAI_TEN_TOI_THIEU) {
             throw new NghiepVuException("Tên đăng nhập phải từ " + DO_DAI_TEN_TOI_THIEU + " ký tự");
@@ -205,7 +204,7 @@ public class TaiKhoanController {
         }
     }
 
-    // Mật khẩu từ 6 ký tự (TK-03)
+    // Mật khẩu từ 6 ký tự
     private void kiemTraMatKhauMoi(String matKhau) {
         if (matKhau == null || matKhau.length() < DO_DAI_MAT_KHAU_TOI_THIEU) {
             throw new NghiepVuException("Mật khẩu phải từ " + DO_DAI_MAT_KHAU_TOI_THIEU + " ký tự");

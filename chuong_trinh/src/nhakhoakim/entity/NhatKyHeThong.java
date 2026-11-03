@@ -5,17 +5,17 @@ import java.time.LocalDateTime;
 public class NhatKyHeThong {
 	
 	
-	    private String maNhatKy;           // Mã định danh bản ghi log (hoặc dùng Long/int tự tăng)
-	    private LocalDateTime thoiGian;    // Thời điểm xảy ra hành động
-	    private String tenDangNhap;        // Tên tài khoản hoặc mã nhân viên thực hiện thao tác
-	    private String vaiTro;             // Vai trò của người thực hiện (Lễ tân, Nha sĩ, Quản trị viên...)
-	    private String hanhDong;           // Loại hành động (THEM, SUA, XOA, DANG_NHAP, THANH_TOAN...)
-	    private String doiTuongTacDong;    // Tên bảng hoặc thực thể bị tác động (HoaDon, BenhNhan, VatTu...)
-	    private String maDoiTuong;         // Mã bản ghi cụ thể bị tác động (ví dụ: HD001, BN005)
-	    private String chiTietThayDoi;     // Nội dung chi tiết (hoặc lưu JSON chứa giá trị cũ/mới trước và sau khi sửa)
-	    private String diaChiIP;           // Địa chỉ IP của máy thực hiện (nếu triển khai dạng client-server)
-	    private String trangThai;          // Kết quả thực hiện ("Thành công" hoặc "Thất bại")
-	    private String ghiChu;             // Ghi chú bổ sung nếu có
+	    private String maNhatKy; // Mã định danh bản ghi log
+	    private LocalDateTime thoiGian; // Thời điểm xảy ra hành động
+	    private String tenDangNhap; // Tên tài khoản hoặc mã nhân
+	    private String vaiTro; // Vai trò của người thực
+	    private String hanhDong; // Loại hành động
+	    private String doiTuongTacDong; // Tên bảng hoặc thực thể bị
+	    private String maDoiTuong; // Mã bản ghi cụ thể bị tác động
+	    private String chiTietThayDoi; // Nội dung chi tiết
+	    private String diaChiIP; // Địa chỉ IP của máy thực
+	    private String trangThai; // Kết quả thực
+	    private String ghiChu; // Ghi chú bổ sung
 	    
 	    
 	    

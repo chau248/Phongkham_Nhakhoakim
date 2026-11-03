@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nhakhoakim.entity.NhanVien;
 
-// Truy cập bảng NhanVien (chỉ lớp DAO được viết SQL). Không có hàm xóa: nhân viên chỉ chuyển sang Nghỉ việc (NV-03).
+// Truy cập bảng NhanVien
 public class NhanVienDAO {
 
     static final String CAC_COT = "maNV, hoTen, vaiTro, soChungChiHanhNghe, ngayHetHanChungChi, gioiTinh, sdt, chuyenKhoa, ngayVaoLam, trangThai";
@@ -33,7 +33,7 @@ public class NhanVienDAO {
         return ds;
     }
 
-    // Tìm nhân viên theo mã; không có thì trả về null
+    // Tìm nhân viên theo mã
     public NhanVien timTheoMa(String maNV) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEO_MA)) {
             ps.setString(1, maNV);
@@ -64,7 +64,7 @@ public class NhanVienDAO {
         }
     }
 
-    // Cập nhật hồ sơ nhân viên (không đổi mã)
+    // Cập nhật hồ sơ nhân viên
     public void capNhat(NhanVien nv) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_CAP_NHAT)) {
             ps.setString(1, nv.getHoTen());
@@ -83,7 +83,7 @@ public class NhanVienDAO {
         }
     }
 
-    // Đổi một dòng kết quả thành đối tượng NhanVien
+    // Đổi một dòng kết quả thành
     private NhanVien doc(ResultSet rs) throws SQLException {
         NhanVien nv = new NhanVien();
         nv.setMaNV(rs.getString("maNV"));

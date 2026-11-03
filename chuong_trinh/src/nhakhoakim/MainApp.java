@@ -63,13 +63,12 @@ import nhakhoakim.ui.TienIch;
 @SuppressWarnings("serial") 
 public class MainApp {
 
-    // Màn hình nào cần nạp lại dữ liệu khi người dùng bấm Quay lại về nó thì cài đặt interface này
+    // Màn hình nào cần nạp lại dữ liệu
     public interface LamMoiDuoc {
 
         void lamMoi();
     }
 
-    // Khung chứa màn hình đặt trong thanh cuộn: luôn rộng bằng cửa sổ (không có thanh cuộn ngang), cao tới đâu cuộn dọc tới đó
     private static class KhungCuon extends JPanel implements Scrollable {
 
         KhungCuon() {
@@ -103,28 +102,28 @@ public class MainApp {
         }
     }
 
-    private static final float CO_CHU_MENU = 18f;      // cỡ chữ tên menu (Bệnh nhân, Lượt khám...), to để dễ nhìn khi mở rộng màn hình
-    private static final float CO_CHU_MUC_MENU = 17f;  // cỡ chữ các mục trong menu
+    private static final float CO_CHU_MENU = 18f; // Cỡ chữ tên menu
+    private static final float CO_CHU_MUC_MENU = 17f; // Cỡ chữ các mục trong menu
 
-    private static MainApp dangChay; // chương trình đang chạy, để các màn hình chuyển sang màn hình khác
-    private static boolean dangBaoLoi = false; // đang hiện hộp báo lỗi chưa bắt được, để không hiện chồng nhiều hộp
+    private static MainApp dangChay; // Chương trình đang chạy
+    private static boolean dangBaoLoi = false; // Đang hiện hộp báo lỗi chưa bắt
 
-    private JFrame cuaSo;                              // cửa sổ chính (null khi chỉ dựng nội dung để kiểm thử)
-    private JPanel noiDungChinh = new JPanel(new BorderLayout()); // tiêu đề ở trên, vùng màn hình ở giữa
-    private JPanel vungGiua = new JPanel(new BorderLayout());      // nơi đặt từng màn hình
+    private JFrame cuaSo; // Cửa sổ chính
+    private JPanel noiDungChinh = new JPanel(new BorderLayout()); // Tiêu đề ở trên
+    private JPanel vungGiua = new JPanel(new BorderLayout()); // Nơi đặt từng màn hình
     private JMenuBar thanhMenu = new JMenuBar();
-    private JComponent manHinhHienTai;                  // màn hình đang hiện ở giữa
-    private Deque<JComponent> lichSuManHinh = new ArrayDeque<>(); // các màn hình đã đi qua, để nút Quay lại trở về
-    private Map<String, Supplier<JComponent>> manHinh = new HashMap<>(); // tên chức năng -> hàm tạo màn hình của chức năng đó
+    private JComponent manHinhHienTai; // Màn hình đang hiện ở giữa
+    private Deque<JComponent> lichSuManHinh = new ArrayDeque<>(); // Các màn hình đã đi qua
+    private Map<String, Supplier<JComponent>> manHinh = new HashMap<>(); // Tên chức năng -> hàm tạo
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             } catch (Exception e) {
-                // dùng giao diện mặc định nếu không đặt được
+                // Dùng giao diện mặc định
             }
-            // Lỗi chưa bắt được (ví dụ mất kết nối CSDL khi dựng màn hình) thì hiện hộp báo lỗi thay vì im lặng
+            // Lỗi chưa bắt được thì hiện hộp báo lỗi
             Thread.setDefaultUncaughtExceptionHandler((luong, loi) -> {
                 loi.printStackTrace();
                 SwingUtilities.invokeLater(() -> baoLoiChuaBat(loi));
@@ -133,7 +132,7 @@ public class MainApp {
         });
     }
 
-    // Hiện hộp đăng nhập; đăng nhập xong mới mở cửa sổ chính (bấm Thoát ở hộp đăng nhập thì kết thúc chương trình)
+    // Hiện hộp đăng nhập
     private static void batDau() {
         NhanVien nv = HopThoaiDangNhap.hien();
         if (nv == null) {
@@ -144,7 +143,7 @@ public class MainApp {
         new MainApp().hienCuaSo();
     }
 
-    // Đăng xuất (TK-02): ghi nhật ký, xóa người dùng hiện tại, đóng cửa sổ chính rồi hiện lại hộp đăng nhập
+    // Đăng xuất
     public static void dangXuat() {
         new TaiKhoanController().dangXuat();
         JFrame cu = dangChay == null ? null : dangChay.cuaSo;
@@ -157,12 +156,12 @@ public class MainApp {
         });
     }
 
-    // Cửa sổ chính đang chạy (để hộp thoại biết hiện ở giữa cửa sổ nào); chưa có thì null
+    // Cửa sổ chính đang chạy
     public static JFrame cuaSo() {
         return dangChay == null ? null : dangChay.cuaSo;
     }
 
-    // Hiện lỗi chưa bắt được bằng hộp thông báo; đang hiện một hộp rồi thì bỏ qua lỗi tiếp theo để không chồng hộp
+    // Hiện lỗi chưa bắt
     private static void baoLoiChuaBat(Throwable loi) {
         if (dangBaoLoi) {
             return;
@@ -186,13 +185,13 @@ public class MainApp {
         cuaSo.setVisible(true);
     }
 
-    // Dựng giao diện: tiêu đề, menu và trang chủ (tách riêng khỏi cửa sổ để có thể kiểm thử không cần màn hình)
+    // Dựng giao diện
     JPanel taoNoiDung() {
         dangChay = this;
         dangKyManHinh();
         taoMenu();
         noiDungChinh.setBackground(TienIch.MAU_NEN);
-        JPanel phanDau = new JPanel(new BorderLayout()); // tiêu đề xanh, bên dưới là thanh menu
+        JPanel phanDau = new JPanel(new BorderLayout()); // Tiêu đề xanh
         phanDau.add(taoTieuDe(), BorderLayout.NORTH);
         phanDau.add(thanhMenu, BorderLayout.SOUTH);
         noiDungChinh.add(phanDau, BorderLayout.NORTH);
@@ -202,7 +201,7 @@ public class MainApp {
         return noiDungChinh;
     }
 
-    // Thanh tiêu đề màu xanh phía trên cùng; bấm vào để về trang chủ. Bên phải hiện người đang đăng nhập và nút Đăng xuất.
+    // Thanh tiêu đề màu xanh phía trên cùng
     private JComponent taoTieuDe() {
         JPanel tieuDe = new JPanel(new BorderLayout()) {
             @Override
@@ -254,7 +253,7 @@ public class MainApp {
         return tieuDe;
     }
 
-    // Thanh menu: mỗi nhóm đối tượng là một menu, mỗi chức năng là một mục
+    // Thanh menu
     private void taoMenu() {
         thanhMenu.removeAll();
         thanhMenu.setBackground(Color.WHITE);
@@ -266,7 +265,7 @@ public class MainApp {
             menu.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
             for (ChucNang cn : nhom.getValue()) {
                 if (!duocDung(cn)) {
-                    continue; // menu và chức năng chỉ hiện đúng vai trò (CH-01)
+                    continue; // Menu chỉ hiện đúng vai trò
                 }
                 JMenuItem muc = new JMenuItem(cn.getTen());
                 muc.setFont(TienIch.FONT.deriveFont(CO_CHU_MUC_MENU));
@@ -280,13 +279,13 @@ public class MainApp {
         }
     }
 
-    // Người đang đăng nhập có được dùng chức năng này không (theo cột vai trò dùng); chưa đăng nhập (chạy kiểm thử) thì cho dùng hết
+    // Người đang đăng nhập
     private boolean duocDung(ChucNang cn) {
         NhanVien nv = PhienLamViec.getNhanVienHienTai();
         return nv == null || java.util.Arrays.asList(cn.getVaiTro().split(",\\s*")).contains(nv.getVaiTro());
     }
 
-    // Trang chủ: chỉ có một dòng gợi ý, các chức năng chọn ở thanh menu phía trên
+    // Trang chủ
     void hienTrangChu() {
         lichSuManHinh.clear();
         JPanel trang = new JPanel();
@@ -296,65 +295,63 @@ public class MainApp {
         datGiua(trang);
     }
 
-    // Đăng ký màn hình cho từng chức năng: mỗi dòng là manHinh.put("Tên chức năng", ManHinhX::new).
-    // Chức năng chưa đăng ký thì vùng nội dung để trống.
+    // Đăng ký màn hình cho từng chức năng
     private void dangKyManHinh() {
-        // ----- Hậu: menu Bệnh nhân và menu Lượt khám
+        // Hậu: menu Bệnh nhân và menu Lượt khám
         manHinh.put("Tìm kiếm bệnh nhân", ManHinhTraCuuBenhNhan::new);
         manHinh.put("Thêm / cập nhật hồ sơ bệnh nhân", () -> new ManHinhHoSoBenhNhan(null));
-        manHinh.put("Xem hồ sơ bệnh án", ManHinhHoSoBenhAn::new);            // ba chức năng dùng chung một màn hình
+        manHinh.put("Xem hồ sơ bệnh án", ManHinhHoSoBenhAn::new); // Ba chức năng dùng chung
         manHinh.put("Cập nhật tiền sử & dị ứng", ManHinhHoSoBenhAn::new);
         manHinh.put("Xem liệu trình đang thực hiện", ManHinhHoSoBenhAn::new);
-        manHinh.put("Khám & ghi nhận điều trị", ManHinhKhamDieuTri::new);    // hai chức năng dùng chung một màn hình
+        manHinh.put("Khám & ghi nhận điều trị", ManHinhKhamDieuTri::new); // Hai chức năng dùng chung
         manHinh.put("Kê đơn thuốc", ManHinhKhamDieuTri::new);
         manHinh.put("Sơ đồ răng điều trị", ManHinhSoDoRang::new);
         manHinh.put("Chỉ định tái khám", ManHinhChiDinhTaiKham::new);
         manHinh.put("Dòng thời gian điều trị", ManHinhDongThoiGian::new);
         manHinh.put("Gợi ý điều trị & ước tính chi phí", ManHinhGoiYDieuTri::new);
 
-        // ----- Trường: menu Lịch hẹn và menu Hóa đơn
+        // Trường: menu Lịch hẹn và menu Hóa đơn
         manHinh.put("Xem lịch hẹn", ManHinhXemLichHen::new);
         manHinh.put("Đặt lịch hẹn", ManHinhDatLichHen::new);
         manHinh.put("Dời / hủy lịch hẹn", ManHinhDoiHuyLichHen::new);
         manHinh.put("Xác nhận lịch hẹn", ManHinhXacNhanLichHen::new);
         manHinh.put("Xem lịch làm việc", ManHinhLichLamViec::new);
         manHinh.put("Danh sách chờ thanh toán", ManHinhChoThanhToan::new);
-        manHinh.put("Lập hóa đơn", ManHinhChoThanhToan::new);                // chọn lượt khám chờ thanh toán rồi lập hóa đơn
+        manHinh.put("Lập hóa đơn", ManHinhChoThanhToan::new); // Chọn lượt khám chờ thanh toán
         manHinh.put("Thanh toán & in hóa đơn", ManHinhThanhToan::new);
 
-        // ----- Tâm: menu Dịch vụ, Nhân viên, Tài khoản
+        // Tâm: menu Dịch vụ, Nhân viên, Tài khoản
         manHinh.put("Xem danh mục dịch vụ & giá", ManHinhDanhMucDichVu::new);
-        manHinh.put("Thêm / sửa dịch vụ", ManHinhDanhMucDichVu::new);        // Quản lý thấy thêm nút Thêm và Sửa trên cùng màn hình
+        manHinh.put("Thêm / sửa dịch vụ", ManHinhDanhMucDichVu::new); // Quản lý thấy thêm nút Thêm
         manHinh.put("Cập nhật hồ sơ nhân viên", ManHinhHoSoNhanVien::new);
         manHinh.put("Phân công ca trực", ManHinhPhanCongCaTruc::new);
         manHinh.put("Đăng nhập / Đăng xuất", ManHinhTaiKhoanCuaToi::new);
         manHinh.put("Tạo tài khoản & gán vai trò", ManHinhTaiKhoan::new);
     }
 
-    // Dựng màn hình của chức năng; chưa đăng ký màn hình thì trả về null
+    // Dựng màn hình của chức năng
     private JComponent taoManHinh(ChucNang cn) {
         Supplier<JComponent> tao = manHinh.get(cn.getTen());
         return tao == null ? null : tao.get();
     }
 
-    // Hiện chức năng được chọn: có màn hình thật thì hiện, chưa làm thì để trống
+    // Hiện chức năng được chọn
     void hienChucNang(ChucNang cn) {
         JComponent noiDung = null;
         try {
             noiDung = taoManHinh(cn);
         } catch (RuntimeException e) {
-            TienIch.baoLoi(e); // dựng màn hình lỗi (ví dụ mất kết nối CSDL) thì báo và để vùng giữa trống
+            TienIch.baoLoi(e); // Dựng màn hình lỗi thì báo
         }
         if (noiDung == null) {
             noiDung = new JPanel();
             noiDung.setOpaque(false);
         }
-        lichSuManHinh.clear(); // chọn từ menu là bắt đầu một chuỗi màn hình mới
+        lichSuManHinh.clear(); // Chọn từ menu là bắt đầu
         datGiua(noiDung);
     }
 
-    // Đặt một màn hình vào giữa cửa sổ, có thanh cuộn khi màn hình dài hơn cửa sổ;
-    // nếu đây là màn hình đi tiếp từ một màn hình khác thì có thêm nút Quay lại ở trên cùng
+    // Đặt một màn hình vào giữa cửa sổ
     private void datGiua(JComponent noiDung) {
         manHinhHienTai = noiDung;
         KhungCuon khung = new KhungCuon();
@@ -376,7 +373,7 @@ public class MainApp {
         vungGiua.repaint();
     }
 
-    // Quay về màn hình trước đó (nếu màn hình đó có hàm lamMoi thì nạp lại dữ liệu cho đúng)
+    // Quay về màn hình trước đó
     private void quayLai() {
         if (lichSuManHinh.isEmpty()) {
             return;
@@ -388,7 +385,7 @@ public class MainApp {
         datGiua(truoc);
     }
 
-    // Đi tiếp sang một màn hình khác và nhớ màn hình hiện tại để nút Quay lại trở về
+    // Đi tiếp sang một màn hình khác
     public static void doiNoiDung(JComponent noiDung) {
         if (dangChay.manHinhHienTai != null) {
             dangChay.lichSuManHinh.push(dangChay.manHinhHienTai);
@@ -396,14 +393,14 @@ public class MainApp {
         dangChay.datGiua(noiDung);
     }
 
-    // Thay màn hình hiện tại bằng màn hình khác, không nhớ màn hình cũ (dùng khi màn hình cũ đã xong việc, ví dụ vừa thêm xong bệnh nhân)
+    // Thay màn hình hiện tại bằng màn hình khác
     public static void thayNoiDung(JComponent noiDung) {
         dangChay.datGiua(noiDung);
     }
 
-    // ----- Phần dưới đây chỉ để chương trình kiểm thử xem được trạng thái hiện tại -----
+    // Mấy hàm cho test xem trạng thái
 
-    // Màn hình đang hiện (không tính khung bao ngoài)
+    // Màn hình đang hiện
     JComponent manHinhDangHien() {
         return manHinhHienTai;
     }
@@ -417,7 +414,7 @@ public class MainApp {
         return thanhMenu;
     }
 
-    // Dựng lại menu theo vai trò của người đang đăng nhập (kiểm thử gọi sau khi đổi người đăng nhập)
+    // Dựng lại menu
     void lamMoiMenu() {
         taoMenu();
     }

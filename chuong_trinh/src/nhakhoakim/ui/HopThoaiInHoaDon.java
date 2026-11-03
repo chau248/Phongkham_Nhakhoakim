@@ -12,8 +12,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import nhakhoakim.MainApp;
 
-// Cửa sổ xem trước hóa đơn dạng chữ kèm nút In (in bằng máy in của hệ thống)
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Cửa sổ xem trước hóa đơn
+@SuppressWarnings("serial") // Lớp giao diện Swing
 class HopThoaiInHoaDon extends JDialog {
 
     private JTextArea noiDung;
@@ -37,7 +37,7 @@ class HopThoaiInHoaDon extends JDialog {
         setLocationRelativeTo(MainApp.cuaSo());
     }
 
-    // Hiện cửa sổ xem trước; chạy không có màn hình (kiểm thử) thì chỉ ghi nội dung vào TienIch.hopCuoi
+    // Hiện cửa sổ xem trước
     static void hien(String chu) {
         if (GraphicsEnvironment.isHeadless()) {
             TienIch.hopCuoi = chu;

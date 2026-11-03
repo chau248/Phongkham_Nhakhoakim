@@ -41,7 +41,7 @@ public class LuotKhamDAO {
         }
     }
 
-    // Cập nhật nội dung khám, trạng thái và giờ kết thúc của lượt khám
+    // Cập nhật nội dung khám, trạng thái
     public void capNhat(LuotKham lk) {
         String sql = "UPDATE dbo.LuotKham SET gioKetThuc = ?, lyDoKham = ?, chanDoan = ?, huongDieuTri = ?, donThuoc = ?,"
                 + " ngayTaiKham = ?, trangThai = ?, ghiChu = ?, maLieuTrinh = ? WHERE maLuotKham = ?";
@@ -62,7 +62,7 @@ public class LuotKhamDAO {
         }
     }
 
-    // Gắn mã hóa đơn vào lượt khám chưa có hóa đơn; trả về true nếu gắn được
+    // Gắn mã hóa đơn vào lượt
     public boolean ganHoaDon(String maLuotKham, String maHoaDon) {
         String sql = "UPDATE dbo.LuotKham SET maHoaDon = ? WHERE maLuotKham = ? AND maHoaDon IS NULL";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -74,35 +74,35 @@ public class LuotKhamDAO {
         }
     }
 
-    // Tìm lượt khám theo mã; không có thì trả về null
+    // Tìm lượt khám theo mã
     public LuotKham timTheoMa(String maLuotKham) {
         List<LuotKham> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maLuotKham = ?", maLuotKham);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Các lượt khám của một hồ sơ, mới nhất trước
+    // Các lượt khám của một hồ sơ
     public List<LuotKham> layTheoHoSo(String maHoSo) {
         return layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maHoSo = ? ORDER BY gioBatDau DESC", maHoSo);
     }
 
-    // Lượt khám đang khám gần nhất của một nha sĩ; không có thì trả về null
+    // Lượt khám đang khám gần nhất
     public LuotKham timDangKham(String maNhanVien) {
         List<LuotKham> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maNhanVienPhuTrach = ? AND trangThai = N'Đang khám' ORDER BY gioBatDau DESC", maNhanVien);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Lượt khám đang khám của một hồ sơ (bệnh nhân); không có thì trả về null
+    // Lượt khám đang khám của một hồ sơ
     public LuotKham timDangKhamTheoHoSo(String maHoSo) {
         List<LuotKham> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maHoSo = ? AND trangThai = N'Đang khám'", maHoSo);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Lượt khám đã hoàn thành nhưng chưa có hóa đơn (cho màn hình chờ thanh toán của Trường)
+    // Lượt khám đã hoàn thành
     public List<LuotKham> layChoThanhToan() {
         return layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE trangThai = N'Hoàn thành' AND maHoaDon IS NULL ORDER BY gioKetThuc", null);
     }
 
-    // Chạy câu SELECT (có hoặc không có một tham số chuỗi) và đọc tất cả dòng
+    // Chạy câu SELECT và đọc tất cả dòng
     private List<LuotKham> layDanhSach(String sql, String thamSo) {
         List<LuotKham> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -120,7 +120,7 @@ public class LuotKhamDAO {
         return ds;
     }
 
-    // Đổi một dòng kết quả thành đối tượng LuotKham
+    // Đổi một dòng kết quả thành
     private LuotKham doc(ResultSet rs) throws SQLException {
         LuotKham lk = new LuotKham();
         lk.setMaLuotKham(rs.getString("maLuotKham"));

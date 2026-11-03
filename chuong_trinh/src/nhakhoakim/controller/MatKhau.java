@@ -8,14 +8,13 @@ import java.util.regex.Pattern;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-// Băm và kiểm tra mật khẩu: lưu dạng "s1$<muối 16 ký tự hex>$<băm 64 ký tự hex>" (PBKDF2-HMAC-SHA256, 20.000 vòng).
-// Mật khẩu cũ lưu chữ thường (không có dạng trên) vẫn đăng nhập được và được băm lại ngay lần đăng nhập đầu.
+// Băm và kiểm tra mật khẩu
 public class MatKhau {
 
     private static final int SO_VONG = 20000;
     private static final Pattern DA_BAM = Pattern.compile("s1\\$[0-9a-f]{16}\\$[0-9a-f]{64}");
 
-    // Băm mật khẩu với một "muối" ngẫu nhiên mới
+    // Băm mật khẩu
     public static String bam(String matKhau) {
         byte[] muoi = new byte[8];
         new SecureRandom().nextBytes(muoi);
@@ -23,7 +22,7 @@ public class MatKhau {
         return "s1$" + muoiHex + "$" + bamVoiMuoi(matKhau, muoiHex);
     }
 
-    // Mật khẩu người dùng gõ có khớp với chuỗi đã lưu không (chuỗi lưu có thể là dạng băm hoặc mật khẩu chữ thường cũ)
+    // Mật khẩu người dùng gõ có khớp
     public static boolean khop(String matKhauGo, String daLuu) {
         if (matKhauGo == null || daLuu == null) {
             return false;
@@ -35,12 +34,12 @@ public class MatKhau {
         return so(bamVoiMuoi(matKhauGo, phan[1]), phan[2]);
     }
 
-    // Chuỗi đã lưu có phải dạng băm không (không phải thì cần băm lại)
+    // Chuỗi đã lưu có phải dạng băm không
     public static boolean daBam(String daLuu) {
         return daLuu != null && DA_BAM.matcher(daLuu).matches();
     }
 
-    // So sánh hai chuỗi trong thời gian không phụ thuộc vào vị trí khác nhau đầu tiên
+    // So sánh hai chuỗi
     private static boolean so(String a, String b) {
         if (a.length() != b.length()) {
             return false;

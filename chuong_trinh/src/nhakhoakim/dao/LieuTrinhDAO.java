@@ -10,10 +10,10 @@ import java.util.List;
 import nhakhoakim.entity.HangSo;
 import nhakhoakim.entity.LieuTrinh;
 
-// Truy cập bảng LieuTrinh (hiện chỉ cần đọc để hiện trong hồ sơ bệnh án)
+// Truy cập bảng LieuTrinh
 public class LieuTrinhDAO {
 
-    // Các liệu trình của một bệnh nhân: đang thực hiện xếp trước (BN-10), trong cùng nhóm thì mới bắt đầu trước
+    // Các liệu trình của một bệnh nhân
     public List<LieuTrinh> layTheoBenhNhan(String maBN) {
         List<LieuTrinh> ds = new ArrayList<>();
         String sql = "SELECT maLieuTrinh, maBN, loaiDichVu, soBuoiDuKien, giaiDoanHienTai, ngayBatDau, ngayDuKienKetThuc,"

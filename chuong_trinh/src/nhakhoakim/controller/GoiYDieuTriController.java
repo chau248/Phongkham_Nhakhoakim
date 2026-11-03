@@ -23,19 +23,14 @@ import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.RangDieuTri;
 import nhakhoakim.entity.GoiYDieuTri.UocTinhChiPhi;
 
-// Gợi ý điều trị từ sơ đồ răng và lịch sử khám, kèm ước tính chi phí của lượt khám đang khám.
-// Quy tắc gợi ý (chỉ là gợi ý, nha sĩ quyết định):
-//  - Răng sâu: gợi ý trám; nếu răng đã bị ghi nhận sâu ở từ 2 lượt khám trở lên thì gợi ý điều trị tủy (áp dụng cả răng sữa).
-//  - Răng đã nhổ ở lượt khám trước mà chưa phục hình: gợi ý Implant hoặc cầu răng (trừ khi đang có liệu trình Implant).
-//    Không gợi ý Implant / cầu răng cho răng sữa, răng khôn (số 8) hoặc bệnh nhân dưới 18 tuổi.
-//  - Chưa lấy cao răng trong 6 tháng gần đây: gợi ý lấy cao răng định kỳ.
+// Gợi ý điều trị từ sơ đồ răng
 public class GoiYDieuTriController {
 
     private static final int PHAN_TRAM_VAT = 8;
     private static final int SO_THANG_VE_SINH = 6;
-    private static final int TUOI_DU_CAY_GHEP = 18;       // dưới tuổi này không gợi ý Implant / cầu răng
-    private static final int TOI_DA_SO_LUONG = 10;        // số lượng tối đa của một dịch vụ trong lượt khám (giống LuotKhamController)
-    private static final String TU_KHOA_CAU_RANG = "cầu"; // tên dịch vụ chứa từ này là dịch vụ cầu răng
+    private static final int TUOI_DU_CAY_GHEP = 18; // Dưới tuổi này không gợi ý
+    private static final int TOI_DA_SO_LUONG = 10; // Số lượng tối đa của một dịch vụ
+    private static final String TU_KHOA_CAU_RANG = "cầu"; // Tên dịch vụ chứa từ này
 
     // Mức độ gợi ý
     private static final String MUC_GAP = "Nên làm gấp";
@@ -48,15 +43,15 @@ public class GoiYDieuTriController {
     private RangDieuTriController rangService;
     private DichVuController dichVuService;
     private BenhNhanDAO benhNhanDAO;
-    private Supplier<NhanVien> nguoiDung; // trả về người đang đăng nhập
+    private Supplier<NhanVien> nguoiDung; // Trả về người đang đăng nhập
 
-    // Dùng trong chương trình: các phụ thuộc mặc định, người dùng lấy từ phiên làm việc
+    // Dùng trong chương trình
     public GoiYDieuTriController() {
         this(new LuotKhamController(), new HoSoBenhAnController(), new RangDieuTriController(), new DichVuController(), new BenhNhanDAO(),
                 PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng khi kiểm thử: truyền vào các phụ thuộc và người đang đăng nhập
+    // Dùng khi kiểm thử
     public GoiYDieuTriController(LuotKhamController luotKhamService, HoSoBenhAnController hoSoService, RangDieuTriController rangService,
             DichVuController dichVuService, BenhNhanDAO benhNhanDAO, Supplier<NhanVien> nguoiDung) {
         this.luotKhamService = luotKhamService;
@@ -67,7 +62,7 @@ public class GoiYDieuTriController {
         this.nguoiDung = nguoiDung;
     }
 
-    // Danh sách gợi ý cho một lượt khám, việc gấp xếp trước
+    // Danh sách gợi ý cho một lượt khám
     public List<GoiYDieuTri> goiY(String maLuotKham) {
         LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
         HoSoBenhAn hs = hoSoService.timTheoMa(lk.getMaHoSo());
@@ -105,7 +100,7 @@ public class GoiYDieuTriController {
         return kq;
     }
 
-    // Chi phí tạm tính của lượt khám: các dịch vụ đã ghi (gắn răng và không gắn răng) cộng VAT
+    // Chi phí tạm tính của lượt khám
     public UocTinhChiPhi uocTinhChiPhi(String maLuotKham) {
         UocTinhChiPhi u = new UocTinhChiPhi();
         Map<String, DichVu> bang = napBangDichVu();
@@ -119,7 +114,7 @@ public class GoiYDieuTriController {
         return u;
     }
 
-    // Tiền (đã gồm VAT) nếu thêm các gợi ý được chọn vào lượt khám
+    // Tiền nếu thêm các gợi ý
     public long tinhTienThem(List<GoiYDieuTri> cacGoiY) {
         long tong = 0;
         for (GoiYDieuTri g : cacGoiY) {
@@ -128,16 +123,14 @@ public class GoiYDieuTriController {
         return tong + Math.round(tong * PHAN_TRAM_VAT / 100.0);
     }
 
-    // Thêm dịch vụ của một gợi ý vào lượt khám đang khám
+    // Thêm dịch vụ của một gợi
     public void themVaoLuotKham(String maLuotKham, GoiYDieuTri goiY) {
         List<GoiYDieuTri> mot = new ArrayList<>();
         mot.add(goiY);
         themNhieuVaoLuotKham(maLuotKham, mot);
     }
 
-    // Thêm dịch vụ của nhiều gợi ý vào lượt khám đang khám. Kiểm tra toàn bộ trước (lượt khám đang khám và đúng nha sĩ phụ trách,
-    // dịch vụ còn hoạt động, chưa có trong lượt khám) rồi mới thêm, nên lỗi không làm thêm dở. Hai gợi ý cùng một dịch vụ
-    // (ví dụ Implant cho hai răng) được cộng thành số lượng 2.
+    // Thêm dịch vụ của nhiều gợi
     public void themNhieuVaoLuotKham(String maLuotKham, List<GoiYDieuTri> ds) {
         if (ds == null || ds.isEmpty()) {
             throw new NghiepVuException("Chưa chọn gợi ý nào để thêm");
@@ -154,7 +147,7 @@ public class GoiYDieuTriController {
         for (LuotKhamDichVu x : luotKhamService.layDichVuDaThucHien(maLuotKham)) {
             daCo.add(x.getMaDichVu());
         }
-        Map<String, Integer> soLuong = new LinkedHashMap<>(); // mã dịch vụ -> số lượng sẽ thêm
+        Map<String, Integer> soLuong = new LinkedHashMap<>(); // Mã dịch vụ -> số lượng sẽ thêm
         for (GoiYDieuTri g : ds) {
             String ma = g.getDichVu().getMaDichVu();
             DichVu dv = dichVuService.timTheoMa(ma);
@@ -175,17 +168,17 @@ public class GoiYDieuTriController {
         }
     }
 
-    // Phần trăm VAT đang dùng để hiện trên màn hình
+    // Phần trăm VAT đang dùng
     public int getPhanTramThue() {
         return PHAN_TRAM_VAT;
     }
 
-    // Có được gợi ý Implant / cầu răng cho răng này không: răng sữa, răng khôn và bệnh nhân dưới 18 tuổi thì không
+    // Có được gợi ý Implant / cầu răng
     private boolean duocGoiYCayGhep(int soFDI, boolean duoi18Tuoi) {
         return !RangDieuTri.laRangSua(soFDI) && !RangDieuTri.laRangKhon(soFDI) && !duoi18Tuoi;
     }
 
-    // Bệnh nhân dưới 18 tuổi không; chưa biết ngày sinh thì coi như không dưới 18
+    // Bệnh nhân dưới 18 tuổi không
     private boolean laDuoi18Tuoi(String maBN) {
         BenhNhan bn = benhNhanDAO.timTheoMa(maBN);
         if (bn == null || bn.getNgaySinh() == null) {
@@ -194,12 +187,12 @@ public class GoiYDieuTriController {
         return bn.tinhTuoi() < TUOI_DU_CAY_GHEP;
     }
 
-    // Thêm một gợi ý theo loại dịch vụ (lấy dịch vụ đầu tiên của loại đó); bỏ qua nếu không có dịch vụ hoặc lượt khám đã có
+    // Thêm một gợi ý theo loại dịch vụ
     private void them(List<GoiYDieuTri> kq, int soRang, String mucDo, String lyDo, String loai, Set<String> daCo, List<LieuTrinh> dangLam) {
         them(kq, soRang, mucDo, lyDo, loai, daCo, dangLam, false);
     }
 
-    // Như trên; chiCauRang = true thì chỉ chọn dịch vụ cầu răng, không chọn Implant
+    // Như trên
     private void them(List<GoiYDieuTri> kq, int soRang, String mucDo, String lyDo, String loai, Set<String> daCo, List<LieuTrinh> dangLam,
             boolean chiCauRang) {
         for (DichVu dv : dichVuService.timTheoLoai(loai)) {
@@ -216,7 +209,7 @@ public class GoiYDieuTriController {
         }
     }
 
-    // Số lượt khám khác nhau mà răng này được ghi nhận là Sâu
+    // Số lượt khám khác nhau
     private int demLuotKhamSau(List<RangDieuTri> lichSu, int soFDI) {
         Set<String> luot = new HashSet<>();
         for (RangDieuTri x : lichSu) {
@@ -227,7 +220,7 @@ public class GoiYDieuTriController {
         return luot.size();
     }
 
-    // Bệnh nhân có liệu trình đang thực hiện thuộc loại dịch vụ này không
+    // Bệnh nhân có liệu trình
     private boolean coLieuTrinh(List<LieuTrinh> dangLam, String loai) {
         for (LieuTrinh lt : dangLam) {
             if (loai.equals(lt.getLoaiDichVu())) {
@@ -237,7 +230,7 @@ public class GoiYDieuTriController {
         return false;
     }
 
-    // Đã lấy cao răng (dịch vụ loại Vệ sinh) trong 6 tháng gần đây chưa
+    // Đã lấy cao răng
     private boolean daVeSinhGanDay(String maHoSo) {
         LocalDate moc = LocalDate.now().minusMonths(SO_THANG_VE_SINH);
         Map<String, DichVu> bang = napBangDichVu();
@@ -255,7 +248,7 @@ public class GoiYDieuTriController {
         return false;
     }
 
-    // Nạp một lần danh mục dịch vụ vào bảng tra theo mã (tránh gọi tìm từng dịch vụ trong vòng lặp)
+    // Nạp một lần danh mục dịch vụ vào bảng tra
     private Map<String, DichVu> napBangDichVu() {
         Map<String, DichVu> bang = new HashMap<>();
         for (DichVu dv : dichVuService.layTatCa()) {
@@ -264,7 +257,7 @@ public class GoiYDieuTriController {
         return bang;
     }
 
-    // Tra dịch vụ trong bảng đã nạp; không có (ví dụ dịch vụ đã ngừng) thì tìm theo mã và nhớ lại; vẫn không có thì null
+    // Tra dịch vụ trong bảng đã nạp
     private DichVu timDichVu(Map<String, DichVu> bang, String ma) {
         if (!bang.containsKey(ma)) {
             bang.put(ma, dichVuService.timTheoMa(ma));
@@ -272,7 +265,7 @@ public class GoiYDieuTriController {
         return bang.get(ma);
     }
 
-    // Thứ tự ưu tiên của mức độ: nhỏ hơn thì hiện trước
+    // Thứ tự ưu tiên của mức độ
     private int thuTu(String mucDo) {
         if (MUC_GAP.equals(mucDo)) {
             return 0;

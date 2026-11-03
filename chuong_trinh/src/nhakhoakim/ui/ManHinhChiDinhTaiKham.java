@@ -19,8 +19,8 @@ import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.HoSoBenhAn;
 import nhakhoakim.entity.LuotKham;
 
-// Màn hình chỉ định tái khám: nha sĩ chọn ngày và dịch vụ, hệ thống tạo lịch hẹn Chờ xác nhận cho lễ tân xác nhận
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình chỉ định tái khám
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhChiDinhTaiKham extends JPanel {
 
     private LuotKhamController luotKhamService = new LuotKhamController();
@@ -29,10 +29,10 @@ public class ManHinhChiDinhTaiKham extends JPanel {
     private BenhNhanController benhNhanService = new BenhNhanController();
     private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
-    private LuotKham luotKham;                                      // lượt khám đang khám
-    private JTextField txtNgay = TienIch.oNhap(14);                 // ngày tái khám dd/MM/yyyy
-    private JComboBox<DichVu> cmbDichVu;                            // dịch vụ của buổi tái khám
-    private JButton btnHuy = TienIch.nutPhu("Hủy lịch tái khám đã tạo"); // chỉ hiện khi lượt khám đã đặt tái khám
+    private LuotKham luotKham; // Lượt khám đang khám
+    private JTextField txtNgay = TienIch.oNhap(14); // Ngày tái khám dd/MM/yyyy
+    private JComboBox<DichVu> cmbDichVu; // Dịch vụ của buổi tái khám
+    private JButton btnHuy = TienIch.nutPhu("Hủy lịch tái khám đã tạo"); // Chỉ hiện khi lượt khám đã
 
     public ManHinhChiDinhTaiKham() {
         List<Component> cacKhoi = new ArrayList<>();
@@ -68,19 +68,19 @@ public class ManHinhChiDinhTaiKham extends JPanel {
         JPanel the = TienIch.the(TienIch.doanChu("Lượt khám " + luotKham.getMaLuotKham() + " (khám ngày "
                 + TienIch.ngay(luotKham.getGioBatDau().toLocalDate()) + "). Ngày tái khám phải sau ngày khám và sau hôm nay.", java.awt.Color.BLACK),
                 form, TienIch.dong(btnTao, btnHuy));
-        JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // thẻ chỉ rộng vừa phải
+        JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // Thẻ chỉ rộng vừa phải
         gioiHan.setOpaque(false);
         gioiHan.add(the, java.awt.BorderLayout.WEST);
         the.setPreferredSize(new java.awt.Dimension(560, the.getPreferredSize().height));
         cacKhoi.add(gioiHan);
     }
 
-    // Nút hủy chỉ hiện khi lượt khám đã có lịch tái khám
+    // Nút hủy
     private void capNhatNutHuy() {
         btnHuy.setVisible(luotKham.getNgayTaiKham() != null);
     }
 
-    // Hủy lịch tái khám đã tạo (đặt nhầm ngày hoặc nhầm dịch vụ) để đặt lại
+    // Hủy lịch tái khám đã tạo để đặt lại
     private void huyLich() {
         if (!TienIch.xacNhan("Hủy lịch tái khám ngày " + TienIch.ngay(luotKham.getNgayTaiKham()) + "?")) {
             return;
@@ -95,7 +95,7 @@ public class ManHinhChiDinhTaiKham extends JPanel {
         }
     }
 
-    // Tạo lịch tái khám (trạng thái Chờ xác nhận)
+    // Tạo lịch tái khám
     private void taoLich() {
         DichVu dichVu = (DichVu) cmbDichVu.getSelectedItem();
         if (dichVu == null) {

@@ -16,18 +16,18 @@ import nhakhoakim.MainApp;
 import nhakhoakim.controller.DichVuController;
 import nhakhoakim.entity.DichVu;
 
-// Hộp thoại chọn một dịch vụ điều trị (chỉ xem giá và thời gian, không sửa); lọc được theo loại dịch vụ
+// Hộp thoại chọn một dịch vụ điều trị
 public class HopThoaiChonDichVu {
 
     private static final String TAT_CA = "Tất cả loại";
 
-    // Chạy kiểm thử không có màn hình thì không hiện được hộp thoại: hàm chon() trả về giá trị này
+    // Chạy kiểm thử không có màn hình
     public static DichVu traLoiTuDong = null;
 
-    private static DichVu daChon;                   // dịch vụ người dùng chọn
-    private static List<DichVu> dangHien;           // danh sách dịch vụ đang hiện trong bảng
+    private static DichVu daChon; // Dịch vụ người dùng chọn
+    private static List<DichVu> dangHien; // Danh sách dịch vụ
 
-    // Mở hộp thoại; trả về dịch vụ được chọn hoặc null nếu bấm Hủy
+    // Mở hộp thoại
     public static DichVu chon() {
         if (GraphicsEnvironment.isHeadless()) {
             return traLoiTuDong;
@@ -55,7 +55,7 @@ public class HopThoaiChonDichVu {
         daChon = null;
         JDialog hop = new JDialog(MainApp.cuaSo(), "Chọn dịch vụ điều trị", true);
         JButton btnOk = TienIch.nutChinh("OK");
-        btnOk.setEnabled(false); // chưa chọn dòng nào thì chưa bấm OK được
+        btnOk.setEnabled(false); // Chưa chọn dòng nào
         tbl.getSelectionModel().addListSelectionListener(e -> btnOk.setEnabled(tbl.getSelectedRow() >= 0));
         btnOk.addActionListener(e -> {
             int vt = tbl.getSelectedRow();
@@ -79,7 +79,7 @@ public class HopThoaiChonDichVu {
         hop.getContentPane().add(duoi, BorderLayout.SOUTH);
         hop.pack();
         hop.setLocationRelativeTo(MainApp.cuaSo());
-        hop.setVisible(true); // dừng ở đây cho tới khi hộp thoại đóng
+        hop.setVisible(true); // Dừng ở đây cho tới
         return daChon;
     }
 

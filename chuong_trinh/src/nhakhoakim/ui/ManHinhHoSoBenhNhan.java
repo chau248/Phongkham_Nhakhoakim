@@ -10,26 +10,26 @@ import nhakhoakim.MainApp;
 import nhakhoakim.controller.BenhNhanController;
 import nhakhoakim.entity.BenhNhan;
 
-// Màn hình thêm mới hoặc cập nhật thông tin hành chính của bệnh nhân (thêm mới thì hệ thống tạo luôn hồ sơ bệnh án rỗng)
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình thêm mới hoặc cập
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhHoSoBenhNhan extends JPanel {
 
     private BenhNhanController benhNhanService = new BenhNhanController();
 
-    private BenhNhan benhNhan;                                   // null nghĩa là đang thêm mới
-    private JLabel lblMa = new JLabel("(tự sinh khi lưu)");      // mã bệnh nhân
+    private BenhNhan benhNhan; // Null nghĩa là đang thêm mới
+    private JLabel lblMa = new JLabel("(tự sinh khi lưu)"); // Mã bệnh nhân
     private JTextField txtHoTen = TienIch.oNhap(32);
-    private JTextField txtNgaySinh = TienIch.oNhap(32);          // dd/MM/yyyy
+    private JTextField txtNgaySinh = TienIch.oNhap(32); // Dd/MM/yyyy
     private JComboBox<String> cmbGioiTinh = new JComboBox<>(new String[] {"", "Nam", "Nữ", "Khác"});
     private JTextField txtSdt = TienIch.oNhap(32);
     private JTextField txtCCCD = TienIch.oNhap(32);
     private JTextField txtEmail = TienIch.oNhap(32);
     private JTextField txtDiaChi = TienIch.oNhap(32);
-    private JTextField txtNguoiLienHe = TienIch.oNhap(32);       // người liên hệ khẩn cấp
+    private JTextField txtNguoiLienHe = TienIch.oNhap(32); // Người liên hệ khẩn cấp
     private JTextField txtSdtNguoiLienHe = TienIch.oNhap(32);
     private JTextField txtGhiChu = TienIch.oNhap(32);
 
-    // Truyền bệnh nhân để sửa, hoặc null để thêm mới
+    // Truyền bệnh nhân để sửa, hoặc null
     public ManHinhHoSoBenhNhan(BenhNhan benhNhan) {
         this.benhNhan = benhNhan;
 
@@ -50,7 +50,7 @@ public class ManHinhHoSoBenhNhan extends JPanel {
         JPanel the = TienIch.the(TienIch.taoForm(ten, o),
                 TienIch.doanChu("Bệnh nhân dưới 18 tuổi bắt buộc nhập người liên hệ khẩn cấp (tên và số điện thoại).", TienIch.MAU_XAM),
                 TienIch.dong(btnLuu));
-        JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // thẻ chỉ rộng vừa phải, không kéo hết chiều ngang cửa sổ
+        JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // Thẻ chỉ rộng vừa phải
         gioiHan.setOpaque(false);
         gioiHan.add(the, java.awt.BorderLayout.WEST);
         the.setPreferredSize(new java.awt.Dimension(640, the.getPreferredSize().height));
@@ -61,7 +61,7 @@ public class ManHinhHoSoBenhNhan extends JPanel {
         }
     }
 
-    // Đổ thông tin bệnh nhân đang sửa vào các ô
+    // Đổ thông tin bệnh nhân
     private void napDuLieu() {
         lblMa.setText(benhNhan.getMaBN());
         txtHoTen.setText(TienIch.chu(benhNhan.getHoTen()));
@@ -76,8 +76,7 @@ public class ManHinhHoSoBenhNhan extends JPanel {
         txtGhiChu.setText(TienIch.chu(benhNhan.getGhiChu()));
     }
 
-    // Lấy dữ liệu từ các ô rồi thêm mới hoặc cập nhật. Dữ liệu gán vào đối tượng mới, chỉ khi Service nhận thì mới
-    // cập nhật đối tượng đang hiển thị (nhập sai bị từ chối thì danh sách bệnh nhân không bị đổi theo)
+    // Lấy dữ liệu từ các ô
     private void luu() {
         try {
             BenhNhan bn = new BenhNhan();
@@ -99,11 +98,11 @@ public class ManHinhHoSoBenhNhan extends JPanel {
             if (benhNhan == null) {
                 BenhNhan moi = benhNhanService.them(bn);
                 TienIch.thongTin("Đã thêm bệnh nhân " + moi.getMaBN() + " và tạo hồ sơ bệnh án rỗng.");
-                MainApp.thayNoiDung(new ManHinhHoSoBenhAn(moi)); // thêm xong thì không cần quay lại form thêm
+                MainApp.thayNoiDung(new ManHinhHoSoBenhAn(moi)); // Thêm xong thì không cần quay
             } else {
                 benhNhanService.capNhat(bn);
                 chepThongTin(bn, benhNhan);
-                napDuLieu(); // hiện lại giá trị đã được Service chuẩn hóa
+                napDuLieu(); // Hiện lại giá trị đã
                 TienIch.thongTin("Đã cập nhật thông tin bệnh nhân " + bn.getMaBN() + ".");
             }
         } catch (RuntimeException e) {
@@ -111,7 +110,7 @@ public class ManHinhHoSoBenhNhan extends JPanel {
         }
     }
 
-    // Chép các thông tin hành chính từ bệnh nhân đã lưu thành công sang đối tượng đang hiển thị
+    // Chép các thông tin hành chính
     private void chepThongTin(BenhNhan nguon, BenhNhan dich) {
         dich.setHoTen(nguon.getHoTen());
         dich.setNgaySinh(nguon.getNgaySinh());

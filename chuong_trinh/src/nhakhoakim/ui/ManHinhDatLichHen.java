@@ -20,18 +20,18 @@ import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.LichHen;
 import nhakhoakim.entity.NhanVien;
 
-// Màn hình đặt lịch hẹn (LH-02 đến LH-04): chọn bệnh nhân, dịch vụ, ngày, nha sĩ có ca trực và một giờ còn trống
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình đặt lịch hẹn
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhDatLichHen extends JPanel {
 
     private LichHenController lichHenController = new LichHenController();
     private DichVuController dichVuController = new DichVuController();
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();
-    private JComboBox<DichVu> cmbDichVu;                                  // dịch vụ đặt
-    private JTextField txtNgay = TienIch.oNhap(10);                       // ngày hẹn (dd/MM/yyyy)
-    private JComboBox<NhanVien> cmbNhaSi = new JComboBox<>();             // nha sĩ có ca trực trong ngày
-    private JComboBox<String> cmbGio = new JComboBox<>();                 // giờ còn trống
+    private JComboBox<DichVu> cmbDichVu; // Dịch vụ đặt
+    private JTextField txtNgay = TienIch.oNhap(10); // Ngày hẹn
+    private JComboBox<NhanVien> cmbNhaSi = new JComboBox<>(); // Nha sĩ có ca trực trong ngày
+    private JComboBox<String> cmbGio = new JComboBox<>(); // Giờ còn trống
     private JComboBox<String> cmbHinhThuc = new JComboBox<>(LichHenController.HINH_THUC.toArray(new String[0]));
     private JLabel lblThongTin = new JLabel(" ");
 
@@ -67,7 +67,7 @@ public class ManHinhDatLichHen extends JPanel {
                 TienIch.the(form, lblThongTin, TienIch.dong(btnDat)));
     }
 
-    // Đổ danh sách nha sĩ có ca trực Có mặt trong ngày đang chọn
+    // Đổ danh sách nha sĩ có ca trực Có mặt
     private void napNhaSi() {
         try {
             LocalDate ngay = TienIch.docNgay(txtNgay.getText());
@@ -85,7 +85,7 @@ public class ManHinhDatLichHen extends JPanel {
         }
     }
 
-    // Đổ các giờ còn trống của nha sĩ và dịch vụ đang chọn
+    // Đổ các giờ còn trống của nha sĩ
     private void napGio() {
         NhanVien nv = (NhanVien) cmbNhaSi.getSelectedItem();
         DichVu dv = (DichVu) cmbDichVu.getSelectedItem();
@@ -109,7 +109,7 @@ public class ManHinhDatLichHen extends JPanel {
         }
     }
 
-    // Đặt lịch với các lựa chọn hiện tại
+    // Đặt lịch với các lựa chọn
     private void dat() {
         BenhNhan bn = chonBenhNhan.getBenhNhan();
         DichVu dv = (DichVu) cmbDichVu.getSelectedItem();

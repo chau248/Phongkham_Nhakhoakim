@@ -3,14 +3,14 @@ package nhakhoakim.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-// Một gợi ý điều trị do hệ thống đưa ra từ tình trạng răng và lịch sử khám của bệnh nhân
+// Một gợi ý điều trị
 public class GoiYDieuTri {
 
-    private int soRang;         // số răng liên quan (0 nếu gợi ý chung, không gắn răng)
-    private String mucDo;       // Nên làm gấp, Nên làm, Cân nhắc hoặc Định kỳ
-    private String lyDo;        // vì sao hệ thống gợi ý
-    private DichVu dichVu;      // dịch vụ được gợi ý
-    private String luuY;        // lưu ý thêm (ví dụ dịch vụ cần theo liệu trình); có thể rỗng
+    private int soRang; // Số răng liên quan
+    private String mucDo; // Nên làm gấp, Nên làm
+    private String lyDo; // Vì sao hệ thống gợi ý
+    private DichVu dichVu; // Dịch vụ được gợi ý
+    private String luuY; // Lưu ý thêm
 
     public GoiYDieuTri(int soRang, String mucDo, String lyDo, DichVu dichVu, String luuY) {
         this.soRang = soRang;
@@ -40,14 +40,14 @@ public class GoiYDieuTri {
         return luuY;
     }
 
-    // Chi phí tạm tính của một lượt khám: các dòng dịch vụ, tiền trước thuế, thuế và tổng
+    // Chi phí tạm tính của một lượt khám
     public static class UocTinhChiPhi {
 
         // Một dòng dịch vụ trong bảng chi phí
         public static class Dong {
-            private String tenDichVu; // tên dịch vụ
-            private int soLuong;      // số lượng (răng hoặc lần)
-            private long donGia;      // đơn giá (đồng)
+            private String tenDichVu; // Tên dịch vụ
+            private int soLuong; // Số lượng
+            private long donGia; // Đơn giá
 
             public Dong(String tenDichVu, int soLuong, long donGia) {
                 this.tenDichVu = tenDichVu;
@@ -67,17 +67,17 @@ public class GoiYDieuTri {
                 return donGia;
             }
 
-            // Thành tiền của dòng = số lượng nhân đơn giá
+            // Thành tiền của dòng là số
             public long getThanhTien() {
                 return soLuong * donGia;
             }
         }
 
-        private List<Dong> cacDong = new ArrayList<>(); // các dòng dịch vụ
-        private long tamTinh;      // tổng tiền các dịch vụ, chưa thuế
-        private int phanTramThue;  // phần trăm VAT
-        private long tienThue;     // tiền thuế
-        private long tong;         // tổng cộng = tạm tính + thuế
+        private List<Dong> cacDong = new ArrayList<>(); // Các dòng dịch vụ
+        private long tamTinh; // Tổng tiền các dịch vụ
+        private int phanTramThue; // Phần trăm VAT
+        private long tienThue; // Tiền thuế
+        private long tong; // Tổng cộng là tạm tính + thuế
 
         public List<Dong> getCacDong() {
             return cacDong;
@@ -99,7 +99,7 @@ public class GoiYDieuTri {
             return tong;
         }
 
-        // Tính lại tạm tính, thuế và tổng từ các dòng hiện có
+        // Tính lại tạm tính, thuế
         public void tinhTong(int phanTramThue) {
             long tong = 0;
             for (Dong d : cacDong) {

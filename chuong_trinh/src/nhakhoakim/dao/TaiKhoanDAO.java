@@ -10,7 +10,7 @@ import java.util.List;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.TaiKhoan;
 
-// Truy cập bảng TaiKhoan (chỉ lớp DAO được viết SQL). Mỗi tài khoản đọc kèm nhân viên sở hữu.
+// Truy cập bảng TaiKhoan
 public class TaiKhoanDAO {
 
     static final String CAC_COT = "t.maTaiKhoan, t.maNV, n.hoTen, n.vaiTro AS vaiTroNV, n.trangThai AS trangThaiNV, t.tenDangNhap, t.matKhau,"
@@ -40,22 +40,22 @@ public class TaiKhoanDAO {
         return layDanhSach(SQL_TAT_CA, null);
     }
 
-    // Tìm tài khoản theo mã; không có thì trả về null
+    // Tìm tài khoản theo mã
     public TaiKhoan timTheoMa(String maTaiKhoan) {
         return mot(layDanhSach(SQL_THEO_MA, maTaiKhoan));
     }
 
-    // Tìm tài khoản theo tên đăng nhập (không phân biệt hoa thường theo collation CSDL); không có thì trả về null
+    // Tìm tài khoản theo tên đăng nhập
     public TaiKhoan timTheoTenDangNhap(String ten) {
         return mot(layDanhSach(SQL_THEO_TEN, ten));
     }
 
-    // Tài khoản của một nhân viên (mỗi nhân viên đúng một tài khoản); chưa có thì trả về null
+    // Tài khoản của một nhân viên
     public TaiKhoan timTheoNhanVien(String maNV) {
         return mot(layDanhSach(SQL_THEO_NHAN_VIEN, maNV));
     }
 
-    // Thêm tài khoản mới (mật khẩu đã băm)
+    // Thêm tài khoản mới
     public void them(TaiKhoan tk) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
             ps.setString(1, tk.getMaTaiKhoan());
@@ -70,42 +70,42 @@ public class TaiKhoanDAO {
         }
     }
 
-    // Đặt mật khẩu mới (đã băm); yeuCauDoi = true thì lần đăng nhập sau phải đổi mật khẩu
+    // Đặt mật khẩu mới
     public void doiMatKhau(String maTaiKhoan, String matKhauDaBam, boolean yeuCauDoi) {
         chay(SQL_DOI_MAT_KHAU, matKhauDaBam, yeuCauDoi, maTaiKhoan);
     }
 
-    // Thay mật khẩu chữ thường cũ bằng bản băm của cùng mật khẩu (không tính là đổi mật khẩu)
+    // Thay mật khẩu chữ thường cũ
     public void nangCapBam(String maTaiKhoan, String matKhauDaBam) {
         chay(SQL_NANG_CAP_BAM, matKhauDaBam, maTaiKhoan);
     }
 
-    // Ghi nhận đăng nhập sai: đặt lại bộ đếm, khóa tài khoản nếu khoa = true
+    // Ghi nhận đăng nhập sai
     public void ghiNhanDangNhapSai(String maTaiKhoan, int soLanSai, boolean khoa) {
         chay(SQL_DANG_NHAP_SAI, soLanSai, khoa, maTaiKhoan);
     }
 
-    // Ghi nhận đăng nhập đúng: xóa bộ đếm sai, ghi giờ đăng nhập cuối
+    // Ghi nhận đăng nhập đúng
     public void ghiNhanDangNhapDung(String maTaiKhoan) {
         chay(SQL_DANG_NHAP_DUNG, maTaiKhoan);
     }
 
-    // Khóa hoặc mở khóa tài khoản (cả hai đều xóa bộ đếm sai)
+    // Khóa hoặc mở khóa tài khoản
     public void datKhoa(String maTaiKhoan, boolean khoa) {
         chay(SQL_DAT_KHOA, khoa, maTaiKhoan);
     }
 
-    // Đổi vai trò tài khoản theo vai trò mới của nhân viên (vai trò tài khoản luôn bằng vai trò nhân viên, TK-04)
+    // Đổi vai trò tài khoản
     public void doiVaiTroTheoNhanVien(String maNV, String vaiTro) {
         chay(SQL_DOI_VAI_TRO_THEO_NV, vaiTro, maNV);
     }
 
-    // Khóa tài khoản của nhân viên đã nghỉ việc (NV-03)
+    // Khóa tài khoản của nhân viên
     public void khoaTheoNhanVien(String maNV) {
         chay(SQL_KHOA_THEO_NV, maNV);
     }
 
-    // Số tài khoản Quản lý đang hoạt động (không bị khóa, nhân viên còn làm việc)
+    // Số tài khoản Quản lý đang hoạt động
     public int demQuanLyHoatDong() {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_DEM_QUAN_LY);
                 ResultSet rs = ps.executeQuery()) {
@@ -115,7 +115,7 @@ public class TaiKhoanDAO {
         }
     }
 
-    // Chạy một câu UPDATE với các tham số bất kỳ
+    // Chạy một câu UPDATE
     private void chay(String sql, Object... thamSo) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             for (int i = 0; i < thamSo.length; i++) {
@@ -131,7 +131,7 @@ public class TaiKhoanDAO {
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Chạy câu SELECT (có hoặc không có một tham số chuỗi) và đọc tất cả dòng
+    // Chạy câu SELECT và đọc tất cả dòng
     private List<TaiKhoan> layDanhSach(String sql, String thamSo) {
         List<TaiKhoan> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

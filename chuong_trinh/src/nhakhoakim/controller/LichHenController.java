@@ -24,13 +24,13 @@ import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.TrangThai;
 import nhakhoakim.entity.VaiTro;
 
-// Nghiệp vụ lịch hẹn (LH-01 đến LH-08, CH-05): xem, đặt, dời, hủy, xác nhận, xem lịch làm việc, và các hàm Hậu gọi khi khám
+// Nghiệp vụ lịch hẹn
 public class LichHenController {
 
     public static final String CHO_XAC_NHAN = "Chờ xác nhận";
     public static final String DA_XAC_NHAN = "Đã xác nhận";
     public static final String KHONG_DEN = "Không đến";
-    public static final int BUOC_PHUT = 30;          // giờ hẹn tròn 30 phút
+    public static final int BUOC_PHUT = 30; // Giờ hẹn tròn 30 phút
     public static final String HINH_THUC_MAC_DINH = "Trực tiếp";
     public static final List<String> HINH_THUC = List.of("Trực tiếp", "Điện thoại", "Online");
 
@@ -43,13 +43,13 @@ public class LichHenController {
     private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
-    // Dùng DAO và controller thật, người đăng nhập thật của chương trình
+    // Dùng DAO và controller thật
     public LichHenController() {
         this(new LichHenDAO(), new CaTrucDAO(), new BenhNhanDAO(), new NhanVienController(), new CaTrucController(),
                 new DichVuController(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng các đối tượng truyền vào (để kiểm thử)
+    // Dùng các đối tượng truyền vào
     public LichHenController(LichHenDAO lichHenDAO, CaTrucDAO caTrucDAO, BenhNhanDAO benhNhanDAO, NhanVienController nhanVienController,
             CaTrucController caTrucController, DichVuController dichVuController, Supplier<NhanVien> nguoiDung) {
         this.lichHenDAO = lichHenDAO;
@@ -61,29 +61,29 @@ public class LichHenController {
         this.nguoiDung = nguoiDung;
     }
 
-    // ===================== Hàm dùng chung và các hàm Hậu gọi khi khám =====================
+    // Hàm dùng chung và các hàm Hậu gọi
 
-    // Tìm lịch hẹn theo mã; không có thì trả về null
+    // Tìm lịch hẹn theo mã
     public LichHen layTheoMa(String maLichHen) {
         return maLichHen == null ? null : lichHenDAO.timTheoMa(maLichHen);
     }
 
-    // Đổi trạng thái lịch hẹn (Hậu gọi để chuyển sang Hoàn thành khi hoàn tất khám, hoặc về Đã xác nhận khi hủy lượt khám)
+    // Đổi trạng thái lịch hẹn
     public void capNhatTrangThai(String maLichHen, String trangThai) {
         lichHenDAO.doiTrangThai(maLichHen, trangThai, null);
     }
 
-    // Lịch hẹn của một nha sĩ trong khoảng ngày (gồm cả hai đầu), theo ngày giờ
+    // Lịch hẹn của một nha sĩ
     public List<LichHen> layTheoNhanVien(String maNV, LocalDate tu, LocalDate den) {
         return lichHenDAO.layTheoNhanVien(maNV, tu, den);
     }
 
-    // Các lịch hẹn Đã xác nhận của một bệnh nhân trong một ngày (khám vãng lai gắn lịch vào lượt khám)
+    // Các lịch hẹn Đã xác nhận của một bệnh nhân
     public List<LichHen> layDaXacNhanTheoBenhNhan(String maBN, LocalDate ngay) {
         return lichHenDAO.layDaXacNhanTheoBenhNhan(maBN, ngay);
     }
 
-    // Hủy lịch tái khám (còn hiệu lực) của bệnh nhân vào một ngày khi nha sĩ đặt nhầm; trả về true nếu hủy được
+    // Hủy lịch tái khám của bệnh nhân vào một ngày
     public boolean huyLichTaiKham(String maBN, LocalDate ngay) {
         List<LichHen> ds = lichHenDAO.layConHieuLucTheoBenhNhanVaNgay(maBN, ngay);
         if (ds.isEmpty()) {
@@ -96,8 +96,7 @@ public class LichHenController {
         return true;
     }
 
-    // Tạo lịch tái khám Chờ xác nhận cho nha sĩ đang khám (LK-11): tự chọn khung giờ trống đầu tiên của ngày đó,
-    // đi qua đủ ràng buộc đặt lịch. Ngày không có ca trực hoặc hết khung giờ thì báo lỗi để nha sĩ chọn ngày khác.
+    // Tạo lịch tái khám Chờ xác nhận
     public LichHen taoLichTaiKham(String maBN, String maDichVu, LocalDate ngay, String maNV) {
         DichVu dv = layDichVuHoatDong(maDichVu);
         BenhNhan bn = layBenhNhanDangDieuTri(maBN);
@@ -110,16 +109,15 @@ public class LichHenController {
                 + "\" (" + dv.getThoiGianDuKien() + " phút). Hãy chọn ngày khác.");
     }
 
-    // ===================== Xem lịch hẹn (LH-01) =====================
+    // Xem lịch hẹn
 
-    // Lịch hẹn của mọi nha sĩ trong khoảng ngày (chỉ Lễ tân và Quản lý thấy lịch của tất cả nha sĩ)
+    // Lịch hẹn của mọi nha sĩ
     public List<LichHen> layTheoKhoang(LocalDate tu, LocalDate den) {
         Quyen.yeuCau(nguoiDung, "xem lịch hẹn của mọi nha sĩ", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         return lichHenDAO.layTheoKhoang(tu, den);
     }
 
-    // Các khung giờ trống (giờ bắt đầu) của một nha sĩ trong một ngày để đặt dịch vụ kéo dài thoiLuongPhut phút:
-    // trong ca trực Có mặt, vừa khít trong ca, không chồng lịch còn hiệu lực, không ở quá khứ
+    // Các khung giờ trống của một nha sĩ
     public List<LocalTime> layKhungGioTrong(String maNV, LocalDate ngay, int thoiLuongPhut) {
         List<LocalTime> kq = new ArrayList<>();
         List<LichHen> daDat = lichHenDAO.layConHieuLucTheoNhaSiVaNgay(maNV, ngay);
@@ -136,7 +134,7 @@ public class LichHenController {
         return kq;
     }
 
-    // Nha sĩ đang làm việc có ca trực Có mặt trong ngày (để chọn khi đặt lịch)
+    // Nha sĩ đang làm việc có ca trực Có mặt
     public List<NhanVien> layNhaSiCoCaTruc(LocalDate ngay) {
         List<NhanVien> kq = new ArrayList<>();
         List<String> daCo = new ArrayList<>();
@@ -153,9 +151,9 @@ public class LichHenController {
         return kq;
     }
 
-    // ===================== Đặt, dời, hủy, xác nhận (LH-02 đến LH-07) =====================
+    // Đặt, dời, hủy, xác nhận
 
-    // Đặt lịch hẹn (Lễ tân, Quản lý): lịch mới ở trạng thái Chờ xác nhận, thời lượng và phòng lấy theo dịch vụ và ca trực (LH-04)
+    // Đặt lịch hẹn
     public LichHen datLich(String maBN, String maNhaSi, String maDichVu, LocalDate ngay, LocalTime gio, String hinhThucDat) {
         Quyen.yeuCau(nguoiDung, "đặt lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         BenhNhan bn = layBenhNhanDangDieuTri(maBN);
@@ -166,8 +164,7 @@ public class LichHenController {
         return luuLichMoi(bn.getMaBN(), maNhaSi, dv, ngay, gio, hinhThucDat == null ? HINH_THUC_MAC_DINH : hinhThucDat);
     }
 
-    // Dời lịch sang ngày giờ khác (Lễ tân, Quản lý): chỉ lịch Chờ xác nhận hoặc Đã xác nhận, không dời lịch đang có lượt khám Đang khám,
-    // ngày giờ mới qua đủ ràng buộc như khi đặt (LH-05, LH-06). Trạng thái lịch giữ nguyên.
+    // Dời lịch sang ngày giờ khác
     public void doiLich(String maLichHen, LocalDate ngayMoi, LocalTime gioMoi) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "dời lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LichHen lh = layLichDoiDuoc(maLichHen);
@@ -181,7 +178,7 @@ public class LichHenController {
                 "Từ " + lh.getNgayHen() + " " + lh.getGioHen() + " sang " + ngayMoi + " " + gioMoi);
     }
 
-    // Hủy lịch hẹn (Lễ tân, Quản lý): bắt buộc có lý do, chỉ lịch Chờ xác nhận hoặc Đã xác nhận, không hủy lịch đang có lượt khám Đang khám (LH-05, LH-06)
+    // Hủy lịch hẹn
     public void huyLich(String maLichHen, String lyDo) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "hủy lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         String lyDoHuy = KiemTraNhap.rongThanhNull(lyDo);
@@ -194,7 +191,7 @@ public class LichHenController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Hủy lịch hẹn", "LichHen", maLichHen, lh.getNgayHen() + " " + lh.getGioHen() + ": " + lyDoHuy);
     }
 
-    // Xác nhận lịch Chờ xác nhận (Lễ tân, Quản lý), kể cả lịch tái khám do nha sĩ tạo. Kiểm tra lại trùng giờ, ca trực và chứng chỉ lúc xác nhận (LH-07).
+    // Xác nhận lịch Chờ xác nhận
     public void xacNhan(String maLichHen) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "xác nhận lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LichHen lh = layLich(maLichHen);
@@ -210,7 +207,7 @@ public class LichHenController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Xác nhận lịch hẹn", "LichHen", maLichHen, null);
     }
 
-    // Đánh dấu bệnh nhân Không đến: lịch Đã xác nhận đã qua giờ hẹn mà chưa có lượt khám (Lễ tân, Quản lý)
+    // Đánh dấu bệnh nhân Không
     public void danhDauKhongDen(String maLichHen) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "đánh dấu bệnh nhân không đến", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LichHen lh = layLich(maLichHen);
@@ -227,10 +224,9 @@ public class LichHenController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Đánh dấu không đến", "LichHen", maLichHen, null);
     }
 
-    // ===================== Xem lịch làm việc (LH-08) =====================
+    // Xem lịch làm việc
 
-    // Lịch làm việc của người đang đăng nhập (chỉ xem): nha sĩ thấy các ca và lịch hẹn của chính mình;
-    // y tá thấy các ca của mình kèm lịch hẹn của nha sĩ cùng phòng và cùng ca (ca hỗ trợ), có tên nha sĩ phụ trách
+    // Lịch làm việc của người đang đăng nhập
     public List<DongLichLamViec> layLichLamViec(LocalDate tu, LocalDate den) {
         NhanVien nv = Quyen.yeuCau(nguoiDung, "xem lịch làm việc", VaiTro.NHA_SI, VaiTro.Y_TA);
         Map<String, String> tenBenhNhan = new HashMap<>();
@@ -264,7 +260,7 @@ public class LichHenController {
         return kq;
     }
 
-    // Thêm vào danh sách các lịch hẹn (chưa hủy) của một nha sĩ nằm trong ca; ca chưa có lịch nào thì thêm một dòng "ca trống"
+    // Thêm vào danh sách các lịch hẹn của một nha sĩ
     private void themDongTheoNhaSi(List<DongLichLamViec> kq, CaTruc ca, String maNhaSi, String tenNhaSi, Map<String, String> tenBenhNhan,
             Map<String, String> tenDichVu) {
         LocalTime tu = CaTrucController.gioBatDauCa(ca.getCaLam());
@@ -299,10 +295,9 @@ public class LichHenController {
         return bang.get(maBN);
     }
 
-    // ===================== Kiểm tra dùng chung =====================
+    // Kiểm tra dùng chung
 
-    // Kiểm tra một lịch (đặt mới, dời hoặc xác nhận) có xếp được không (LH-02, LH-03, CH-05, NV-02); trả về phòng của ca trực.
-    // boQuaMa là mã lịch đang dời hoặc xác nhận (để không coi là trùng với chính nó), đặt mới thì null.
+    // Kiểm tra một lịch có xếp được không
     private String kiemTraXepLich(String maBN, String maNhaSi, DichVu dv, LocalDate ngay, LocalTime gio, String boQuaMa) {
         if (ngay == null || gio == null) {
             throw new NghiepVuException("Phải chọn ngày và giờ hẹn");
@@ -346,7 +341,7 @@ public class LichHenController {
         return caTruc.get(0).getPhong();
     }
 
-    // Bệnh nhân đã có lịch còn hiệu lực chồng khoảng thời gian này chưa
+    // Bệnh nhân đã có lịch
     private boolean benhNhanBan(String maBN, LocalDate ngay, LocalTime gio, int phut, String boQuaMa) {
         return timLichChong(lichHenDAO.layConHieuLucTheoBenhNhanVaNgay(maBN, ngay), gio, phut, boQuaMa) != null;
     }
@@ -355,7 +350,7 @@ public class LichHenController {
         return timLichChong(ds, gio, phut, boQuaMa) != null;
     }
 
-    // Lịch đầu tiên trong danh sách có khoảng thời gian chồng lên [gio, gio + phut); không có thì trả về null
+    // Lịch đầu tiên
     private LichHen timLichChong(List<LichHen> ds, LocalTime gio, int phut, String boQuaMa) {
         for (LichHen lh : ds) {
             if (lh.getMaLichHen().equals(boQuaMa)) {
@@ -368,7 +363,7 @@ public class LichHenController {
         return null;
     }
 
-    // Ca của một giờ bắt đầu: Sáng nếu từ 08:00 đến trước 12:00, Chiều nếu từ 13:00 đến trước 17:00, ngoài ra là null
+    // Ca của một giờ bắt đầu
     public static String caCuaGio(LocalTime gio) {
         if (!gio.isBefore(LocalTime.of(8, 0)) && gio.isBefore(LocalTime.of(12, 0))) {
             return CaTrucController.SANG;
@@ -379,7 +374,7 @@ public class LichHenController {
         return null;
     }
 
-    // Lấy lịch hẹn theo mã; không có thì báo lỗi
+    // Lấy lịch hẹn theo mã
     private LichHen layLich(String maLichHen) {
         LichHen lh = layTheoMa(maLichHen);
         if (lh == null) {
@@ -388,7 +383,7 @@ public class LichHenController {
         return lh;
     }
 
-    // Lịch hẹn được phép dời hoặc hủy: đang Chờ xác nhận hoặc Đã xác nhận và chưa có lượt khám Đang khám (LH-05, LH-06)
+    // Lịch hẹn được phép dời hoặc hủy
     private LichHen layLichDoiDuoc(String maLichHen) {
         LichHen lh = layLich(maLichHen);
         if (!CHO_XAC_NHAN.equals(lh.getTrangThai()) && !DA_XAC_NHAN.equals(lh.getTrangThai())) {
@@ -422,7 +417,7 @@ public class LichHenController {
         return dv;
     }
 
-    // Lưu lịch mới (đã kiểm tra) ở trạng thái Chờ xác nhận; phòng lấy theo ca trực của nha sĩ
+    // Lưu lịch mới ở trạng thái Chờ xác nhận
     private LichHen luuLichMoi(String maBN, String maNhaSi, DichVu dv, LocalDate ngay, LocalTime gio, String hinhThuc) {
         String phong = kiemTraXepLich(maBN, maNhaSi, dv, ngay, gio, null);
         LichHen lh = new LichHen();

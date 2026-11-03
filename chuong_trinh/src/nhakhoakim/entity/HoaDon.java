@@ -2,14 +2,13 @@ package nhakhoakim.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-//Cac ham hien tai de trong (chua ro tong tien nen tinh nhung gi)
 public class HoaDon {
     private String trangThai,maHoaDon,hinhThucThanhToan,maBenhNhan,ghiChu;
     private String maNhanVien;
     private LocalDateTime ngayLap, ngayThanhToan;
     private ChiTietHoaDon chiTiet;
     private BigDecimal tongTien,tienGiamGia, tongTienTruocThue, phanTramThue;
-    private java.util.List<ChiTietHoaDon> dsChiTiet = new java.util.ArrayList<>(); // các dòng chi tiết của hóa đơn
+    private java.util.List<ChiTietHoaDon> dsChiTiet = new java.util.ArrayList<>(); // Các dòng chi tiết của hóa đơn
 
     public String getMaHoaDon() {
         return maHoaDon;

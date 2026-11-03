@@ -36,21 +36,21 @@ import nhakhoakim.entity.RangDieuTri;
 import nhakhoakim.entity.TrangThai;
 import nhakhoakim.entity.VaiTro;
 
-// Nghiệp vụ hóa đơn (HD-01 đến HD-06): danh sách chờ thanh toán, lập hóa đơn từ lượt khám đã hoàn tất, thanh toán, hủy, in
+// Nghiệp vụ hóa đơn
 public class HoaDonController {
 
     public static final String CHUA_THANH_TOAN = "Chưa thanh toán";
     public static final String DA_THANH_TOAN = "Đã thanh toán";
     public static final List<String> HINH_THUC = List.of("Tiền mặt", "Chuyển khoản", "Thẻ", "Ví điện tử");
-    public static final BigDecimal THUE_VAT = new BigDecimal("8"); // phần trăm VAT
+    public static final BigDecimal THUE_VAT = new BigDecimal("8"); // Phần trăm VAT
 
-    // Một lượt khám đã hoàn tất đang chờ lập hóa đơn, kèm thông tin để hiện lên bảng
+    // Một lượt khám đã hoàn tất đang chờ lập hóa đơn
     public static class DongChoThanhToan {
         public LuotKham luotKham;
         public String maBN;
         public String tenBenhNhan;
         public String tenNhaSi;
-        public BigDecimal tamTinh; // tổng tiền đã gồm VAT nếu lập hóa đơn ngay (chưa giảm giá)
+        public BigDecimal tamTinh; // Tổng tiền đã gồm VAT
     }
 
     private HoaDonDAO hoaDonDAO = new HoaDonDAO();
@@ -66,9 +66,7 @@ public class HoaDonController {
     private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // ===================== Danh sách chờ thanh toán (HD-01) =====================
-
-    // Các lượt khám Hoàn thành chưa có hóa đơn, kèm tên bệnh nhân, nha sĩ và số tiền tạm tính
+    // Các lượt khám Hoàn thành chưa có hóa đơn
     public List<DongChoThanhToan> layChoThanhToan() {
         Quyen.yeuCau(nguoiDung, "xem danh sách chờ thanh toán", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         List<LuotKham> dsLuotKham = luotKhamDAO.layChoThanhToan();
@@ -92,17 +90,14 @@ public class HoaDonController {
         return kq;
     }
 
-    // ===================== Lập hóa đơn (HD-02 đến HD-04) =====================
 
-    // Hóa đơn tạm tính của một lượt khám (chưa lưu) để xem trước trên màn hình: các dòng lấy từ dịch vụ đã thực hiện, giá theo giá hiện tại
+    // Hóa đơn tạm tính của một lượt khám
     public HoaDon xemTruoc(String maLuotKham, BigDecimal tienGiamGia) {
         LuotKham lk = layLuotKhamLapDuoc(maLuotKham);
         return dungHoaDon(lk, "(chưa lập)", tienGiamGia, null);
     }
 
-    // Lập hóa đơn cho lượt khám đã hoàn thành và chưa có hóa đơn (Lễ tân, Quản lý).
-    // Đơn giá lấy theo giá dịch vụ lúc lập và lưu cố định; giảm giá không vượt tổng tiền dịch vụ; hóa đơn, các dòng chi tiết và việc gắn vào lượt khám
-    // nằm trong một transaction. Hóa đơn mới ở trạng thái Chưa thanh toán.
+    // Lập hóa đơn cho lượt khám đã hoàn thành
     public HoaDon lapHoaDon(String maLuotKham, BigDecimal tienGiamGia, String ghiChu) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "lập hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LuotKham lk = layLuotKhamLapDuoc(maLuotKham);
@@ -111,7 +106,7 @@ public class HoaDonController {
         HoaDon hd = dungHoaDon(lk, MaGenerator.taoMa("HD"), tienGiamGia, nguoi.getMaNV());
         hd.setGhiChu(ghiChuGon);
         for (ChiTietHoaDon ct : hd.getDsChiTiet()) {
-            ct.setMaHoaDon(hd.getMaHoaDon());
+            ct.setMaHoaDon(hd);
             ct.setMaChiTiet(MaGenerator.taoMa("CT"));
         }
         hoaDonDAO.themKemChiTiet(hd, hd.getDsChiTiet(), maLuotKham);
@@ -119,7 +114,7 @@ public class HoaDonController {
         return hd;
     }
 
-    // Lượt khám phải tồn tại, đã Hoàn thành và chưa gắn hóa đơn (HD-02)
+    // Kiểm tra lượt khám
     private LuotKham layLuotKhamLapDuoc(String maLuotKham) {
         LuotKham lk = maLuotKham == null ? null : luotKhamDAO.timTheoMa(maLuotKham);
         if (lk == null) {
@@ -134,7 +129,7 @@ public class HoaDonController {
         return lk;
     }
 
-    // Dựng đối tượng hóa đơn (chưa lưu) từ lượt khám: các dòng chi tiết, giảm giá, thuế, tổng tiền
+    // Dựng đối tượng hóa đơn
     private HoaDon dungHoaDon(LuotKham lk, String maHoaDon, BigDecimal tienGiamGia, String maNhanVienLap) {
         List<ChiTietHoaDon> dong = tinhDongChiTiet(lk);
         if (dong.isEmpty()) {
@@ -165,8 +160,7 @@ public class HoaDonController {
         return hd;
     }
 
-    // Các dòng chi tiết của lượt khám (HD-04): dịch vụ gắn răng tính theo (răng, dịch vụ) mỗi cặp một lần (trám nhiều mặt cùng răng chỉ tính một lần, LK-22),
-    // dịch vụ không gắn răng cộng dồn số lượng theo dịch vụ. Đơn giá là giá niêm yết hiện tại.
+    // Các dòng chi tiết của lượt khám
     List<ChiTietHoaDon> tinhDongChiTiet(LuotKham lk) {
         List<ChiTietHoaDon> kq = new ArrayList<>();
         Set<String> daTinh = new HashSet<>();
@@ -200,7 +194,7 @@ public class HoaDonController {
         return ct;
     }
 
-    // Tổng (đơn giá x số lượng - giảm giá dòng) của các dòng
+    // Tổng của các dòng
     public static BigDecimal tongDichVu(List<ChiTietHoaDon> dong) {
         BigDecimal tong = BigDecimal.ZERO;
         for (ChiTietHoaDon ct : dong) {
@@ -210,25 +204,23 @@ public class HoaDonController {
         return tong;
     }
 
-    // Tổng tiền trước thuế = tổng dịch vụ - giảm giá của cả hóa đơn
+    // Tổng tiền trước thuế là tổng dịch vụ
     public static BigDecimal tinhTruocThue(List<ChiTietHoaDon> dong, BigDecimal giamGia) {
         return tongDichVu(dong).subtract(giamGia);
     }
 
-    // Tổng tiền thanh toán = trước thuế cộng VAT, làm tròn đến đồng (HD-03)
+    // Tổng tiền thanh toán là trước thuế cộng VAT
     public static BigDecimal tinhTongTien(BigDecimal truocThue, BigDecimal phanTramThue) {
         return truocThue.multiply(BigDecimal.valueOf(100).add(phanTramThue)).divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP);
     }
 
-    // ===================== Xem, thanh toán, hủy, in (HD-05, HD-06) =====================
-
-    // Tất cả hóa đơn, mới nhất trước (chưa kèm dòng chi tiết)
+    // Tất cả hóa đơn, mới nhất trước
     public List<HoaDon> layTatCa() {
         Quyen.yeuCau(nguoiDung, "xem hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         return hoaDonDAO.layTatCa();
     }
 
-    // Hóa đơn kèm các dòng chi tiết; không có thì báo lỗi
+    // Hóa đơn kèm các dòng chi tiết
     public HoaDon timTheoMa(String maHoaDon) {
         HoaDon hd = maHoaDon == null ? null : hoaDonDAO.timTheoMa(maHoaDon);
         if (hd == null) {
@@ -238,7 +230,7 @@ public class HoaDonController {
         return hd;
     }
 
-    // Thanh toán hóa đơn Chưa thanh toán bằng một trong bốn hình thức; thanh toán xong thì hóa đơn bị khóa (HD-05)
+    // Thanh toán hóa đơn Chưa thanh toán
     public void thanhToan(String maHoaDon, String hinhThuc) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "thanh toán hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         HoaDon hd = timTheoMa(maHoaDon);
@@ -254,7 +246,7 @@ public class HoaDonController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Thanh toán hóa đơn", "HoaDon", maHoaDon, hinhThuc + ", " + hd.getTongTien());
     }
 
-    // Hủy hóa đơn chưa thanh toán (chỉ Quản lý, bắt buộc có lý do); lượt khám quay về danh sách chờ thanh toán. Hóa đơn đã thanh toán thì khóa (CH-02).
+    // Hủy hóa đơn chưa thanh toán
     public void huyHoaDon(String maHoaDon, String lyDo) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "hủy hóa đơn", VaiTro.QUAN_LY);
         String lyDoHuy = KiemTraNhap.rongThanhNull(lyDo);
@@ -275,7 +267,7 @@ public class HoaDonController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Hủy hóa đơn", "HoaDon", maHoaDon, lyDoHuy);
     }
 
-    // Nội dung hóa đơn dạng chữ để xem trước và in; chỉ in hóa đơn Đã thanh toán, hóa đơn Đã hủy không in (HD-06)
+    // Nội dung hóa đơn dạng chữ để xem trước
     public String taoNoiDungIn(String maHoaDon) {
         Quyen.yeuCau(nguoiDung, "in hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         HoaDon hd = timTheoMa(maHoaDon);
@@ -320,7 +312,7 @@ public class HoaDonController {
         return sb.toString();
     }
 
-    // Số tiền có dấu chấm ngăn cách hàng nghìn, ví dụ 1.500.000 (Locale cố định nên không phụ thuộc cài đặt máy)
+    // Số tiền có dấu chấm ngăn cách hàng nghìn
     public static String dinhDangTien(BigDecimal so) {
         return String.format(Locale.GERMANY, "%,d", so.setScale(0, RoundingMode.HALF_UP).longValue());
     }

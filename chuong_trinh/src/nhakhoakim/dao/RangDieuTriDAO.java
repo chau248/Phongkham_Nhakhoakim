@@ -37,7 +37,7 @@ public class RangDieuTriDAO {
         }
     }
 
-    // Cập nhật bản ghi răng đã có; thời điểm ghi nhận được đặt lại là bây giờ để bản vừa sửa là bản mới nhất của răng
+    // Cập nhật bản ghi răng đã
     public void capNhat(RangDieuTri r) {
         String sql = "UPDATE dbo.RangDieuTri SET matRang = ?, trangThai = ?, vatLieu = ?, maDichVu = ?, daNho = ?, mauHienThi = ?, ghiChu = ?,"
                 + " ngayGhiNhan = ? WHERE maBanGhi = ?";
@@ -59,7 +59,7 @@ public class RangDieuTriDAO {
         }
     }
 
-    // Xóa một bản ghi răng của lượt khám (ràng cả mã lượt khám để không xóa nhầm lượt khác); trả về true nếu xóa được
+    // Xóa một bản ghi răng của lượt khám
     public boolean xoa(String maLuotKham, String maBanGhi) {
         try (Connection c = DatabaseConnection.getConnection();
                 PreparedStatement ps = c.prepareStatement("DELETE FROM dbo.RangDieuTri WHERE maBanGhi = ? AND maLuotKham = ?")) {
@@ -71,20 +71,19 @@ public class RangDieuTriDAO {
         }
     }
 
-    // Các bản ghi răng của một lượt khám, theo số FDI; cùng một răng thì bản mới nhất trước
+    // Các bản ghi răng của một lượt khám
     public List<RangDieuTri> layTheoLuotKham(String maLuotKham) {
         return layDanhSach("SELECT " + CAC_COT + " FROM dbo.RangDieuTri r WHERE r.maLuotKham = ?"
                 + " ORDER BY r.soFDI, r.ngayGhiNhan DESC, r.maBanGhi DESC", maLuotKham);
     }
 
-    // Tất cả bản ghi răng của một hồ sơ qua mọi lượt khám, mới nhất trước (để biết tình trạng hiện tại của từng răng);
-    // cùng thời điểm thì mã bản ghi lớn hơn (ghi sau) đứng trước
+    // Tất cả bản ghi răng của một hồ sơ qua mọi lượt khám
     public List<RangDieuTri> layTheoHoSo(String maHoSo) {
         return layDanhSach("SELECT " + CAC_COT + " FROM dbo.RangDieuTri r JOIN dbo.LuotKham k ON k.maLuotKham = r.maLuotKham"
                 + " WHERE k.maHoSo = ? ORDER BY r.ngayGhiNhan DESC, r.maBanGhi DESC", maHoSo);
     }
 
-    // Chạy câu SELECT có một tham số chuỗi và đọc tất cả dòng
+    // Chạy câu SELECT có một tham số chuỗi
     private List<RangDieuTri> layDanhSach(String sql, String thamSo) {
         List<RangDieuTri> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

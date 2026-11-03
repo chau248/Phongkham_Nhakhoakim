@@ -16,9 +16,8 @@ import nhakhoakim.entity.LoaiDichVu;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.VaiTro;
 
-// Màn hình danh mục dịch vụ và bảng giá (DV-01): mọi vai trò được xem; Nha sĩ, Lễ tân, Y tá chỉ thấy dịch vụ đang hoạt động;
-// Quản lý thấy cả dịch vụ đã ngừng và có nút Thêm, Sửa
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình danh mục dịch vụ và bảng giá
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
 
     private static final String TAT_CA = "Tất cả";
@@ -26,9 +25,9 @@ public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
     private DichVuController dichVuController = new DichVuController();
     private boolean laQuanLy;
 
-    private JTextField txtTim = TienIch.oNhap(24);                 // tìm theo tên dịch vụ
-    private JComboBox<String> cmbLoai = new JComboBox<>();         // lọc theo loại
-    private JComboBox<String> cmbTrangThai = new JComboBox<>(new String[] {TAT_CA, "Đang hoạt động", "Đã ngừng"}); // chỉ Quản lý có
+    private JTextField txtTim = TienIch.oNhap(24); // Tìm theo tên dịch vụ
+    private JComboBox<String> cmbLoai = new JComboBox<>(); // Lọc theo loại
+    private JComboBox<String> cmbTrangThai = new JComboBox<>(new String[] {TAT_CA, "Đang hoạt động", "Đã ngừng"}); // Chỉ Quản lý
     private JTable tblDichVu = TienIch.taoBang(new String[] {"Mã", "Tên dịch vụ", "Loại", "Giá (đồng)", "Thời gian (phút)", "Đơn vị", "Cần liệu trình", "Trạng thái"},
             new int[] {90, 240, 100, 110, 100, 70, 100, 110}, "Không có dịch vụ nào.");
     private List<DichVu> dsHienThi = new ArrayList<>();
@@ -71,7 +70,7 @@ public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
         loc();
     }
 
-    // Tải danh mục theo vai trò rồi lọc theo tên, loại, trạng thái đang chọn
+    // Tải danh mục theo vai trò rồi lọc
     private void loc() {
         try {
             NhanVien nv = PhienLamViec.getNhanVienHienTai();

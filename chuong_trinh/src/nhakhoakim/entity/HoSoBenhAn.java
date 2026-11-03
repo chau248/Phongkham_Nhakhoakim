@@ -5,15 +5,15 @@ import java.util.ArrayList;
 
 public class HoSoBenhAn {
 
-    private String maHoSo; // mã hồ sơ, dạng HS000001
-    private String maBN; // mã bệnh nhân sở hữu hồ sơ
-    private LocalDate ngayTao; // ngày tạo hồ sơ
-    private String tienSuBenh; // tiền sử bệnh
-    private String canhBaoDiUng; // các chất bệnh nhân dị ứng, cách nhau bằng dấu phẩy
-    private String nhomMau; // nhóm máu: A, B, AB hoặc O
-    private String benhNen; // bệnh nền
-    private String thuocDangSuDung; // thuốc đang dùng
-    private String ghiChuDacBiet; // ghi chú đặc biệt
+    private String maHoSo; // Mã hồ sơ, dạng HS000001
+    private String maBN; // Mã bệnh nhân sở hữu hồ sơ
+    private LocalDate ngayTao; // Ngày tạo hồ sơ
+    private String tienSuBenh; // Tiền sử bệnh
+    private String canhBaoDiUng; // Các chất bệnh nhân dị ứng
+    private String nhomMau; // Nhóm máu: A, B, AB hoặc O
+    private String benhNen; // Bệnh nền
+    private String thuocDangSuDung; // Thuốc đang dùng
+    private String ghiChuDacBiet; // Ghi chú đặc biệt
     private String trangThaiHoSo; // Đang mở hoặc Đã đóng
     
     
@@ -117,7 +117,7 @@ public class HoSoBenhAn {
         this.trangThaiHoSo = trangThaiHoSo;
     }
 
-    // Các nhóm thuốc hay gây dị ứng chéo: dị ứng một thuốc trong nhóm thì không dùng các thuốc còn lại của nhóm
+    // Các nhóm thuốc hay gây dị ứng chéo
     private static final String[][] NHOM_THUOC = {
         {"penicillin", "amoxicillin", "amoxicilin", "ampicillin", "augmentin", "cloxacillin"},
         {"cephalosporin", "cefalexin", "cephalexin", "cefixime", "cefuroxim", "cefadroxil"},
@@ -125,11 +125,11 @@ public class HoSoBenhAn {
         {"sulfa", "sulfamid", "sulfamethoxazole", "bactrim"}
     };
 
-    // Các giá trị người dùng hay gõ để nói "không có dị ứng"; không được coi là một tác nhân gây dị ứng
+    // Các giá trị người dùng hay gõ
     private static final String[] KHONG_DI_UNG = {"không", "không có", "không dị ứng", "không có dị ứng", "ko", "ko có",
         "chưa có", "chưa ghi nhận", "chưa rõ", "none", "n/a", "-"};
 
-    // Giá trị này có nghĩa là "không dị ứng" (ví dụ "Không", "Không có") chứ không phải tên một chất
+    // Giá trị này có nghĩa
     public static boolean laGiaTriKhongDiUng(String giaTri) {
         if (giaTri == null) {
             return true;
@@ -143,7 +143,7 @@ public class HoSoBenhAn {
         return g.isEmpty();
     }
 
-    // Hồ sơ có ghi nhận ít nhất một tác nhân dị ứng thật (không tính "Không", "Không có"...)
+    // Hồ sơ có ghi nhận ít
     public boolean coCanhBaoDiUng() {
         if (canhBaoDiUng == null) {
             return false;
@@ -156,8 +156,7 @@ public class HoSoBenhAn {
         return false;
     }
 
-    // Kiểm tra một thuốc hoặc vật liệu có nằm trong cảnh báo dị ứng không (không phân biệt hoa thường),
-    // kể cả khi thuốc đó cùng nhóm với chất bệnh nhân dị ứng (ví dụ dị ứng Penicillin thì không kê Amoxicillin)
+    // Kiểm tra một thuốc hoặc vật liệu
     public boolean kiemTraCanhBaoDiUng(String ten) {
         if (canhBaoDiUng == null || ten == null || ten.trim().isEmpty()) {
             return false;
@@ -180,7 +179,7 @@ public class HoSoBenhAn {
         return false;
     }
 
-    // Chuỗi s có chứa tên một thuốc nào đó của nhóm không
+    // Chuỗi s có chứa tên
     private boolean coTrongNhom(String[] nhom, String s) {
         for (String thuoc : nhom) {
             if (s.contains(thuoc)) {

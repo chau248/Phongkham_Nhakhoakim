@@ -21,9 +21,8 @@ import nhakhoakim.controller.TaiKhoanController;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.TaiKhoan;
 
-// Màn hình tạo tài khoản và gán vai trò (TK-03, TK-04): chỉ Quản lý; mỗi nhân viên một tài khoản, vai trò tài khoản luôn bằng vai trò nhân viên;
-// khóa, mở khóa và cấp lại mật khẩu
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình tạo tài khoản và gán vai trò
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhTaiKhoan extends JPanel {
 
     private TaiKhoanController taiKhoanController = new TaiKhoanController();
@@ -34,7 +33,7 @@ public class ManHinhTaiKhoan extends JPanel {
     private List<TaiKhoan> dsTaiKhoan = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
 
-    private JComboBox<NhanVien> cmbNhanVien = new JComboBox<>();     // nhân viên đang làm chưa có tài khoản
+    private JComboBox<NhanVien> cmbNhanVien = new JComboBox<>(); // Nhân viên đang làm
     private JTextField txtTen = TienIch.oNhap(20);
     private JPasswordField txtMatKhau = new JPasswordField(20);
     private JLabel lblVaiTro = TienIch.chuThuong(" ", false);
@@ -75,7 +74,7 @@ public class ManHinhTaiKhoan extends JPanel {
         tai();
     }
 
-    // Tải danh sách tài khoản và danh sách nhân viên chưa có tài khoản
+    // Tải danh sách tài khoản
     private void tai() {
         try {
             dsTaiKhoan = taiKhoanController.layTatCa();
@@ -149,7 +148,7 @@ public class ManHinhTaiKhoan extends JPanel {
         }
     }
 
-    // Cấp lại mật khẩu cho tài khoản đang chọn (hỏi mật khẩu mới trong hộp có ô che ký tự)
+    // Cấp lại mật khẩu cho tài khoản đang chọn
     private void capLai() {
         TaiKhoan tk = dangChon();
         if (tk == null) {
@@ -167,7 +166,7 @@ public class ManHinhTaiKhoan extends JPanel {
         }
     }
 
-    // Hộp nhập mật khẩu có che ký tự; bấm Hủy thì trả về null (chạy không có màn hình thì lấy TienIch.nhapTuDong)
+    // Hộp nhập mật khẩu có che ký tự
     static String hoiMatKhau(String loiNhac) {
         if (GraphicsEnvironment.isHeadless()) {
             return TienIch.nhapTuDong;

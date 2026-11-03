@@ -1,13 +1,13 @@
 package nhakhoakim.entity;
 
-// Dịch vụ không gắn với răng cụ thể trong một lượt khám (khám tổng quát, lấy cao răng...)
+// Dịch vụ không gắn với răng cụ thể
 public class LuotKhamDichVu {
 
-    private int maDong; // số thứ tự dòng (tự tăng)
-    private String maLuotKham; // mã lượt khám
-    private String maDichVu; // mã dịch vụ
-    private int soLuong; // số lượng
-    private String ghiChu; // ghi chú
+    private int maDong; // Số thứ tự dòng
+    private String maLuotKham; // Mã lượt khám
+    private String maDichVu; // Mã dịch vụ
+    private int soLuong; // Số lượng
+    private String ghiChu; // Ghi chú
 
     public int getMaDong() {
         return maDong;

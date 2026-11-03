@@ -11,46 +11,42 @@ import nhakhoakim.entity.HoSoBenhAn;
 import nhakhoakim.entity.LuotKham;
 import nhakhoakim.entity.NhanVien;
 
-// Nghiệp vụ bệnh nhân: tìm kiếm, thêm mới (kèm hồ sơ bệnh án rỗng), cập nhật thông tin hành chính
-// Ràng buộc BN-01 đến BN-05, BN-12 đến BN-14, BN-17, BN-18 (file RANG_BUOC_NGHIEP_VU.md trong lịch sử git)
-// (phần hồ sơ bệnh án BN-06 đến BN-11, BN-15, BN-16 nằm ở HoSoBenhAnController và entity HoSoBenhAn)
+// Nghiệp vụ bệnh nhân
 public class BenhNhanController {
 
     private static final int TOI_DA_KET_QUA = 50;
 
     private BenhNhanDAO benhNhanDAO;
     private HoSoBenhAnController hoSoService;
-    private Supplier<NhanVien> nguoiDung; // cho biết ai đang đăng nhập (kiểm thử thì truyền người giả)
+    private Supplier<NhanVien> nguoiDung; 
     private NhatKyController nhatKyService = new NhatKyController();
 
-    // Dùng DAO thật và người đăng nhập thật của chương trình
     public BenhNhanController() {
         this(new BenhNhanDAO(), new HoSoBenhAnController(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng DAO và người dùng truyền vào (để kiểm thử không cần CSDL)
     public BenhNhanController(BenhNhanDAO benhNhanDAO, HoSoBenhAnController hoSoService, Supplier<NhanVien> nguoiDung) {
         this.benhNhanDAO = benhNhanDAO;
         this.hoSoService = hoSoService;
         this.nguoiDung = nguoiDung;
     }
 
-    // Tìm bệnh nhân theo mã; không có thì trả về null
+    // Tìm bệnh nhân theo mã
     public BenhNhan timTheoMa(String maBN) {
         return benhNhanDAO.timTheoMa(maBN);
     }
 
-    // Tìm bệnh nhân đang điều trị theo mã, họ tên hoặc số điện thoại; từ khóa rỗng thì lấy tối đa 50 người đầu (BN-01)
+    // Tìm theo từ khóa
     public List<BenhNhan> timKiem(String tuKhoa) {
         return benhNhanDAO.timKiem(tuKhoa == null ? "" : tuKhoa.trim(), TOI_DA_KET_QUA);
     }
 
-    // Như trên; gomNgung = true thì lấy cả bệnh nhân đã ngừng theo dõi (để mở lại hoặc tránh đăng ký trùng)
+    // Tìm theo từ khóa, có thể gồm cả người ngừng theo dõi
     public List<BenhNhan> timKiem(String tuKhoa, boolean gomNgung) {
         return benhNhanDAO.timKiem(tuKhoa == null ? "" : tuKhoa.trim(), TOI_DA_KET_QUA, gomNgung);
     }
 
-    // Kiểm tra thông tin nhập vào (BN-02, BN-03, BN-12, BN-13, BN-17); sai thì báo lỗi bằng câu tiếng Việt
+    // Kiểm tra thông tin nhập vào
     public void kiemTra(BenhNhan bn) {
         if (bn.getHoTen() == null || bn.getHoTen().trim().isEmpty()) {
             throw new NghiepVuException("Họ tên không được để trống");
@@ -77,7 +73,7 @@ public class BenhNhanController {
         if (bn.getSoCCCD() != null && !bn.getSoCCCD().matches("[0-9]{12}")) {
             throw new NghiepVuException("Số căn cước phải đủ 12 số");
         }
-        // Số điện thoại người liên hệ: có nhập thì phải đúng định dạng, bất kể tuổi
+        // Số điện thoại người liên hệ
         if (bn.getSdtNguoiLienHe() != null && !laSoDienThoai(bn.getSdtNguoiLienHe())) {
             throw new NghiepVuException("Số điện thoại người liên hệ phải đủ 10 số và bắt đầu bằng 0");
         }
@@ -97,7 +93,7 @@ public class BenhNhanController {
         }
     }
 
-    // Thêm bệnh nhân mới và tạo luôn hồ sơ bệnh án rỗng trong cùng một transaction (BN-04); trả về bệnh nhân đã có mã
+    // Thêm bệnh nhân mới
     public BenhNhan them(BenhNhan bn) {
         kiemTraQuyenSua();
         chuanHoa(bn);
@@ -108,11 +104,11 @@ public class BenhNhanController {
         bn.setNgayDangKy(LocalDate.now());
         bn.setTrangThai(HangSo.DANG_DIEU_TRI);
         HoSoBenhAn hs = hoSoService.taoDoiTuongHoSoRong(bn.getMaBN());
-        benhNhanDAO.themKemHoSo(bn, hs); // DAO lo transaction: lỗi thì hủy cả bệnh nhân lẫn hồ sơ
+        benhNhanDAO.themKemHoSo(bn, hs);
         return bn;
     }
 
-    // Cập nhật thông tin hành chính của bệnh nhân đã có
+    // Cập nhật thông tin bệnh nhân
     public void capNhat(BenhNhan bn) {
         kiemTraQuyenSua();
         if (benhNhanDAO.timTheoMa(bn.getMaBN()) == null) {
@@ -124,8 +120,7 @@ public class BenhNhanController {
         benhNhanDAO.capNhat(bn);
     }
 
-    // Ngừng theo dõi hoặc mở lại bệnh nhân (BN-18): chỉ Lễ tân hoặc Quản lý; không ngừng khi còn lượt khám đang dở;
-    // trạng thái mới phải khác trạng thái hiện tại; có ghi nhật ký
+    // Ngừng theo dõi hoặc mở lại bệnh nhân
     public void doiTrangThai(String maBN, String trangThaiMoi) {
         kiemTraQuyenSua();
         if (!HangSo.DANG_DIEU_TRI.equals(trangThaiMoi) && !HangSo.NGUNG_THEO_DOI.equals(trangThaiMoi)) {
@@ -151,7 +146,7 @@ public class BenhNhanController {
                 "Từ [" + bn.getTrangThai() + "] sang [" + trangThaiMoi + "]");
     }
 
-    // Chỉ Lễ tân hoặc Quản lý được thêm, sửa thông tin hành chính (BN-05)
+    // Chỉ LT & QL được thêm
     private void kiemTraQuyenSua() {
         NhanVien nv = nguoiDung.get();
         if (nv == null) {
@@ -167,7 +162,7 @@ public class BenhNhanController {
         throw new NghiepVuException("Vai trò " + vaiTro + " không được sửa thông tin hành chính của bệnh nhân");
     }
 
-    // CCCD không được trùng bệnh nhân khác (BN-02)
+    // CCCD không được trùng bệnh nhân khác
     private void kiemTraTrungCCCD(BenhNhan bn) {
         if (bn.getSoCCCD() == null) {
             return;
@@ -178,15 +173,14 @@ public class BenhNhanController {
         }
     }
 
-    // Cùng họ tên và cùng ngày sinh với một bệnh nhân đã có (kể cả đã ngừng theo dõi) thì coi là đăng ký trùng (BN-14);
-    // trẻ em chưa có CCCD cũng bị chặn ở đây. Họ tên đã được gộp khoảng trắng thừa trong chuanHoa.
+    // Cùng họ tên và cùng ngày sinh
     private void kiemTraTrungNguoi(BenhNhan bn) {
         if (bn.getNgaySinh() == null) {
             return;
         }
         for (BenhNhan khac : benhNhanDAO.timTheoHoTenNgaySinh(bn.getHoTen(), bn.getNgaySinh())) {
             if (khac.getMaBN() != null && khac.getMaBN().equals(bn.getMaBN())) {
-                continue; // chính người này
+                continue; // Chính người này
             }
             String ghiChuTrangThai = "";
             if (khac.getTrangThai() != null && !HangSo.DANG_DIEU_TRI.equals(khac.getTrangThai())) {
@@ -197,7 +191,7 @@ public class BenhNhanController {
         }
     }
 
-    // Cắt khoảng trắng thừa (họ tên gộp nhiều khoảng trắng thành một); ô để trống thì đổi thành null để lưu NULL vào CSDL
+    // Cắt khoảng thừa
     private void chuanHoa(BenhNhan bn) {
         bn.setHoTen(bn.getHoTen() == null ? null : bn.getHoTen().trim().replaceAll("\\s+", " "));
         bn.setSdt(rongThanhNull(bn.getSdt()));
@@ -210,12 +204,12 @@ public class BenhNhanController {
         bn.setGioiTinh(rongThanhNull(bn.getGioiTinh()));
     }
 
-    // Số điện thoại hợp lệ: đúng 10 số, bắt đầu bằng 0
+    // Số điện thoại hợp lệ
     private boolean laSoDienThoai(String s) {
         return s.matches("0[0-9]{9}");
     }
 
-    // Chuỗi không được dài hơn độ dài cột trong CSDL, nếu không SQL Server báo lỗi cắt chuỗi khó hiểu
+    // Chuỗi không được dài hơn độ dài cột
     private static void doDai(String giaTri, int toiDa, String tenTruong) {
         if (giaTri != null && giaTri.length() > toiDa) {
             throw new NghiepVuException(tenTruong + " dài tối đa " + toiDa + " ký tự (hiện đang " + giaTri.length() + " ký tự)");
@@ -223,7 +217,7 @@ public class BenhNhanController {
     }
 
 
-    // Chuỗi rỗng hoặc toàn khoảng trắng thì trả về null, ngược lại cắt khoảng trắng hai đầu
+    // Chuỗi rỗng hoặc toàn khoảng trắng
     private static String rongThanhNull(String s) {
         return s == null || s.trim().isEmpty() ? null : s.trim();
     }

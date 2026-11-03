@@ -21,14 +21,12 @@ import nhakhoakim.entity.LuotKhamDichVu;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.RangDieuTri;
 
-// Nghiệp vụ lượt khám: bắt đầu khám, ghi nội dung, kê đơn, chọn dịch vụ, hoàn tất, tái khám và trao đổi với hóa đơn
-// Ràng buộc LK-01 đến LK-21 (file RANG_BUOC_NGHIEP_VU.md trong lịch sử git)
 public class LuotKhamController {
 
-    private static final int TOI_DA_SO_LUONG = 10;     // số lượng tối đa của một dịch vụ không gắn răng
-    private static final int TOI_DA_NGAY_TAI_KHAM = 180; // hẹn tái khám tối đa 6 tháng sau
+    private static final int TOI_DA_SO_LUONG = 10;     
+    private static final int TOI_DA_NGAY_TAI_KHAM = 180; 
 
-    // Độ dài tối đa của các cột văn bản trong bảng LuotKham
+    // Độ dài tối đa của các cột văn bản
     private static final int DO_DAI_LY_DO_KHAM = 255;
     private static final int DO_DAI_CHAN_DOAN = 500;
     private static final int DO_DAI_HUONG_DIEU_TRI = 500;
@@ -36,8 +34,8 @@ public class LuotKhamController {
     private static final int DO_DAI_GHI_CHU = 255;
     private static final int DO_DAI_LY_DO_HUY = 150;
 
-    private static final String TIEN_TO_HUY = "Hủy khám: "; // đầu phần ghi chú khi hủy lượt khám
-    private static final String NOI_GHI_CHU = " | ";         // dấu nối giữa ghi chú cũ và phần hủy khám
+    private static final String TIEN_TO_HUY = "Hủy khám: "; 
+    private static final String NOI_GHI_CHU = " | "; 
 
     private final LuotKhamDAO luotKhamDAO;
     private final LuotKhamDichVuDAO dichVuLuotKhamDAO;
@@ -48,16 +46,15 @@ public class LuotKhamController {
     private final NhanVienController nhanVienService;
     private final LichHenController lichHenService;
     private final CaTrucController caTrucService;
-    private final Supplier<NhanVien> nguoiDung; // người đang đăng nhập
+    private final Supplier<NhanVien> nguoiDung;
 
-    // Dùng các lớp thật và người đăng nhập lấy từ PhienLamViec
     public LuotKhamController() {
         this(new LuotKhamDAO(), new LuotKhamDichVuDAO(), new RangDieuTriDAO(), new BenhNhanDAO(),
                 new HoSoBenhAnController(), new DichVuController(), new NhanVienController(), new LichHenController(),
                 new CaTrucController(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng các đối tượng truyền vào (để thay bản giả khi kiểm thử)
+    // Dùng các đối tượng truyền vào
     public LuotKhamController(LuotKhamDAO luotKhamDAO, LuotKhamDichVuDAO dichVuLuotKhamDAO, RangDieuTriDAO rangDAO,
             BenhNhanDAO benhNhanDAO, HoSoBenhAnController hoSoService, DichVuController dichVuService,
             NhanVienController nhanVienService, LichHenController lichHenService, CaTrucController caTrucService,
@@ -74,7 +71,7 @@ public class LuotKhamController {
         this.nguoiDung = nguoiDung;
     }
 
-    // Kiểm tra nha sĩ được bắt đầu khám: đúng vai trò, còn chứng chỉ, có ca trực hôm nay, không có lượt khám đang dở
+    // Kiểm tra nha sĩ được bắt đầu khám
     private void kiemTraNhaSi(String maNhaSi) {
         NhanVien dangNhap = nguoiDung.get();
         if (dangNhap == null || !dangNhap.getMaNV().equals(maNhaSi)) {
@@ -95,7 +92,7 @@ public class LuotKhamController {
         }
     }
 
-    // Kiểm tra hồ sơ được khám: hồ sơ còn mở, bệnh nhân đang điều trị và chưa có lượt khám nào đang dở
+    // Kiểm tra hồ sơ được khám
     private HoSoBenhAn kiemTraHoSo(String maHoSo) {
         HoSoBenhAn hs = hoSoService.timTheoMa(maHoSo);
         if (HangSo.HO_SO_DA_DONG.equals(hs.getTrangThaiHoSo())) {
@@ -111,7 +108,7 @@ public class LuotKhamController {
         return hs;
     }
 
-    // Tạo và lưu lượt khám mới ở trạng thái Đang khám
+    // Tạo và lưu lượt khám mới
     private LuotKham taoLuotKham(String maHoSo, String maNhaSi, String lyDoKham, String maLichHen) {
         LuotKham lk = new LuotKham();
         lk.setMaLuotKham(MaGenerator.taoMa("LK"));
@@ -125,8 +122,7 @@ public class LuotKhamController {
         return lk;
     }
 
-    // Khám vãng lai (không bấm từ lịch hẹn). Nếu bệnh nhân có lịch hẹn Đã xác nhận trong hôm nay thì gắn lịch đó vào lượt khám
-    // (ưu tiên lịch của chính nha sĩ này) để lịch được chuyển sang Hoàn thành khi khám xong, không bị treo hoặc ghi "Không đến".
+    // Khám vãng lai
     public LuotKham batDauKham(String maHoSo, String maNhaSi, String lyDoKham) {
         String lyDo = rongThanhNull(lyDoKham);
         doDai(lyDo, DO_DAI_LY_DO_KHAM, "Lý do khám");
@@ -141,13 +137,13 @@ public class LuotKhamController {
         return taoLuotKham(maHoSo, maNhaSi, lyDo, maLichHen);
     }
 
-    // Khám vãng lai theo mã bệnh nhân: lấy hồ sơ của bệnh nhân rồi bắt đầu khám
+    // Khám vãng lai theo mã bệnh nhân
     public LuotKham batDauKhamTheoBenhNhan(String maBN, String maNhaSi, String lyDoKham) {
         HoSoBenhAn hs = hoSoService.timTheoBenhNhan(maBN);
         return batDauKham(hs.getMaHoSo(), maNhaSi, lyDoKham);
     }
 
-    // Khám theo lịch hẹn: lịch phải Đã xác nhận, đúng ngày hôm nay và đúng nha sĩ phụ trách
+    // Khám theo lịch hẹn
     public LuotKham batDauKhamTheoLich(String maLichHen, String maNhaSi) {
         LichHen lh = lichHenService.layTheoMa(maLichHen);
         if (lh == null) {
@@ -170,12 +166,12 @@ public class LuotKhamController {
         return taoLuotKham(hs.getMaHoSo(), maNhaSi, lyDo, maLichHen);
     }
 
-    // Lượt khám đang khám của nha sĩ; không có thì trả về null
+    // Lượt khám đang khám của nha sĩ
     public LuotKham layDangKham(String maNhaSi) {
         return luotKhamDAO.timDangKham(maNhaSi);
     }
 
-    // Lấy lượt khám theo mã; không có thì báo lỗi
+    // Lấy lượt khám theo mã
     public LuotKham timTheoMa(String maLuotKham) {
         LuotKham lk = luotKhamDAO.timTheoMa(maLuotKham);
         if (lk == null) {
@@ -184,7 +180,7 @@ public class LuotKhamController {
         return lk;
     }
 
-    // Lấy lượt khám để sửa: phải đang khám (lượt đã hoàn thành hoặc đã hủy thì khóa) và người sửa là nha sĩ phụ trách
+    // Lấy lượt khám để sửa
     private LuotKham layLuotKhamDeSua(String maLuotKham) {
         LuotKham lk = timTheoMa(maLuotKham);
         if (!HangSo.DANG_KHAM.equals(lk.getTrangThai())) {
@@ -197,7 +193,7 @@ public class LuotKhamController {
         return lk;
     }
 
-    // Kiểm tra độ dài rồi gán lý do khám, chẩn đoán, hướng điều trị và ghi chú vào lượt khám (chưa lưu CSDL)
+    // Kiểm tra độ dài rồi gán lý do khám
     private void ganNoiDung(LuotKham lk, String lyDoKham, String chanDoan, String huongDieuTri, String ghiChu) {
         String lyDo = rongThanhNull(lyDoKham);
         String chanDoanMoi = rongThanhNull(chanDoan);
@@ -213,7 +209,7 @@ public class LuotKhamController {
         lk.setGhiChu(ghiChuMoi);
     }
 
-    // Kiểm tra đơn thuốc (độ dài, từng thuốc không trùng dị ứng); trả về đơn đã cắt khoảng trắng, đơn rỗng thì trả về null
+    // Kiểm tra đơn thuốc
     private String kiemTraDonThuoc(LuotKham lk, String donThuoc) {
         String don = rongThanhNull(donThuoc);
         if (don == null) {
@@ -232,8 +228,7 @@ public class LuotKhamController {
         return don;
     }
 
-    // Lưu một lần toàn bộ nội dung khám trên màn hình: lý do, chẩn đoán, hướng điều trị, đơn thuốc, ghi chú
-    // Đơn thuốc rỗng nghĩa là xóa đơn (đặt null); thuốc nào trùng dị ứng thì chặn và không lưu gì
+    // Lưu một lần toàn bộ nội
     public void luuNoiDungKham(String maLuotKham, String lyDoKham, String chanDoan, String huongDieuTri, String donThuoc, String ghiChu) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         ganNoiDung(lk, lyDoKham, chanDoan, huongDieuTri, ghiChu);
@@ -241,14 +236,14 @@ public class LuotKhamController {
         luotKhamDAO.capNhat(lk);
     }
 
-    // Ghi lý do khám, chẩn đoán, hướng điều trị và ghi chú (không đụng đến đơn thuốc)
+    // Ghi lý do khám, chẩn đoán
     public void capNhatNoiDung(String maLuotKham, String lyDoKham, String chanDoan, String huongDieuTri, String ghiChu) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         ganNoiDung(lk, lyDoKham, chanDoan, huongDieuTri, ghiChu);
         luotKhamDAO.capNhat(lk);
     }
 
-    // Kê đơn thuốc: đơn không được rỗng; mỗi dòng (hoặc mỗi mục cách nhau dấu ;) là một thuốc, không được trùng dị ứng
+    // Kê đơn thuốc: đơn không được rỗng
     public void keDonThuoc(String maLuotKham, String donThuoc) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         if (rongThanhNull(donThuoc) == null) {
@@ -258,7 +253,7 @@ public class LuotKhamController {
         luotKhamDAO.capNhat(lk);
     }
 
-    // Lấy dịch vụ theo mã, phải tồn tại và còn hoạt động; không thì báo lỗi
+    // Lấy dịch vụ theo mã, phải tồn
     private DichVu layDichVuConHoatDong(String maDichVu) {
         DichVu dv = dichVuService.timTheoMa(maDichVu);
         if (dv == null || !dv.isTrangThaiHoatDong()) {
@@ -267,20 +262,20 @@ public class LuotKhamController {
         return dv;
     }
 
-    // Tính giờ kết thúc khám: bây giờ, nhưng luôn sau giờ bắt đầu (ràng buộc CSDL gioKetThuc > gioBatDau)
+    // Tính giờ kết thúc khám
     private LocalDateTime tinhGioKetThuc(LuotKham lk) {
         LocalDateTime bay = LocalDateTime.now();
         return bay.isAfter(lk.getGioBatDau()) ? bay : lk.getGioBatDau().plusMinutes(1);
     }
 
-    // Thêm một dịch vụ (không gắn răng) vào lượt khám
+    // Thêm một dịch vụ vào lượt khám
     public void themDichVu(String maLuotKham, String maDichVu, int soLuong) {
         layLuotKhamDeSua(maLuotKham);
         layDichVuConHoatDong(maDichVu);
         if (soLuong <= 0 || soLuong > TOI_DA_SO_LUONG) {
             throw new NghiepVuException("Số lượng phải từ 1 đến " + TOI_DA_SO_LUONG);
         }
-        int daCo = 0; // cùng dịch vụ đã thêm trước đó trong lượt khám này
+        int daCo = 0; // Cùng dịch vụ đã thêm trước đó
         for (LuotKhamDichVu cu : dichVuLuotKhamDAO.layTheoLuotKham(maLuotKham)) {
             if (cu.getMaDichVu().equals(maDichVu)) {
                 daCo += cu.getSoLuong();
@@ -296,8 +291,7 @@ public class LuotKhamController {
         dichVuLuotKhamDAO.them(x);
     }
 
-    // Cảnh báo (không chặn) khi dịch vụ cần liệu trình mà bệnh nhân chưa có; không có gì cần cảnh báo thì trả về null
-    // Hiện chưa có nơi nào gọi (màn hình dùng canhBaoThuThuat), giữ lại để tương thích với mã cũ
+    // Cảnh báo khi dịch vụ cần liệu trình
     public String canhBaoLieuTrinh(String maLuotKham, String maDichVu) {
         LuotKham lk = timTheoMa(maLuotKham);
         DichVu dv = dichVuService.timTheoMa(maDichVu);
@@ -305,8 +299,7 @@ public class LuotKhamController {
         return hoSoService.canhBaoLieuTrinh(hs.getMaBN(), dv);
     }
 
-    // Gom các cảnh báo (không chặn) khi chọn một dịch vụ cho bệnh nhân: thiếu liệu trình, bệnh nền, thuốc đang dùng, tuổi;
-    // không có gì cần cảnh báo thì trả về null
+    // Gom các cảnh báo khi chọn một dịch vụ
     public String canhBaoThuThuat(String maLuotKham, String maDichVu) {
         LuotKham lk = timTheoMa(maLuotKham);
         DichVu dv = dichVuService.timTheoMa(maDichVu);
@@ -323,7 +316,7 @@ public class LuotKhamController {
         return ds.isEmpty() ? null : String.join("\n\n", ds);
     }
 
-    // Ghép ghi chú cũ với phần hủy khám sao cho không quá độ dài cột ghi chú; nếu dài quá thì cắt phần ghi chú cũ
+    // Ghép ghi chú cũ với phần hủy khám sao
     private String ghepGhiChuHuy(String ghiChuCu, String lyDoHuy) {
         String phanHuy = TIEN_TO_HUY + lyDoHuy;
         String cu = rongThanhNull(ghiChuCu);
@@ -340,8 +333,7 @@ public class LuotKhamController {
         return cu.isEmpty() ? phanHuy : cu + NOI_GHI_CHU + phanHuy;
     }
 
-    // Hủy lượt khám đang khám (chọn nhầm bệnh nhân, bệnh nhân bỏ về...): phải có lý do và chưa ghi nhận dịch vụ hay răng nào;
-    // nếu đã đặt lịch tái khám thì lịch tái khám đó cũng bị hủy; lượt khám chuyển sang Đã hủy và lịch hẹn (nếu có) trở lại Đã xác nhận
+    // Hủy lượt khám đang khám
     public void huyLuotKham(String maLuotKham, String lyDo) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         String lyDoHuy = rongThanhNull(lyDo);
@@ -364,7 +356,7 @@ public class LuotKhamController {
         }
     }
 
-    // Hủy lịch tái khám đã đặt của lượt khám đang khám (đặt nhầm ngày hoặc nhầm dịch vụ) để đặt lại
+    // Hủy lịch tái khám đã đặt của lượt khám đang khám
     public void huyTaiKham(String maLuotKham) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         if (lk.getNgayTaiKham() == null) {
@@ -374,14 +366,14 @@ public class LuotKhamController {
         luotKhamDAO.capNhat(lk);
     }
 
-    // Hủy lịch hẹn tái khám tương ứng và xóa ngày tái khám trên đối tượng lượt khám (người gọi tự lưu)
+    // Hủy lịch hẹn tái khám tương ứng
     private void huyLichTaiKhamCuaLuot(LuotKham lk) {
         HoSoBenhAn hs = hoSoService.timTheoMa(lk.getMaHoSo());
         lichHenService.huyLichTaiKham(hs.getMaBN(), lk.getNgayTaiKham());
         lk.setNgayTaiKham(null);
     }
 
-    // Bỏ một dịch vụ khỏi lượt khám; dòng phải thuộc đúng lượt khám đang sửa
+    // Bỏ một dịch vụ khỏi lượt khám
     public void xoaDichVu(String maLuotKham, int maDong) {
         layLuotKhamDeSua(maLuotKham);
         if (!dichVuLuotKhamDAO.xoa(maLuotKham, maDong)) {
@@ -389,16 +381,15 @@ public class LuotKhamController {
         }
     }
 
-    // Dịch vụ không gắn răng của lượt khám (để hiện trên màn hình khám)
+    // Dịch vụ không gắn răng của lượt khám
     public List<LuotKhamDichVu> layDichVuKhongGanRang(String maLuotKham) {
         return dichVuLuotKhamDAO.layTheoLuotKham(maLuotKham);
     }
 
-    // Tất cả dịch vụ đã thực hiện (gắn răng + không gắn răng), gộp theo dịch vụ, để Trường lập chi tiết hóa đơn.
-    // Dịch vụ gắn răng tính theo (răng, dịch vụ): trám nhiều mặt của cùng một răng chỉ tính một lần.
+    // Tất cả dịch vụ đã thực hiện, gộp
     public List<LuotKhamDichVu> layDichVuDaThucHien(String maLuotKham) {
         Map<String, Integer> tong = new LinkedHashMap<>();
-        Set<String> daTinh = new HashSet<>(); // một răng làm một dịch vụ chỉ tính một lần dù ghi trên nhiều mặt răng
+        Set<String> daTinh = new HashSet<>(); // Một răng làm một dịch vụ
         for (RangDieuTri r : rangDAO.layTheoLuotKham(maLuotKham)) {
             if (r.getMaDichVu() != null && daTinh.add(r.getSoFDI() + "|" + r.getMaDichVu())) {
                 tong.merge(r.getMaDichVu(), 1, Integer::sum);
@@ -418,7 +409,7 @@ public class LuotKhamController {
         return kq;
     }
 
-    // Hoàn tất khám: phải có chẩn đoán và ít nhất một dịch vụ đã thực hiện; sau đó khóa lượt khám và hoàn thành lịch hẹn
+    // Hoàn tất khám
     public void hoanTatKham(String maLuotKham) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         if (lk.getChanDoan() == null || lk.getChanDoan().trim().isEmpty()) {
@@ -435,7 +426,7 @@ public class LuotKhamController {
         }
     }
 
-    // Chỉ định tái khám: ngày tái khám phải sau ngày khám, mỗi lượt khám một lịch; tạo lịch hẹn Chờ xác nhận
+    // Chỉ định tái khám
     public void datTaiKham(String maLuotKham, LocalDate ngayTaiKham, String maDichVu) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         if (lk.getNgayTaiKham() != null) {
@@ -449,18 +440,18 @@ public class LuotKhamController {
         }
         layDichVuConHoatDong(maDichVu);
         HoSoBenhAn hs = hoSoService.timTheoMa(lk.getMaHoSo());
-        // Tạo lịch trước: nếu lịch lỗi (trùng giờ, không có ca trực...) thì không lưu ngày tái khám
+        // Tạo lịch trước
         lichHenService.taoLichTaiKham(hs.getMaBN(), maDichVu, ngayTaiKham, lk.getMaNhanVienPhuTrach());
         lk.setNgayTaiKham(ngayTaiKham);
         luotKhamDAO.capNhat(lk);
     }
 
-    // Lượt khám đã hoàn thành nhưng chưa có hóa đơn (cho màn hình chờ thanh toán của Trường)
+    // Lượt khám đã hoàn thành
     public List<LuotKham> layLuotKhamChoThanhToan() {
         return luotKhamDAO.layChoThanhToan();
     }
 
-    // Gắn hóa đơn vào lượt khám sau khi Trường lập hóa đơn; mỗi lượt khám chỉ gắn một lần
+    // Gắn hóa đơn vào lượt khám
     public void ganHoaDon(String maLuotKham, String maHoaDon) {
         LuotKham lk = timTheoMa(maLuotKham);
         if (!HangSo.HOAN_THANH.equals(lk.getTrangThai())) {
@@ -471,7 +462,7 @@ public class LuotKhamController {
         }
     }
 
-    // Chuỗi không được dài hơn độ dài cột trong CSDL, nếu không SQL Server báo lỗi cắt chuỗi khó hiểu
+    // Chuỗi không được dài hơn độ dài cột
     private static void doDai(String giaTri, int toiDa, String tenTruong) {
         if (giaTri != null && giaTri.length() > toiDa) {
             throw new NghiepVuException(tenTruong + " dài tối đa " + toiDa + " ký tự (hiện đang " + giaTri.length() + " ký tự)");
@@ -479,7 +470,7 @@ public class LuotKhamController {
     }
 
 
-    // Chuỗi rỗng hoặc toàn khoảng trắng thì trả về null, ngược lại cắt khoảng trắng hai đầu
+    // Chuỗi rỗng hoặc toàn khoảng trắng
     private static String rongThanhNull(String s) {
         return s == null || s.trim().isEmpty() ? null : s.trim();
     }

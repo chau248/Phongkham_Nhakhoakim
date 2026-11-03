@@ -4,11 +4,11 @@ import java.time.LocalDate;
 
 public class CaTruc {
 
-    private String maCaTruc; // mã ca trực, dạng CA000001
-    private NhanVien maNV; // nhân viên trực
-    private LocalDate ngay; // ngày trực
+    private String maCaTruc; // Mã ca trực, dạng CA000001
+    private NhanVien maNV; // Nhân viên trực
+    private LocalDate ngay; // Ngày trực
     private String caLam; // Sáng hoặc Chiều
-    private String phong; // phòng khám hoặc quầy lễ tân
+    private String phong; // Phòng khám hoặc quầy lễ tân
     private String trangThai; // Có mặt, Vắng hoặc Điều chuyển
     
     

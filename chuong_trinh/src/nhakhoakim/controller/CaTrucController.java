@@ -15,7 +15,7 @@ import nhakhoakim.entity.LichHen;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.VaiTro;
 
-// Nghiệp vụ phân công ca trực (NV-04, NV-05): Quản lý xếp ca theo tuần; các nơi khác chỉ hỏi ca trực của nha sĩ
+// Nghiệp vụ phân công ca trực
 public class CaTrucController {
 
     public static final String SANG = "Sáng";
@@ -32,12 +32,12 @@ public class CaTrucController {
     private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
-    // Dùng DAO thật và người đăng nhập thật của chương trình
+    // Dùng DAO thật
     public CaTrucController() {
         this(new CaTrucDAO(), new LichHenDAO(), new NhanVienController(), PhienLamViec::getNhanVienHienTai);
     }
 
-    // Dùng DAO và người dùng truyền vào (để kiểm thử)
+    // Dùng DAO và người dùng truyền vào
     public CaTrucController(CaTrucDAO caTrucDAO, LichHenDAO lichHenDAO, NhanVienController nhanVienController, Supplier<NhanVien> nguoiDung) {
         this.caTrucDAO = caTrucDAO;
         this.lichHenDAO = lichHenDAO;
@@ -45,27 +45,27 @@ public class CaTrucController {
         this.nguoiDung = nguoiDung;
     }
 
-    // Giờ bắt đầu của ca: Sáng 08:00, Chiều 13:00 (CH-05)
+    // Giờ bắt đầu của ca
     public static LocalTime gioBatDauCa(String caLam) {
         return SANG.equals(caLam) ? LocalTime.of(8, 0) : LocalTime.of(13, 0);
     }
 
-    // Giờ kết thúc của ca: Sáng 12:00, Chiều 17:00 (CH-05)
+    // Giờ kết thúc của ca
     public static LocalTime gioKetThucCa(String caLam) {
         return SANG.equals(caLam) ? LocalTime.of(12, 0) : LocalTime.of(17, 0);
     }
 
-    // Các ca trực trong khoảng ngày (gồm cả hai đầu) của mọi nhân viên
+    // Các ca trực
     public List<CaTruc> layTheoKhoang(LocalDate tu, LocalDate den) {
         return caTrucDAO.layTheoKhoang(tu, den);
     }
 
-    // Các ca trực của một nhân viên trong khoảng ngày (gồm cả hai đầu)
+    // Các ca trực của một nhân viên
     public List<CaTruc> layTheoNhanVienVaKhoang(String maNV, LocalDate tu, LocalDate den) {
         return caTrucDAO.layTheoNhanVien(maNV, tu, den);
     }
 
-    // Các ca Có mặt của một nhân viên trong một ngày, nếu caLam khác null thì chỉ lấy ca đó
+    // Các ca Có mặt của một nhân viên
     public List<CaTruc> layCaCoMat(String maNV, LocalDate ngay, String caLam) {
         List<CaTruc> kq = new ArrayList<>();
         for (CaTruc ca : caTrucDAO.layTheoNhanVien(maNV, ngay, ngay)) {
@@ -76,18 +76,17 @@ public class CaTrucController {
         return kq;
     }
 
-    // Nhân viên có ca trực Có mặt vào ngày đó không (caLam null nghĩa là ca nào cũng được)
+    // Nhân viên có ca trực
     public boolean coCaTruc(String maNV, LocalDate ngay, String caLam) {
         return !layCaCoMat(maNV, ngay, caLam).isEmpty();
     }
 
-    // Tìm ca trực theo mã; không có thì trả về null
+    // Tìm ca trực theo mã
     public CaTruc timTheoMa(String maCaTruc) {
         return caTrucDAO.timTheoMa(maCaTruc);
     }
 
-    // Phân công một ca trực (chỉ Quản lý). Kiểm tra: nhân viên đang làm việc, nha sĩ còn chứng chỉ, không xếp ca quá khứ,
-    // không hai ca trùng ngày và ca, mỗi phòng và ca tối đa một nha sĩ, lễ tân xếp ở quầy lễ tân (NV-02, NV-04, NV-05).
+    // Phân công một ca trực
     public CaTruc phanCong(String maNV, LocalDate ngay, String caLam, String phong) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "phân công ca trực", VaiTro.QUAN_LY);
         NhanVien nv = nhanVienController.timTheoMa(maNV);
@@ -137,7 +136,7 @@ public class CaTrucController {
         return ca;
     }
 
-    // Đổi trạng thái ca (Có mặt, Vắng, Điều chuyển); không đánh dấu Vắng hay Điều chuyển khi nha sĩ còn lịch hẹn trong ca đó
+    // Đổi trạng thái ca
     public void doiTrangThai(String maCaTruc, String trangThai) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "đổi trạng thái ca trực", VaiTro.QUAN_LY);
         CaTruc ca = layCa(maCaTruc);
@@ -151,7 +150,7 @@ public class CaTrucController {
         nhatKy.ghiNhatKy(nguoi.getMaNV(), "Đổi trạng thái ca trực", "CaTruc", maCaTruc, "Từ [" + ca.getTrangThai() + "] sang [" + trangThai + "]");
     }
 
-    // Xóa ca đã xếp nhầm (chỉ Quản lý): ca chưa diễn ra và nha sĩ chưa có lịch hẹn trong ca đó (NV-05)
+    // Xóa ca đã xếp nhầm
     public void xoa(String maCaTruc) {
         NhanVien nguoi = Quyen.yeuCau(nguoiDung, "xóa ca trực", VaiTro.QUAN_LY);
         CaTruc ca = layCa(maCaTruc);
@@ -172,7 +171,7 @@ public class CaTrucController {
         return ca;
     }
 
-    // Nha sĩ có lịch hẹn còn hiệu lực nằm trong ca này thì báo lỗi (không xóa hay bỏ ca đã có lịch hẹn)
+    // Nha sĩ có lịch hẹn còn hiệu lực
     private void kiemTraKhongCoLichHen(CaTruc ca, String viec) {
         if (!VaiTro.NHA_SI.equals(ca.getMaNV().getVaiTro())) {
             return;

@@ -1,6 +1,6 @@
 package nhakhoakim.entity;
 
-// Tên các loại dịch vụ (cột DichVu.loaiDichVu) mà chương trình cần so sánh khi cảnh báo và gợi ý
+// Tên các loại dịch vụ
 public class LoaiDichVu {
 
     public static final String KHAM = "Khám";

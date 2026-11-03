@@ -1,6 +1,6 @@
 package nhakhoakim.entity;
 
-// Các giá trị trạng thái lưu trong CSDL của bệnh nhân, hồ sơ, lượt khám và răng; dùng hằng này thay vì gõ chuỗi
+// Các giá trị trạng thái lưu
 public class TrangThai {
 
     // Bệnh nhân

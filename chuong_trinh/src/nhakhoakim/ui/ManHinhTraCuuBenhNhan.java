@@ -19,22 +19,21 @@ import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HangSo;
 import nhakhoakim.entity.NhanVien;
 
-// Màn hình tìm kiếm bệnh nhân theo mã, họ tên hoặc số điện thoại; từ kết quả mở hồ sơ bệnh án, sửa thông tin, thêm mới,
-// ngừng theo dõi hoặc mở lại điều trị
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình tìm kiếm bệnh nhân theo mã
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
 
     private BenhNhanController benhNhanService = new BenhNhanController();
     private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
-    private JTextField txtTuKhoa = TienIch.oNhap(28);              // từ khóa tìm kiếm
+    private JTextField txtTuKhoa = TienIch.oNhap(28); // Từ khóa tìm kiếm
     private JTable tblBenhNhan = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Ngày sinh", "Giới tính", "Số điện thoại", "Địa chỉ", "Nha sĩ khám gần nhất", "Trạng thái"},
-            new int[] {90, 180, 95, 75, 115, 200, 170, 110}, "Không có bệnh nhân nào."); // kết quả
-    private JLabel lblKetQua = new JLabel();                       // số kết quả
-    private List<BenhNhan> dsBenhNhan = new ArrayList<>();         // dữ liệu của bảng
+            new int[] {90, 180, 95, 75, 115, 200, 170, 110}, "Không có bệnh nhân nào."); // Kết quả
+    private JLabel lblKetQua = new JLabel(); // Số kết quả
+    private List<BenhNhan> dsBenhNhan = new ArrayList<>(); // Dữ liệu của bảng
     private JButton btnSua = TienIch.nutPhu("Sửa thông tin");
     private JButton btnThem = TienIch.nutPhu("Thêm bệnh nhân mới");
-    private JLabel lblQuyen = new JLabel();                        // giải thích vì sao không sửa được
+    private JLabel lblQuyen = new JLabel(); // Giải thích
     private JCheckBox chkNgung = new JCheckBox("Gồm cả bệnh nhân ngừng theo dõi");
     private JButton btnNgung = TienIch.nutPhu("Ngừng theo dõi");
     private JButton btnMoLai = TienIch.nutPhu("Mở lại điều trị");
@@ -48,7 +47,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
         chkNgung.setFont(TienIch.FONT);
         chkNgung.addActionListener(e -> tim());
 
-        // Bấm đúp chỉ mở hồ sơ khi bấm trúng một dòng có dữ liệu (bấm vào vùng trống của bảng thì bỏ qua)
+        // Bấm đúp chỉ mở hồ sơ
         tblBenhNhan.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -80,20 +79,20 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
         tim();
     }
 
-    // Quay lại từ màn hình sửa hoặc thêm bệnh nhân thì tìm lại để bảng có dữ liệu mới
+    // Quay lại từ màn hình sửa hoặc thêm bệnh nhân
     @Override
     public void lamMoi() {
         apDungQuyenSua();
         tim();
     }
 
-    // Chỉ Lễ tân và Quản lý được thêm, sửa thông tin hành chính (BN-05); vai trò khác thì khóa các nút và nói rõ lý do
+    // Chỉ Lễ tân và Quản lý được thêm
     private void apDungQuyenSua() {
         NhanVien nv = null;
         try {
             nv = PhienLamViec.getNhanVienHienTai();
         } catch (RuntimeException e) {
-            nv = null; // không biết ai đăng nhập thì để Service báo lỗi khi lưu
+            nv = null; // Không biết ai đăng nhập
         }
         boolean khoa = nv != null && !HangSo.VAI_TRO_LE_TAN.equals(nv.getVaiTro()) && !HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro());
         btnSua.setEnabled(!khoa);
@@ -103,7 +102,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
         lblQuyen.setText(khoa ? nv.getVaiTro() + " chỉ xem, không được thêm hoặc sửa thông tin hành chính của bệnh nhân." : " ");
     }
 
-    // Tìm theo từ khóa và hiện lên bảng (từ khóa rỗng thì hiện tối đa 50 bệnh nhân đầu)
+    // Tìm theo từ khóa và hiện lên bảng
     private void tim() {
         try {
             dsBenhNhan = benhNhanService.timKiem(txtTuKhoa.getText(), chkNgung.isSelected());
@@ -111,7 +110,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
             for (BenhNhan bn : dsBenhNhan) {
                 dsMa.add(bn.getMaBN());
             }
-            Map<String, String> nhaSi = nhaSiService.layTenNhaSiKhamGanNhat(dsMa); // hỏi một lần cho cả bảng
+            Map<String, String> nhaSi = nhaSiService.layTenNhaSiKhamGanNhat(dsMa); // Hỏi một lần cho cả bảng
             List<String[]> dong = new ArrayList<>();
             for (BenhNhan bn : dsBenhNhan) {
                 String tenNhaSi = nhaSi.containsKey(bn.getMaBN()) ? nhaSi.get(bn.getMaBN()) : "Chưa khám";
@@ -125,7 +124,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
         }
     }
 
-    // Bệnh nhân đang chọn trong bảng; chưa chọn thì nhắc và trả về null
+    // Bệnh nhân đang chọn trong bảng
     private BenhNhan dangChon() {
         int vt = tblBenhNhan.getSelectedRow();
         if (vt < 0 || vt >= dsBenhNhan.size()) {
@@ -135,7 +134,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
         return dsBenhNhan.get(vt);
     }
 
-    // Ngừng theo dõi hoặc mở lại bệnh nhân đang chọn (Service kiểm quyền và điều kiện)
+    // Ngừng theo dõi hoặc mở lại
     private void doiTrangThai(String trangThaiMoi) {
         BenhNhan bn = dangChon();
         if (bn == null) {

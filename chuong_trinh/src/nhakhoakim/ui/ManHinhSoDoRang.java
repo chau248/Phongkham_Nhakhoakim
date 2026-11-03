@@ -36,12 +36,11 @@ import nhakhoakim.entity.HoSoBenhAn;
 import nhakhoakim.entity.LuotKham;
 import nhakhoakim.entity.RangDieuTri;
 
-// Màn hình sơ đồ răng điều trị: răng vĩnh viễn (32 răng) và răng sữa (20 răng) theo hệ FDI,
-// bấm một răng để ghi nhận tình trạng trong lượt khám đang khám
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình sơ đồ răng điều trị
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhSoDoRang extends JPanel {
 
-    private static final int TUOI_HIEN_RANG_SUA = 6;          // bệnh nhân dưới tuổi này thì mặc định hiện răng sữa
+    private static final int TUOI_HIEN_RANG_SUA = 6; // Bệnh nhân dưới tuổi này
 
     // Màu tô cho từng trạng thái răng
     private static final Map<String, Color> MAU = new HashMap<>();
@@ -56,7 +55,7 @@ public class ManHinhSoDoRang extends JPanel {
         MAU.put(HangSo.RANG_CAU_RANG, new Color(0xFFCC80));
     }
 
-    // Nút của một răng: ô vuông tô màu theo tình trạng, viền xanh đậm khi đang được chọn
+    // Nút của một răng
     private static class NutRang extends JButton {
         private Color mau = Color.WHITE;
         private boolean dangChon = false;
@@ -65,7 +64,7 @@ public class ManHinhSoDoRang extends JPanel {
             super(String.valueOf(so));
             setPreferredSize(new Dimension(48, 48));
             setFont(TienIch.FONT_DAM);
-            setMargin(new java.awt.Insets(0, 0, 0, 0)); // bỏ lề mặc định để số răng không bị cắt thành dấu ba chấm
+            setMargin(new java.awt.Insets(0, 0, 0, 0)); // Bỏ lề mặc định
             setFocusPainted(false);
             setContentAreaFilled(false);
             setBorderPainted(false);
@@ -99,14 +98,14 @@ public class ManHinhSoDoRang extends JPanel {
     private BenhNhanController benhNhanService = new BenhNhanController();
     private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
-    private LuotKham luotKham;                                       // lượt khám đang khám
-    private Map<Integer, NutRang> nutRang = new HashMap<>();         // nút của từng răng (cả hai bộ), khóa là số FDI
-    private Map<Integer, RangDieuTri> tinhTrang = new HashMap<>();   // tình trạng hiện tại của từng răng
-    private Map<String, String> tenDichVu = new HashMap<>();         // mã dịch vụ -> tên dịch vụ
-    private int rangDangChon = 0;                                    // số FDI đang chọn (0 là chưa chọn)
+    private LuotKham luotKham; // Lượt khám đang khám
+    private Map<Integer, NutRang> nutRang = new HashMap<>(); // Nút của từng răng
+    private Map<Integer, RangDieuTri> tinhTrang = new HashMap<>(); // Tình trạng hiện tại của từng
+    private Map<String, String> tenDichVu = new HashMap<>(); // Mã dịch vụ -> tên dịch vụ
+    private int rangDangChon = 0; // Số FDI đang chọn
 
-    private JPanel khungVinhVien = new JPanel();                     // sơ đồ răng vĩnh viễn
-    private JPanel khungSua = new JPanel();                          // sơ đồ răng sữa
+    private JPanel khungVinhVien = new JPanel(); // Sơ đồ răng vĩnh viễn
+    private JPanel khungSua = new JPanel(); // Sơ đồ răng sữa
     private JButton btnVinhVien = TienIch.nutChinh("Răng vĩnh viễn");
     private JButton btnSua = TienIch.nutPhu("Răng sữa");
 
@@ -114,9 +113,9 @@ public class ManHinhSoDoRang extends JPanel {
     private JComboBox<String> cmbTrangThai = new JComboBox<>();
     private JComboBox<String> cmbMatRang = new JComboBox<>(new String[] {"", "Gần", "Xa", "Nhai", "Ngoài", "Trong"});
     private JTextField txtVatLieu = TienIch.oNhap(26);
-    private JComboBox<DichVu> cmbDichVu;                             // dịch vụ đã làm (chưa chọn nghĩa là không có dịch vụ)
+    private JComboBox<DichVu> cmbDichVu; // Dịch vụ đã làm
     private JTextField txtGhiChu = TienIch.oNhap(26);
-    private JComboBox<RangDieuTri> cmbBanGhi = new JComboBox<>();    // các bản ghi của răng đang chọn trong lượt khám này
+    private JComboBox<RangDieuTri> cmbBanGhi = new JComboBox<>(); // Các bản ghi của răng đang chọn
     private JButton btnGo = TienIch.nutPhu("Gỡ bản ghi đã chọn");
 
     public ManHinhSoDoRang() {
@@ -139,17 +138,17 @@ public class ManHinhSoDoRang extends JPanel {
         }
     }
 
-    // Dựng công tắc răng vĩnh viễn / răng sữa, hai sơ đồ và form ghi nhận
+    // Dựng công tắc răng vĩnh viễn / răng sữa
     private void dung(List<Component> cacKhoi) {
         HoSoBenhAn hoSoKham = hoSoService.timTheoMa(luotKham.getMaHoSo());
         BenhNhan benhNhanKham = benhNhanService.timTheoMa(hoSoKham.getMaBN());
         cacKhoi.add(DongThongTinLuotKham.tao(benhNhanKham == null ? hoSoKham.getMaBN() : benhNhanKham.getHoTen(),
                 nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
-        // răng vĩnh viễn, hàm trên: 18..11 | 21..28 ; hàm dưới: 48..41 | 31..38
+        // Răng vĩnh viễn, hàm trên
         khungVinhVien.setOpaque(false);
         TienIch.xep(khungVinhVien, 8, taoHang(new int[] {18, 17, 16, 15, 14, 13, 12, 11}, new int[] {21, 22, 23, 24, 25, 26, 27, 28}),
                 taoHang(new int[] {48, 47, 46, 45, 44, 43, 42, 41}, new int[] {31, 32, 33, 34, 35, 36, 37, 38}));
-        // răng sữa, hàm trên: 55..51 | 61..65 ; hàm dưới: 85..81 | 71..75
+        // Răng sữa, hàm trên: 55..51 | 61..65
         khungSua.setOpaque(false);
         TienIch.xep(khungSua, 8, taoHang(new int[] {55, 54, 53, 52, 51}, new int[] {61, 62, 63, 64, 65}),
                 taoHang(new int[] {85, 84, 83, 82, 81}, new int[] {71, 72, 73, 74, 75}));
@@ -207,14 +206,14 @@ public class ManHinhSoDoRang extends JPanel {
         btnGhi.addActionListener(e -> ghiNhan());
         JPanel the = TienIch.the(lblRang, form, TienIch.dong(btnGhi), TienIch.nhan("Đã ghi trên răng này trong lượt khám (gỡ nếu ghi nhầm)"),
                 TienIch.dong(cmbBanGhi, btnGo));
-        JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // thẻ chỉ rộng vừa phải, không kéo hết chiều ngang cửa sổ
+        JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // Thẻ chỉ rộng vừa phải
         gioiHan.setOpaque(false);
         gioiHan.add(the, java.awt.BorderLayout.WEST);
         the.setPreferredSize(new Dimension(560, the.getPreferredSize().height));
         cacKhoi.add(gioiHan);
     }
 
-    // Bệnh nhân của lượt khám có dưới 6 tuổi không (chưa biết ngày sinh thì coi như không)
+    // Bệnh nhân của lượt khám
     private boolean laTreDuoiSauTuoi() {
         HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
         BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
@@ -225,7 +224,7 @@ public class ManHinhSoDoRang extends JPanel {
         return tuoi >= 0 && tuoi < TUOI_HIEN_RANG_SUA;
     }
 
-    // Hiện sơ đồ răng sữa (sua = true) hoặc răng vĩnh viễn, nút đang chọn được tô đậm
+    // Hiện sơ đồ răng sữa hoặc răng vĩnh viễn
     private void hienBoRang(boolean sua) {
         khungVinhVien.setVisible(!sua);
         khungSua.setVisible(sua);
@@ -235,7 +234,7 @@ public class ManHinhSoDoRang extends JPanel {
         repaint();
     }
 
-    // Một hàng răng gồm hai nửa (phải và trái) cách nhau một khoảng
+    // Một hàng răng gồm hai nửa
     private JPanel taoHang(int[] nuaPhai, int[] nuaTrai) {
         JPanel hang = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         hang.setOpaque(false);
@@ -249,7 +248,7 @@ public class ManHinhSoDoRang extends JPanel {
         return hang;
     }
 
-    // Nút của một răng; bấm vào thì chọn răng đó
+    // Nút của một răng
     private NutRang taoNutRang(int so) {
         NutRang btn = new NutRang(so);
         btn.addActionListener(e -> chonRang(so));
@@ -257,7 +256,7 @@ public class ManHinhSoDoRang extends JPanel {
         return btn;
     }
 
-    // Đọc tình trạng hiện tại của các răng và tô màu lại sơ đồ
+    // Đọc tình trạng hiện tại của các răng
     private void napTinhTrang() {
         tinhTrang.clear();
         for (RangDieuTri r : rangService.layTinhTrangMoiNhat(luotKham.getMaHoSo())) {
@@ -270,7 +269,7 @@ public class ManHinhSoDoRang extends JPanel {
         }
     }
 
-    // Tên các dịch vụ đã ghi cho răng này trong lượt khám đang khám (không trùng tên); chưa có thì chuỗi rỗng
+    // Tên các dịch vụ đã ghi cho răng này
     private String dichVuDaGhi(int so) {
         List<String> ten = new ArrayList<>();
         for (RangDieuTri r : rangService.layTheoLuotKham(luotKham.getMaLuotKham())) {
@@ -284,7 +283,7 @@ public class ManHinhSoDoRang extends JPanel {
         return String.join(", ", ten);
     }
 
-    // Chọn một răng: điền sẵn form bằng tình trạng hiện tại của răng đó
+    // Chọn một răng
     private void chonRang(int so) {
         rangDangChon = so;
         RangDieuTri r = tinhTrang.get(so);
@@ -310,7 +309,7 @@ public class ManHinhSoDoRang extends JPanel {
         napTinhTrang();
     }
 
-    // Gỡ bản ghi răng đã chọn (ghi nhầm trạng thái hoặc dịch vụ) khỏi lượt khám đang khám
+    // Gỡ bản ghi răng đã chọn
     private void goBanGhi() {
         RangDieuTri b = (RangDieuTri) cmbBanGhi.getSelectedItem();
         if (b == null) {
@@ -329,7 +328,7 @@ public class ManHinhSoDoRang extends JPanel {
         }
     }
 
-    // Ghi nhận tình trạng răng đang chọn vào lượt khám
+    // Ghi nhận tình trạng răng
     private void ghiNhan() {
         if (rangDangChon == 0) {
             TienIch.thongTin("Vui lòng bấm chọn một răng trên sơ đồ.");
@@ -346,7 +345,7 @@ public class ManHinhSoDoRang extends JPanel {
             r.setMaDichVu(dichVu == null ? null : dichVu.getMaDichVu());
             r.setGhiChu(txtGhiChu.getText().trim().isEmpty() ? null : txtGhiChu.getText().trim());
 
-            // Gom các cảnh báo (không chặn) rồi hỏi xác nhận một lần
+            // Gom các cảnh báo
             String canhBao = r.getMaDichVu() == null ? null : luotKhamService.canhBaoThuThuat(luotKham.getMaLuotKham(), r.getMaDichVu());
             String thieuDichVu = rangService.canhBaoThieuDichVu(luotKham.getMaLuotKham(), r);
             if (canhBao != null && thieuDichVu != null) {

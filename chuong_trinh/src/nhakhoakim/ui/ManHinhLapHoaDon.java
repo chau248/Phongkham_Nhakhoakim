@@ -14,9 +14,8 @@ import nhakhoakim.controller.HoaDonController;
 import nhakhoakim.entity.ChiTietHoaDon;
 import nhakhoakim.entity.HoaDon;
 
-// Màn hình lập hóa đơn (HD-02 đến HD-04) cho một lượt khám đã hoàn thành: các dòng lấy từ dịch vụ đã thực hiện,
-// lễ tân chỉ nhập giảm giá và ghi chú; tổng tiền = dịch vụ - giảm giá + VAT 8%
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình lập hóa đơn
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhLapHoaDon extends JPanel {
 
     private HoaDonController hoaDonController = new HoaDonController();
@@ -25,7 +24,7 @@ public class ManHinhLapHoaDon extends JPanel {
 
     private JTable tblChiTiet = TienIch.taoBang(new String[] {"Dịch vụ", "Răng", "Số lượng", "Đơn giá", "Thành tiền"},
             new int[] {280, 70, 80, 120, 130}, "Lượt khám chưa ghi dịch vụ nào.");
-    private JTextField txtGiamGia = TienIch.oNhap(12);              // số tiền giảm (đồng)
+    private JTextField txtGiamGia = TienIch.oNhap(12); // Số tiền giảm
     private JTextField txtGhiChu = TienIch.oNhap(40);
     private JLabel lblTongDichVu = TienIch.chuThuong(" ", false);
     private JLabel lblTruocThue = TienIch.chuThuong(" ", false);
@@ -48,7 +47,7 @@ public class ManHinhLapHoaDon extends JPanel {
         tinh();
     }
 
-    // Đọc số tiền giảm giá người dùng gõ (bỏ dấu chấm ngăn cách); ô trống là 0
+    // Đọc số tiền giảm giá người dùng gõ
     private BigDecimal docGiamGia() {
         String chu = txtGiamGia.getText().trim().replace(".", "").replace(",", "");
         if (chu.isEmpty()) {
@@ -61,7 +60,7 @@ public class ManHinhLapHoaDon extends JPanel {
         }
     }
 
-    // Tính hóa đơn tạm với giảm giá đang nhập và hiện lên bảng
+    // Tính hóa đơn tạm với giảm giá đang nhập
     private void tinh() {
         try {
             HoaDon hd = hoaDonController.xemTruoc(maLuotKham, docGiamGia());
@@ -83,7 +82,7 @@ public class ManHinhLapHoaDon extends JPanel {
         }
     }
 
-    // Lập hóa đơn rồi chuyển sang màn hình thanh toán
+    // Lập hóa đơn
     private void lap() {
         try {
             HoaDon hd = hoaDonController.lapHoaDon(maLuotKham, docGiamGia(), txtGhiChu.getText());

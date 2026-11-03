@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nhakhoakim.entity.LichHen;
 
-// Truy cập bảng LichHen (chỉ lớp DAO được viết SQL). Quy tắc đặt, dời, hủy nằm ở LichHenController.
+// Truy cập bảng LichHen
 public class LichHenDAO {
 
     static final String CAC_COT = "maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen, trangThai, thoiLuongDuKien, phong, hinhThucDat,"
@@ -52,48 +52,48 @@ public class LichHenDAO {
         }
     }
 
-    // Tìm lịch hẹn theo mã; không có thì trả về null
+    // Tìm lịch hẹn theo mã
     public LichHen timTheoMa(String maLichHen) {
         List<LichHen> ds = layDanhSach(SQL_THEO_MA, maLichHen);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Lịch hẹn của mọi nha sĩ trong khoảng ngày (gồm cả hai đầu), theo ngày giờ
+    // Lịch hẹn của mọi nha sĩ
     public List<LichHen> layTheoKhoang(LocalDate tu, LocalDate den) {
         return layDanhSach(SQL_THEO_KHOANG, tu, den);
     }
 
-    // Lịch hẹn của một nha sĩ trong khoảng ngày (gồm cả hai đầu), theo ngày giờ
+    // Lịch hẹn của một nha sĩ
     public List<LichHen> layTheoNhanVien(String maNV, LocalDate tu, LocalDate den) {
         return layDanhSach(SQL_THEO_NHAN_VIEN, maNV, tu, den);
     }
 
-    // Lịch còn hiệu lực (Chờ xác nhận hoặc Đã xác nhận) của một nha sĩ trong một ngày, dùng để kiểm tra trùng giờ
+    // Lịch còn hiệu lực của một nha sĩ
     public List<LichHen> layConHieuLucTheoNhaSiVaNgay(String maNV, LocalDate ngay) {
         return layDanhSach(SQL_HIEU_LUC_NHA_SI_NGAY, maNV, ngay);
     }
 
-    // Lịch còn hiệu lực của một bệnh nhân trong một ngày, dùng để kiểm tra bệnh nhân không có hai lịch chồng nhau
+    // Lịch còn hiệu lực của một bệnh nhân
     public List<LichHen> layConHieuLucTheoBenhNhanVaNgay(String maBN, LocalDate ngay) {
         return layDanhSach(SQL_HIEU_LUC_BENH_NHAN_NGAY, maBN, ngay);
     }
 
-    // Lịch Đã xác nhận của một bệnh nhân trong một ngày (khám vãng lai gắn lịch này vào lượt khám)
+    // Lịch Đã xác nhận của một bệnh nhân
     public List<LichHen> layDaXacNhanTheoBenhNhan(String maBN, LocalDate ngay) {
         return layDanhSach(SQL_DA_XAC_NHAN_BENH_NHAN_NGAY, maBN, ngay);
     }
 
-    // Đổi trạng thái lịch hẹn; lyDoHuy chỉ có khi hủy (các trạng thái khác truyền null)
+    // Đổi trạng thái lịch hẹn
     public void doiTrangThai(String maLichHen, String trangThai, String lyDoHuy) {
         chay(SQL_DOI_TRANG_THAI, trangThai, lyDoHuy, maLichHen);
     }
 
-    // Dời lịch sang ngày giờ khác (kèm phòng và thời lượng tính lại)
+    // Dời lịch sang ngày giờ khác
     public void doiNgayGio(String maLichHen, LocalDate ngay, LocalTime gio, String phong, int thoiLuongPhut) {
         chay(SQL_DOI_NGAY_GIO, ngay, gio, phong, thoiLuongPhut, maLichHen);
     }
 
-    // Lịch hẹn này đang có lượt khám Đang khám không (không được dời hoặc hủy lịch lúc đó, LH-06)
+    // Lịch hẹn này đang có lượt
     public boolean coLuotKhamDangKham(String maLichHen) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_DEM_DANG_KHAM)) {
             ps.setString(1, maLichHen);
@@ -105,7 +105,7 @@ public class LichHenDAO {
         }
     }
 
-    // Chạy một câu UPDATE với các tham số bất kỳ
+    // Chạy một câu UPDATE
     private void chay(String sql, Object... thamSo) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             for (int i = 0; i < thamSo.length; i++) {
@@ -117,7 +117,7 @@ public class LichHenDAO {
         }
     }
 
-    // Chạy câu SELECT với các tham số bất kỳ và đọc tất cả dòng
+    // Chạy câu SELECT với các tham số bất kỳ
     private List<LichHen> layDanhSach(String sql, Object... thamSo) {
         List<LichHen> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

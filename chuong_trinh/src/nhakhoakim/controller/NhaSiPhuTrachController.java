@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// Cho biết tên nha sĩ phụ trách để các màn hình hiện lên cho người dùng thấy ai đang khám, ai phụ trách liệu trình
+// Cho biết tên nha sĩ phụ trách
 public class NhaSiPhuTrachController {
 
     private NhaSiPhuTrachDAO dao;
@@ -17,12 +17,12 @@ public class NhaSiPhuTrachController {
         this(new NhaSiPhuTrachDAO());
     }
 
-    // Dùng DAO truyền vào (để kiểm thử không cần CSDL)
+    // Dùng DAO truyền vào
     public NhaSiPhuTrachController(NhaSiPhuTrachDAO dao) {
         this.dao = dao;
     }
 
-    // Tên một nhân viên; mã rỗng thì trả về chuỗi rỗng, không tìm thấy tên thì trả về chính mã
+    // Tên một nhân viên
     public String layTen(String maNV) {
         if (maNV == null || maNV.trim().isEmpty()) {
             return "";
@@ -30,12 +30,12 @@ public class NhaSiPhuTrachController {
         return tenHoacMa(dao.layTen(List.of(maNV.trim())), maNV.trim());
     }
 
-    // Bảng tra mã nhân viên -> họ tên cho cả danh sách mã (hỏi CSDL một lần)
+    // Bảng tra mã nhân viên -> họ tên
     public Map<String, String> layTen(Collection<String> dsMaNV) {
         return dao.layTen(dsMaNV);
     }
 
-    // Bảng tra mã bệnh nhân -> họ tên nha sĩ của lượt khám gần nhất (bệnh nhân chưa khám lần nào thì không có trong bảng)
+    // Bảng tra mã bệnh nhân ->
     public Map<String, String> layTenNhaSiKhamGanNhat(Collection<String> dsMaBN) {
         Map<String, String> maNhaSi = dao.layNhaSiKhamGanNhat(dsMaBN);
         Map<String, String> ten = dao.layTen(maNhaSi.values());
@@ -46,7 +46,7 @@ public class NhaSiPhuTrachController {
         return kq;
     }
 
-    // Tên trong bảng tra; không có thì dùng mã để người dùng vẫn biết là nhân viên nào
+    // Tên trong bảng tra
     public static String tenHoacMa(Map<String, String> bangTen, String maNV) {
         if (maNV == null) {
             return "";

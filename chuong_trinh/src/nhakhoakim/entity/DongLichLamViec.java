@@ -3,18 +3,18 @@ package nhakhoakim.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-// Một dòng của màn hình "Xem lịch làm việc": một ca trực và (nếu có) một lịch hẹn trong ca đó
+// Một dòng của màn hình "Xem
 public class DongLichLamViec {
 
     private LocalDate ngay;
     private String caLam;
     private String phong;
-    private LocalTime gio;          // giờ hẹn; null nghĩa là ca chưa có lịch hẹn nào
+    private LocalTime gio; // Giờ hẹn
     private String maLichHen;
     private String tenBenhNhan;
     private String tenDichVu;
-    private String tenNhaSi;        // nha sĩ phụ trách (y tá thấy tên nha sĩ cùng phòng)
-    private String trangThai;       // trạng thái lịch hẹn
+    private String tenNhaSi; // Nha sĩ phụ trách
+    private String trangThai; // Trạng thái lịch hẹn
 
     public DongLichLamViec(LocalDate ngay, String caLam, String phong) {
         this.ngay = ngay;

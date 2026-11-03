@@ -1,11 +1,12 @@
 package nhakhoakim.entity;
 
 import java.math.BigDecimal;
-//tinhThanhTien chua hoan thanh do chua co cong thuc
+// TinhThanhTien chua hoan thanh do chua
 public class ChiTietHoaDon {
     private int soLuong,soFDIRang;
     private String maDichVu;
-    private String ghiChu,maChiTiet, maHoaDon;
+    private String ghiChu,maChiTiet;
+    private HoaDon maHoaDon;
     private BigDecimal donGia;
     private BigDecimal giamGia;
     public int getSoLuong() {
@@ -51,13 +52,13 @@ public class ChiTietHoaDon {
         this.giamGia = giamGia;
     }
 
-    public String getMaHoaDon() {
+    public HoaDon getMaHoaDon() {
         return maHoaDon;
     }
-    public void setMaHoaDon(String maHoaDon) {
+    public void setMaHoaDon(HoaDon maHoaDon) {
         this.maHoaDon = maHoaDon;
     }
-    public ChiTietHoaDon(String maHoaDon, int soLuong, int soFDIRang, String 
+    public ChiTietHoaDon(HoaDon maHoaDon, int soLuong, int soFDIRang, String 
         maDichVu, String ghiChu, String maChiTiet, BigDecimal donGia,
             BigDecimal giamGia) {
         setMaHoaDon(maHoaDon);
@@ -81,7 +82,7 @@ public class ChiTietHoaDon {
     }
     @Override
     public String toString() {
-        return "maChiTiet=" + getMaChiTiet() + ", maHoaDon=" + getMaHoaDon() + ", maDichVu=" + getMaDichVu() + ", soLuong="
+        return "maChiTiet=" + getMaChiTiet() + ", maHoaDon=" + (getMaHoaDon() == null ? null : getMaHoaDon().getMaHoaDon()) + ", maDichVu=" + getMaDichVu() + ", soLuong="
                 + getSoLuong() + ", donGia=" + getDonGia() + ", giamGia=" + getGiamGia() + ", ghiChu=" + getGhiChu()
                 + ", soFDIRang=" + getSoFDIRang();
     }

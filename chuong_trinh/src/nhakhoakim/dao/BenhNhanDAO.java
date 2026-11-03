@@ -11,30 +11,30 @@ import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.HangSo;
 import nhakhoakim.entity.HoSoBenhAn;
 
-// Truy cập bảng BenhNhan (chỉ lớp DAO được viết SQL)
+// Truy cập bảng BenhNhan
 public class BenhNhanDAO {
 
     private static final String CAC_COT = "maBN, hoTen, ngaySinh, gioiTinh, sdt, diaChi, email, soCCCD, nguoiLienHeKhanCap,"
             + " sdtNguoiLienHe, ngayDangKy, trangThai, ghiChu";
 
-    // Tìm bệnh nhân theo mã; không có thì trả về null
+    // Tìm bệnh nhân theo mã
     public BenhNhan timTheoMa(String maBN) {
         List<BenhNhan> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.BenhNhan WHERE maBN = ?", maBN, null, null, 0);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Tìm bệnh nhân theo số căn cước; không có thì trả về null
+    // Tìm bệnh nhân theo số căn cước
     public BenhNhan timTheoCCCD(String soCCCD) {
         List<BenhNhan> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.BenhNhan WHERE soCCCD = ?", soCCCD, null, null, 0);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Tìm bệnh nhân đang điều trị theo mã, họ tên hoặc số điện thoại (không phân biệt hoa thường), tối đa toiDa dòng
+    // Tìm bệnh nhân đang điều trị theo mã
     public List<BenhNhan> timKiem(String tuKhoa, int toiDa) {
         return timKiem(tuKhoa, toiDa, false);
     }
 
-    // Như trên; gomNgung = true thì lấy cả bệnh nhân đã ngừng theo dõi (để mở lại)
+    // Như trên
     public List<BenhNhan> timKiem(String tuKhoa, int toiDa, boolean gomNgung) {
         String mau = "%" + tuKhoa + "%";
         String loc = gomNgung ? "" : "trangThai = N'" + HangSo.DANG_DIEU_TRI + "' AND ";
@@ -42,7 +42,7 @@ public class BenhNhanDAO {
                 + "(maBN LIKE ? OR hoTen LIKE ? OR sdt LIKE ?) ORDER BY hoTen", mau, mau, mau, toiDa);
     }
 
-    // Đổi trạng thái bệnh nhân (Đang điều trị / Ngừng theo dõi)
+    // Đổi trạng thái bệnh nhân
     public void capNhatTrangThai(String maBN, String trangThai) {
         try (Connection c = DatabaseConnection.getConnection();
                 PreparedStatement ps = c.prepareStatement("UPDATE dbo.BenhNhan SET trangThai = ? WHERE maBN = ?")) {
@@ -54,7 +54,7 @@ public class BenhNhanDAO {
         }
     }
 
-    // Tìm mọi bệnh nhân (kể cả đã ngừng theo dõi) trùng họ tên và ngày sinh; họ tên so khớp theo collation của CSDL
+    // Tìm mọi bệnh nhân trùng họ tên
     public List<BenhNhan> timTheoHoTenNgaySinh(String hoTen, LocalDate ngaySinh) {
         List<BenhNhan> ds = new ArrayList<>();
         String sql = "SELECT " + CAC_COT + " FROM dbo.BenhNhan WHERE hoTen = ? AND ngaySinh = ?";
@@ -72,7 +72,7 @@ public class BenhNhanDAO {
         return ds;
     }
 
-    // Thêm bệnh nhân và hồ sơ bệnh án rỗng trong cùng một transaction (BN-04): một trong hai lỗi thì hủy cả hai
+    // Thêm bệnh nhân và hồ sơ bệnh án rỗng
     public void themKemHoSo(BenhNhan bn, HoSoBenhAn hs) {
         try (Connection c = DatabaseConnection.getConnection()) {
             c.setAutoCommit(false);
@@ -89,7 +89,7 @@ public class BenhNhanDAO {
         }
     }
 
-    // Thêm bệnh nhân bằng kết nối có sẵn (dùng trong themKemHoSo)
+    // Thêm bệnh nhân bằng kết nối có sẵn
     public void them(Connection c, BenhNhan bn) throws SQLException {
         String sql = "INSERT INTO dbo.BenhNhan (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
@@ -110,7 +110,7 @@ public class BenhNhanDAO {
         }
     }
 
-    // Cập nhật thông tin hành chính của bệnh nhân (không đổi mã và ngày đăng ký)
+    // Cập nhật thông tin hành chính
     public void capNhat(BenhNhan bn) {
         String sql = "UPDATE dbo.BenhNhan SET hoTen = ?, ngaySinh = ?, gioiTinh = ?, sdt = ?, diaChi = ?, email = ?, soCCCD = ?,"
                 + " nguoiLienHeKhanCap = ?, sdtNguoiLienHe = ?, ghiChu = ? WHERE maBN = ?";
@@ -132,7 +132,7 @@ public class BenhNhanDAO {
         }
     }
 
-    // Chạy câu SELECT: nếu toiDa > 0 thì tham số đầu tiên là TOP, sau đó lần lượt các tham số chuỗi (bỏ qua tham số null)
+    // Chạy câu SELECT
     private List<BenhNhan> layDanhSach(String sql, String t1, String t2, String t3, int toiDa) {
         List<BenhNhan> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -156,7 +156,7 @@ public class BenhNhanDAO {
         return ds;
     }
 
-    // Đổi dòng hiện tại của kết quả thành đối tượng BenhNhan
+    // Đổi dòng hiện tại của kết
     private BenhNhan doc(ResultSet rs) throws SQLException {
         BenhNhan bn = new BenhNhan();
         bn.setMaBN(rs.getString("maBN"));

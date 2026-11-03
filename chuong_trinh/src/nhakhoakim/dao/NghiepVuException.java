@@ -1,6 +1,6 @@
 package nhakhoakim.dao;
 
-// Lỗi vi phạm quy tắc nghiệp vụ; nội dung là câu tiếng Việt hiện thẳng cho người dùng
+// Lỗi vi phạm quy tắc nghiệp vụ
 public class NghiepVuException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

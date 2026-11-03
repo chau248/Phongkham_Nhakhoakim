@@ -2,39 +2,21 @@ package nhakhoakim.entity;
 
 import java.time.LocalDateTime;
 
-//- maBanGhi : String
-//
-//- soFDI : int
-//
-//- trangThai : String
-//
-//- vatLieu : String
-//
-//- matRang : String (Mặt răng (gần, xa, nhai, ngoài, trong))
-//
-//- ngayGhiNhan : LocalDateTime
-//
-//- maDichVu : String (Dịch vụ áp dụng cho răng này)
-//
-//- daNho : boolean
-//
-//- mauHienThi : String (Màu/ký hiệu hiển thị trên sơ đồ răng)
-//
-//- ghiChu : String
+// MaBanGhi : String
 
 public class RangDieuTri {
 
-    private String maBanGhi; // mã bản ghi, dạng BG000001
-    private String maLuotKham; // mã lượt khám
-    private int soFDI; // số răng theo hệ FDI (11-18, 21-28, 31-38, 41-48)
-    private String matRang; // mặt răng: Gần, Xa, Nhai, Ngoài, Trong
-    private String trangThai; // Bình thường, Sâu, Đã trám, Bọc sứ, Đã nhổ, Implant, Cầu răng
-    private String vatLieu; // vật liệu sử dụng
-    private LocalDateTime ngayGhiNhan; // thời điểm ghi nhận
-    private String maDichVu; // dịch vụ đã thực hiện trên răng này
-    private boolean daNho; // true nếu răng đã nhổ
-    private String mauHienThi; // màu hiển thị trên sơ đồ răng
-    private String ghiChu; // ghi chú
+    private String maBanGhi; // Mã bản ghi, dạng BG000001
+    private String maLuotKham; // Mã lượt khám
+    private int soFDI; // Số răng theo hệ FDI
+    private String matRang; // Mặt răng
+    private String trangThai; // Bình thường, Sâu, Đã trám
+    private String vatLieu; // Vật liệu sử dụng
+    private LocalDateTime ngayGhiNhan; // Thời điểm ghi nhận
+    private String maDichVu; // Dịch vụ đã thực hiện trên
+    private boolean daNho; // True nếu răng đã nhổ
+    private String mauHienThi; // Màu hiển thị trên sơ đồ răng
+    private String ghiChu; // Ghi chú
     
     
     
@@ -151,26 +133,26 @@ public class RangDieuTri {
         this.ghiChu = ghiChu;
     }
 
-    // Kiểm tra số FDI có hợp lệ không: răng vĩnh viễn 11-18, 21-28, 31-38, 41-48 hoặc răng sữa 51-55, 61-65, 71-75, 81-85
+    // Kiểm tra số FDI có hợp lệ không
     public static boolean kiemTraSoFDI(int so) {
         return laRangVinhVien(so) || laRangSua(so);
     }
 
-    // Răng vĩnh viễn: hàng 1 đến 4, răng số 1 đến 8
+    // Răng vĩnh viễn
     public static boolean laRangVinhVien(int so) {
         int hang = so / 10;
         int rang = so % 10;
         return hang >= 1 && hang <= 4 && rang >= 1 && rang <= 8;
     }
 
-    // Răng sữa: hàng 5 đến 8, răng số 1 đến 5 (trẻ có tối đa 20 răng sữa)
+    // Răng sữa: hàng 5 đến 8, răng số 1 đến 5
     public static boolean laRangSua(int so) {
         int hang = so / 10;
         int rang = so % 10;
         return hang >= 5 && hang <= 8 && rang >= 1 && rang <= 5;
     }
 
-    // Răng khôn (số 8 của răng vĩnh viễn)
+    // Răng khôn
     public static boolean laRangKhon(int so) {
         return laRangVinhVien(so) && so % 10 == 8;
     }

@@ -2,27 +2,19 @@ package nhakhoakim.entity;
 
 import java.math.BigDecimal;
 
-//maDichVu : String 
-//tenDichVu : String 
-// gia : BigDecimal 
-// thoiGianDuKien : int 
-// moTa : .. 
-// donViTinh : String (// Răng / Lần / Hàm) 
-//trangThaiHoatDong : boolean 
-// yeuCauLieuTrinh : boolean (// Cần nhiều buổi điều trị hay không) 
-//lienQuanImplantCauRang : boolean (// Dùng cho ràng buộc sơ đồ răng "đã nhổ") 
+// MaDichVu : String
 
 public class DichVu {
 
-    private String maDichVu; // mã dịch vụ, dạng DV000001
-    private String tenDichVu; // tên dịch vụ
-    private long gia; // giá niêm yết (đồng)
-    private int thoiGianDuKien; // thời gian dự kiến (phút)
-    private String loaiDichVu; // loại dịch vụ
-    private boolean trangThaiHoatDong; // true nếu đang cung cấp
-    private boolean yeuCauLieuTrinh; // true nếu cần theo liệu trình
-    private boolean lienQuanImplantCauRang; // true nếu là dịch vụ Implant hoặc cầu răng
-    private String moTa; // mô tả ngắn
+    private String maDichVu; // Mã dịch vụ, dạng DV000001
+    private String tenDichVu; // Tên dịch vụ
+    private long gia; // Giá niêm yết
+    private int thoiGianDuKien; // Thời gian dự kiến
+    private String loaiDichVu; // Loại dịch vụ
+    private boolean trangThaiHoatDong; // True nếu đang cung cấp
+    private boolean yeuCauLieuTrinh; // True nếu cần theo liệu trình
+    private boolean lienQuanImplantCauRang; // True nếu là dịch vụ Implant
+    private String moTa; // Mô tả ngắn
     private String donViTinh; // Lần, Răng hoặc Hàm
     
     

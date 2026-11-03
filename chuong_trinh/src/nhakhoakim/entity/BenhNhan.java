@@ -3,42 +3,24 @@ package nhakhoakim.entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-//maBN : String 
-//hoTen : String 
-//ngaySinh : LocalDate 
-//sdt : String 
-//namSinh : int 
-//gioiTinh : String 
-//diaChi : String 
-//email : String 
-//soCCCD : String 
-//nguoiLienHeKhanCap : String 
-//sdtNguoiLienHe : String 
-//ngayDangKy : LocalDate 
-//trangThai : String 
-//ghiChu : String 
-//hoSoBenhAn : HoSoBenHAn 
-//danhSachLieuTrinh : LieuTrinh 
-//danhSachLichHen : LichHen 
-//danhSachHoaDon : HoaDon 
-//danhSachNhaSi : NhanVien 
+// MaBN : String
 
 
 public class BenhNhan {
 
-    private String maBN; // mã bệnh nhân, dạng BN000001
-    private String hoTen; // họ tên
-    private LocalDate ngaySinh; // ngày sinh
+    private String maBN; // Mã bệnh nhân, dạng BN000001
+    private String hoTen; // Họ tên
+    private LocalDate ngaySinh; // Ngày sinh
     private String gioiTinh; // Nam, Nữ hoặc Khác
-    private String sdt; // số điện thoại (10 số, bắt đầu bằng 0)
-    private String diaChi; // địa chỉ
-    private String email; // email
-    private String soCCCD; // số căn cước công dân (12 số)
-    private String nguoiLienHeKhanCap; // người liên hệ khẩn cấp
-    private String sdtNguoiLienHe; // số điện thoại người liên hệ khẩn cấp
-    private LocalDate ngayDangKy; // ngày đăng ký
-    private String trangThai; // Đang điều trị hoặc Ngừng theo dõi
-    private String ghiChu; // ghi chú
+    private String sdt; // Số điện thoại
+    private String diaChi; // Địa chỉ
+    private String email; // Email
+    private String soCCCD; // Số căn cước công dân
+    private String nguoiLienHeKhanCap; // Người liên hệ khẩn cấp
+    private String sdtNguoiLienHe; // Số điện thoại người liên hệ
+    private LocalDate ngayDangKy; // Ngày đăng ký
+    private String trangThai; // Đang điều trị hoặc Ngừng
+    private String ghiChu; // Ghi chú
     
 
     public BenhNhan() {

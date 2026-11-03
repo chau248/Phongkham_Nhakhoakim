@@ -22,38 +22,37 @@ import nhakhoakim.entity.LieuTrinh;
 import nhakhoakim.entity.LuotKham;
 import nhakhoakim.entity.NhanVien;
 
-// Màn hình hồ sơ bệnh án: xem tiền sử, dị ứng, liệu trình đang thực hiện, lịch sử khám; sửa tiền sử và dị ứng.
-// Ba chức năng "Xem hồ sơ bệnh án", "Cập nhật tiền sử & dị ứng", "Xem liệu trình đang thực hiện" dùng chung màn hình này.
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình hồ sơ bệnh án
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhHoSoBenhAn extends JPanel {
 
     private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
     private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
-    private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();   // chọn bệnh nhân cần xem
-    private JPanel khuBanner = new JPanel(new java.awt.BorderLayout());      // chỗ đặt banner dị ứng
-    private JLabel lblThongTin = new JLabel();                               // thông tin hành chính
-    private JTextArea txaTienSu = TienIch.oNhieuDong(3, 40);                 // tiền sử bệnh
-    private JTextField txtDiUng = TienIch.oNhap(40);                         // dị ứng, cách nhau dấu phẩy
-    private JComboBox<String> cmbNhomMau = new JComboBox<>(new String[] {"", "A", "B", "AB", "O"}); // nhóm máu
-    private JTextArea txaBenhNen = TienIch.oNhieuDong(2, 40);                // bệnh nền
-    private JTextField txtThuoc = TienIch.oNhap(40);                         // thuốc đang dùng
+    private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan(); // Chọn bệnh nhân cần xem
+    private JPanel khuBanner = new JPanel(new java.awt.BorderLayout()); // Chỗ đặt banner dị ứng
+    private JLabel lblThongTin = new JLabel(); // Thông tin hành chính
+    private JTextArea txaTienSu = TienIch.oNhieuDong(3, 40); // Tiền sử bệnh
+    private JTextField txtDiUng = TienIch.oNhap(40); // Dị ứng, cách nhau dấu phẩy
+    private JComboBox<String> cmbNhomMau = new JComboBox<>(new String[] {"", "A", "B", "AB", "O"}); // Nhóm máu
+    private JTextArea txaBenhNen = TienIch.oNhieuDong(2, 40); // Bệnh nền
+    private JTextField txtThuoc = TienIch.oNhap(40); // Thuốc đang dùng
     private JButton btnLuu = TienIch.nutChinh("Lưu thay đổi");
-    private JLabel lblQuyen = new JLabel();                                  // giải thích vì sao không sửa được
+    private JLabel lblQuyen = new JLabel(); // Giải thích
     private JTable tblLieuTrinh = TienIch.taoBang(new String[] {"Loại", "Số buổi", "Giai đoạn hiện tại", "Nha sĩ phụ trách", "Trạng thái", "Dự kiến kết thúc"},
-            new int[] {100, 65, 220, 150, 110, 110}, "Bệnh nhân chưa có liệu trình.");                // liệu trình của bệnh nhân
+            new int[] {100, 65, 220, 150, 110, 110}, "Bệnh nhân chưa có liệu trình."); // Liệu trình của bệnh nhân
     private JTable tblLichSu = TienIch.taoBang(new String[] {"Ngày khám", "Nha sĩ", "Lý do", "Chẩn đoán", "Trạng thái"},
-            new int[] {130, 150, 180, 250, 100}, "Bệnh nhân chưa có lượt khám nào.");                  // lịch sử khám
-    private JPanel khuNoiDung = new JPanel();                                // phần hiện sau khi chọn bệnh nhân
-    private HoSoBenhAn hoSo;                                                 // hồ sơ đang xem
-    private HoSoBenhAn hoSoBanDau;                                           // bản sao hồ sơ lúc mở, để Service gộp đúng khi hai người cùng sửa
-    private JButton btnDongHoSo = TienIch.nutPhu("Đóng hồ sơ");              // chỉ quản lý thấy
+            new int[] {130, 150, 180, 250, 100}, "Bệnh nhân chưa có lượt khám nào."); // Lịch sử khám
+    private JPanel khuNoiDung = new JPanel(); // Phần hiện sau khi chọn bệnh
+    private HoSoBenhAn hoSo; // Hồ sơ đang xem
+    private HoSoBenhAn hoSoBanDau; // Bản sao hồ sơ lúc mở
+    private JButton btnDongHoSo = TienIch.nutPhu("Đóng hồ sơ"); // Chỉ quản lý thấy
 
     public ManHinhHoSoBenhAn() {
         this(null);
     }
 
-    // Mở sẵn hồ sơ của một bệnh nhân (null thì để người dùng tự chọn)
+    // Mở sẵn hồ sơ của một bệnh nhân
     public ManHinhHoSoBenhAn(BenhNhan benhNhan) {
         JButton btnXem = TienIch.nutChinh("Xem hồ sơ");
         btnXem.addActionListener(e -> xemHoSo());
@@ -77,7 +76,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         btnLuu.addActionListener(e -> luuThongTin());
         btnDongHoSo.addActionListener(e -> doiTrangThaiHoSo());
 
-        // Đổi bệnh nhân ở ô chọn thì ẩn hồ sơ đang hiện và bỏ hồ sơ cũ, để không lưu nhầm vào bệnh nhân khác
+        // Đổi bệnh nhân ở ô chọn
         chonBenhNhan.addChonListener(e -> {
             hoSo = null;
             khuNoiDung.setVisible(false);
@@ -96,12 +95,12 @@ public class ManHinhHoSoBenhAn extends JPanel {
                 TienIch.dong(TienIch.nhan("Bệnh nhân"), chonBenhNhan, btnXem, btnThoiGian), khuNoiDung);
 
         if (benhNhan != null) {
-            chonBenhNhan.setBenhNhan(benhNhan); // chưa có trong danh sách thì thêm vào đầu rồi chọn
+            chonBenhNhan.setBenhNhan(benhNhan); // Chưa có trong danh sách
             xemHoSo();
         }
     }
 
-    // Nạp hồ sơ của bệnh nhân đang chọn lên màn hình
+    // Nạp hồ sơ của bệnh nhân
     private void xemHoSo() {
         BenhNhan bn = chonBenhNhan.getBenhNhan();
         if (bn == null) {
@@ -116,7 +115,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         }
     }
 
-    // Đổ dữ liệu hồ sơ vào các ô; nếu có dị ứng thì hiện khung cảnh báo đỏ ở đầu
+    // Đổ dữ liệu hồ sơ vào các ô
     private void hienHoSo(BenhNhan bn) {
         String diUng = hoSo.coCanhBaoDiUng() ? TienIch.chu(hoSo.getCanhBaoDiUng()).trim() : "";
         khuBanner.removeAll();
@@ -134,7 +133,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         hoSoBanDau = saoChep(hoSo);
         apDungQuyenSua();
 
-        // Lấy liệu trình và lịch sử khám trước, rồi hỏi tên nha sĩ một lần cho cả hai bảng
+        // Lấy liệu trình và lịch sử khám trước
         List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(bn.getMaBN());
         List<LuotKham> dsLichSu = hoSoService.layLichSuKham(hoSo.getMaHoSo());
         List<String> dsMaNhaSi = new ArrayList<>();
@@ -166,14 +165,14 @@ public class ManHinhHoSoBenhAn extends JPanel {
         khuNoiDung.repaint();
     }
 
-    // Chỉ Nha sĩ và Y tá được sửa thông tin y tế (BN-08); hồ sơ đã đóng chỉ xem (BN-07). Vai trò khác thì khóa nút Lưu và nói rõ lý do.
+    // Chỉ Nha sĩ
     private void apDungQuyenSua() {
         String lyDo = null;
         NhanVien nv = null;
         try {
             nv = PhienLamViec.getNhanVienHienTai();
         } catch (RuntimeException e) {
-            nv = null; // không biết ai đăng nhập thì để Service báo lỗi khi lưu
+            nv = null; // Không biết ai đăng nhập
         }
         if (nv != null && !HangSo.VAI_TRO_NHA_SI.equals(nv.getVaiTro()) && !HangSo.VAI_TRO_Y_TA.equals(nv.getVaiTro())) {
             lyDo = nv.getVaiTro() + " chỉ xem phần y tế";
@@ -187,7 +186,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         lblQuyen.setText(lyDo == null ? "" : lyDo);
     }
 
-    // Sao chép các trường y tế của hồ sơ (để so sánh khi lưu)
+    // Sao chép các trường y tế của hồ sơ
     private HoSoBenhAn saoChep(HoSoBenhAn goc) {
         HoSoBenhAn b = new HoSoBenhAn();
         b.setMaHoSo(goc.getMaHoSo());
@@ -201,7 +200,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         return b;
     }
 
-    // Quản lý đóng hồ sơ (chỉ xem) hoặc mở lại hồ sơ đã đóng
+    // Quản lý đóng hồ sơ
     private void doiTrangThaiHoSo() {
         if (hoSo == null) {
             return;
@@ -219,7 +218,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
         }
     }
 
-    // Lưu tiền sử, dị ứng và thông tin y tế: gán vào bản sao, Service kiểm tra và chuẩn hóa (dị ứng, ô trống)
+    // Lưu tiền sử, dị ứng và thông tin y tế
     private void luuThongTin() {
         if (hoSo == null) {
             TienIch.thongTin("Vui lòng chọn bệnh nhân rồi bấm Xem hồ sơ trước khi lưu.");

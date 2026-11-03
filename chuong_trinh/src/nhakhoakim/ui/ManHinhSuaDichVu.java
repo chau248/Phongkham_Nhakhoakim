@@ -13,18 +13,18 @@ import nhakhoakim.dao.NghiepVuException;
 import nhakhoakim.entity.DichVu;
 import nhakhoakim.entity.LoaiDichVu;
 
-// Màn hình thêm hoặc sửa một dịch vụ (DV-02, DV-03): chỉ Quản lý; tên không trùng, giá không âm, thời gian lớn hơn 0
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình thêm hoặc sửa một dịch vụ
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhSuaDichVu extends JPanel {
 
     private DichVuController dichVuController = new DichVuController();
-    private DichVu dichVu; // dịch vụ đang sửa (null là thêm mới)
+    private DichVu dichVu; // Dịch vụ đang sửa
 
     private JTextField txtTen = TienIch.oNhap(32);
     private JComboBox<String> cmbLoai = new JComboBox<>(new String[] {LoaiDichVu.KHAM, LoaiDichVu.VE_SINH, LoaiDichVu.TRAM, LoaiDichVu.NHO_RANG,
         LoaiDichVu.NOI_NHA, LoaiDichVu.THAM_MY, LoaiDichVu.IMPLANT, LoaiDichVu.PHUC_HINH, "Chỉnh nha", "Chẩn đoán"});
-    private JTextField txtGia = TienIch.oNhap(14);                  // giá (đồng)
-    private JTextField txtThoiGian = TienIch.oNhap(6);              // thời gian dự kiến (phút)
+    private JTextField txtGia = TienIch.oNhap(14); // Giá
+    private JTextField txtThoiGian = TienIch.oNhap(6); // Thời gian dự kiến
     private JComboBox<String> cmbDonVi = new JComboBox<>(DichVuController.DON_VI_TINH.toArray(new String[0]));
     private JTextArea txaMoTa = TienIch.oNhieuDong(3, 32);
     private JCheckBox chkLieuTrinh = new JCheckBox("Cần theo liệu trình (nhiều buổi)");
@@ -33,7 +33,7 @@ public class ManHinhSuaDichVu extends JPanel {
 
     public ManHinhSuaDichVu(DichVu dichVu) {
         this.dichVu = dichVu;
-        cmbLoai.setEditable(true); // cho gõ loại mới ngoài danh sách gợi ý
+        cmbLoai.setEditable(true); // Cho gõ loại mới ngoài danh
         cmbLoai.setFont(TienIch.FONT);
         cmbDonVi.setFont(TienIch.FONT);
         for (JCheckBox c : new JCheckBox[] {chkLieuTrinh, chkImplantCauRang, chkHoatDong}) {
@@ -62,7 +62,7 @@ public class ManHinhSuaDichVu extends JPanel {
         TienIch.xepManHinh(this, TienIch.tieuDe(dichVu == null ? "Thêm dịch vụ" : "Sửa dịch vụ"), TienIch.the(form, TienIch.dong(btnLuu)));
     }
 
-    // Đọc số nguyên người dùng gõ; gõ sai thì báo lỗi nghiệp vụ nêu tên ô
+    // Đọc số nguyên người dùng gõ
     private long docSo(String chu, String tenO) {
         try {
             return Long.parseLong(chu.trim().replace(".", "").replace(",", ""));
@@ -71,10 +71,10 @@ public class ManHinhSuaDichVu extends JPanel {
         }
     }
 
-    // Lưu dịch vụ (thêm mới hoặc cập nhật)
+    // Lưu dịch vụ
     private void luu() {
         try {
-            DichVu dv = new DichVu(); // đối tượng mới để nhập sai thì dịch vụ đang xem không bị đổi theo
+            DichVu dv = new DichVu(); // Đối tượng mới để nhập sai
             if (dichVu != null) {
                 dv.setMaDichVu(dichVu.getMaDichVu());
             }

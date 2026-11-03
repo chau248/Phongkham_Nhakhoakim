@@ -46,8 +46,8 @@ import nhakhoakim.dao.NghiepVuException;
 import nhakhoakim.entity.BenhNhan;
 import nhakhoakim.entity.DichVu;
 
-// Các hàm dùng chung cho các màn hình Swing: định dạng ngày giờ, nhãn, nút, bảng, form, hộp thông báo, ô chọn bệnh nhân
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Các hàm dùng chung
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class TienIch {
 
     public static final Color MAU_CHINH = new Color(0x0E7C86);
@@ -64,19 +64,19 @@ public class TienIch {
     public static final Font FONT_DAM = new Font("Segoe UI", Font.BOLD, 14);
 
     private static final DateTimeFormatter NGAY = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    // Dùng khi đọc ngày người dùng gõ: nghiêm ngặt để ngày không có thật (31/02/1995) bị từ chối thay vì tự đổi thành 28/02/1995
+    // Dùng khi đọc ngày người dùng gõ
     private static final DateTimeFormatter NGAY_NGHIEM = DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter GIO = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter NGAY_GIO = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    // Chạy kiểm thử không có màn hình thì không hiện được hộp thoại: hộp cuối cùng được ghi vào đây và hàm xacNhan trả về traLoiXacNhan
+    // Chạy kiểm thử không có màn hình
     public static String hopCuoi = "";
     public static boolean traLoiXacNhan = true;
     public static String nhapTuDong = null;
 
-    // ===================== Định dạng =====================
+    // Định dạng
 
-    // Ngày dạng dd/MM/yyyy; null thì trả về chuỗi rỗng
+    // Ngày dạng dd/MM/yyyy
     public static String ngay(LocalDate d) {
         return d == null ? "" : d.format(NGAY);
     }
@@ -91,17 +91,17 @@ public class TienIch {
         return t == null ? "" : t.format(NGAY_GIO);
     }
 
-    // Chuỗi null thì đổi thành rỗng để hiện lên màn hình
+    // Chuỗi null thì đổi thành rỗng
     public static String chu(String s) {
         return s == null ? "" : s;
     }
 
-    // Số tiền có dấu chấm ngăn cách hàng nghìn, ví dụ 1.500.000 (dùng Locale cố định nên không phụ thuộc cài đặt máy)
+    // Số tiền có dấu chấm ngăn cách hàng nghìn
     public static String tien(long soTien) {
         return String.format(Locale.GERMANY, "%,d", soTien);
     }
 
-    // Đọc ngày người dùng gõ vào ô chữ (dd/MM/yyyy): ô trống thì trả về null, gõ sai thì báo lỗi nghiệp vụ
+    // Đọc ngày người dùng gõ vào ô chữ
     public static LocalDate docNgay(String chuoi) {
         if (chuoi == null || chuoi.trim().isEmpty()) {
             return null;
@@ -113,7 +113,7 @@ public class TienIch {
         }
     }
 
-    // ===================== Chữ, nút, khối =====================
+    // Chữ, nút, khối
 
     // Tiêu đề lớn của màn hình
     public static JLabel tieuDe(String chu) {
@@ -130,17 +130,17 @@ public class TienIch {
         return lbl;
     }
 
-    // Nhãn thường (chữ đậm hoặc không)
+    // Nhãn thường
     public static JLabel chuThuong(String chu, boolean dam) {
         JLabel lbl = new JLabel(chu);
         lbl.setFont(dam ? FONT_DAM : FONT);
         return lbl;
     }
 
-    // Nút bo góc: chinh = true là nút chính nền xanh chữ trắng, false là nút phụ nền trắng viền xanh
+    // Nút bo góc
     private static class Nut extends JButton {
         private boolean chinh;
-        private Color mau = MAU_CHINH; // màu viền và chữ của nút phụ
+        private Color mau = MAU_CHINH; // Màu viền và chữ của nút phụ
 
         Nut(String chu, boolean chinh, Color mau) {
             super(chu);
@@ -187,7 +187,7 @@ public class TienIch {
         return new Nut(chu, true, MAU_CHINH);
     }
 
-    // Đổi một nút giữa dạng chính (nền xanh) và dạng phụ (viền xanh), dùng cho cặp nút công tắc
+    // Đổi một nút giữa dạng chính và dạng phụ
     public static void datNutChinh(JButton nut, boolean chinh) {
         if (nut instanceof Nut) {
             ((Nut) nut).chinh = chinh;
@@ -205,7 +205,7 @@ public class TienIch {
         return new Nut(chu, false, MAU_DO_CHU);
     }
 
-    // Nút trông như đường dẫn (chữ xanh, gạch chân khi trỏ chuột vào)
+    // Nút trông như đường dẫn
     public static JButton lienKet(String chu) {
         JButton b = new JButton("<html><u>" + chu + "</u></html>");
         b.setBorderPainted(false);
@@ -218,7 +218,7 @@ public class TienIch {
         return b;
     }
 
-    // Khối chữ nhiều dòng, nền màu (dùng cho cảnh báo đỏ, nhắc vàng, hướng dẫn); chữ tự xuống dòng theo bề rộng
+    // Khối chữ nhiều dòng, nền màu
     public static JComponent thongBao(String chu, Color nen, Color mauChu, boolean dam) {
         JTextArea o = new JTextArea(chu);
         o.setEditable(false);
@@ -232,7 +232,7 @@ public class TienIch {
         return o;
     }
 
-    // Đoạn chữ nhiều dòng không nền (dùng cho hướng dẫn)
+    // Đoạn chữ nhiều dòng không nền
     public static JComponent doanChu(String chu, Color mauChu) {
         JTextArea o = new JTextArea(chu);
         o.setEditable(false);
@@ -252,7 +252,7 @@ public class TienIch {
         return t;
     }
 
-    // Ô nhập nhiều dòng (đặt trong khung cuộn)
+    // Ô nhập nhiều dòng
     public static JTextArea oNhieuDong(int soHang, int soCot) {
         JTextArea t = new JTextArea(soHang, soCot);
         t.setFont(FONT);
@@ -268,7 +268,7 @@ public class TienIch {
         return c;
     }
 
-    // Một dòng ngang các thành phần (nút, nhãn...), căn trái
+    // Một dòng ngang các thành phần, căn trái
     public static JPanel dong(Component... cacCon) {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         p.setOpaque(false);
@@ -278,7 +278,7 @@ public class TienIch {
         return p;
     }
 
-    // Thẻ trắng viền mảnh chứa nội dung bên trong (xếp dọc các thành phần truyền vào)
+    // Thẻ trắng viền mảnh chứa nội
     public static JPanel the(Component... cacCon) {
         JPanel p = new JPanel();
         p.setBackground(Color.WHITE);
@@ -288,7 +288,7 @@ public class TienIch {
         return p;
     }
 
-    // Xếp các thành phần theo chiều dọc: mỗi thành phần chiếm hết bề rộng, cao đúng bằng nội dung, cách nhau khoangCach điểm ảnh
+    // Xếp các thành phần theo chiều dọc
     public static void xep(JPanel p, int khoangCach, Component... cacCon) {
         p.setLayout(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
@@ -306,19 +306,19 @@ public class TienIch {
         day.gridx = 0;
         day.gridy = hang;
         day.weighty = 1;
-        JPanel phanDem = new JPanel(); // phần đệm đẩy các thành phần lên trên
+        JPanel phanDem = new JPanel(); // Phần đệm đẩy các thành phần
         phanDem.setOpaque(false);
         p.add(phanDem, day);
     }
 
-    // Xếp màn hình: viền lề 24 điểm ảnh, nền trong suốt, các thành phần cách nhau 14 điểm ảnh
+    // Xếp màn hình
     public static void xepManHinh(JPanel p, Component... cacCon) {
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
         xep(p, 14, cacCon);
     }
 
-    // Form hai cột: cột trái là tên ô, cột phải là ô nhập
+    // Form hai cột
     public static JPanel taoForm(String[] ten, Component[] oNhap) {
         JPanel p = new JPanel(new GridBagLayout());
         p.setOpaque(false);
@@ -341,10 +341,9 @@ public class TienIch {
         return p;
     }
 
-    // ===================== Bảng =====================
+    // Bảng
 
-    // Bảng dữ liệu mỗi dòng là một String[]; không sửa trực tiếp, không sắp xếp (để vị trí dòng chọn luôn khớp với danh sách dữ liệu);
-    // khi chưa có dòng nào thì vẽ câu khiTrong ở giữa bảng
+    // Bảng dữ liệu mỗi dòng là một String[]
     public static JTable taoBang(String[] tenCot, int[] rong, String khiTrong) {
         DefaultTableModel mo = new DefaultTableModel(tenCot, 0) {
             @Override
@@ -377,7 +376,7 @@ public class TienIch {
         return bang;
     }
 
-    // Thay toàn bộ dòng của bảng bằng danh sách mới
+    // Thay toàn bộ dòng của bảng
     public static void napBang(JTable bang, List<String[]> dong) {
         DefaultTableModel mo = (DefaultTableModel) bang.getModel();
         mo.setRowCount(0);
@@ -386,7 +385,7 @@ public class TienIch {
         }
     }
 
-    // Khung cuộn bao một bảng (hoặc danh sách), cao cho trước
+    // Khung cuộn bao một bảng, cao cho trước
     public static JScrollPane cuonBang(JComponent bang, int cao) {
         JScrollPane c = new JScrollPane(bang);
         c.setPreferredSize(new Dimension(900, cao));
@@ -394,7 +393,7 @@ public class TienIch {
         return c;
     }
 
-    // Cột có chữ dài thì xuống dòng thay vì bị cắt bằng dấu ba chấm: chiSo là vị trí cột trong bảng
+    // Cột có chữ dài thì xuống dòng thay
     public static void cotXuongDong(JTable bang, int chiSo) {
         bang.getColumnModel().getColumn(chiSo).setCellRenderer(new TableCellRenderer() {
             private JTextArea o = new JTextArea();
@@ -417,9 +416,9 @@ public class TienIch {
         });
     }
 
-    // ===================== Ô chọn =====================
+    // Ô chọn
 
-    // Ô chọn dịch vụ: hiện tên dịch vụ; chưa chọn (chỉ số -1) thì hiện câu khiChuaChon
+    // Ô chọn dịch vụ: hiện tên dịch vụ
     public static JComboBox<DichVu> taoChonDichVu(List<DichVu> danhSach, String khiChuaChon) {
         JComboBox<DichVu> cmb = new JComboBox<>(new DefaultComboBoxModel<>(danhSach.toArray(new DichVu[0])));
         cmb.setFont(FONT);
@@ -437,7 +436,7 @@ public class TienIch {
         return cmb;
     }
 
-    // Ô chọn bệnh nhân: một ô gõ để tìm (mã, họ tên hoặc số điện thoại, nhấn Enter hoặc bấm Tìm) và một danh sách kết quả để chọn
+    // Ô chọn bệnh nhân
     public static class ChonBenhNhan extends JPanel {
         private JTextField txtTim = oNhap(20);
         private JComboBox<BenhNhan> cmb = new JComboBox<>();
@@ -469,7 +468,7 @@ public class TienIch {
             napDanhSach(benhNhanService.timKiem(""));
         }
 
-        // Tìm theo chữ đang gõ, thay danh sách bằng kết quả; không có ai thì báo
+        // Tìm theo chữ đang gõ
         private void tim() {
             try {
                 String tuKhoa = txtTim.getText().trim();
@@ -490,12 +489,12 @@ public class TienIch {
             cmb.setSelectedIndex(-1);
         }
 
-        // Bệnh nhân đang chọn; chưa chọn thì trả về null
+        // Bệnh nhân đang chọn
         public BenhNhan getBenhNhan() {
             return (BenhNhan) cmb.getSelectedItem();
         }
 
-        // Chọn người có cùng mã; chưa có trong danh sách thì thêm vào đầu rồi chọn; bn null thì bỏ chọn
+        // Chọn người có cùng mã
         public void setBenhNhan(BenhNhan bn) {
             if (bn == null) {
                 cmb.setSelectedIndex(-1);
@@ -512,13 +511,13 @@ public class TienIch {
             cmb.setSelectedIndex(0);
         }
 
-        // Gọi hàm này mỗi khi người dùng chọn một bệnh nhân khác trong danh sách
+        // Gọi hàm này mỗi
         public void addChonListener(ActionListener l) {
             cmb.addActionListener(l);
         }
     }
 
-    // Khối thông báo "chưa có lượt khám đang khám" kèm nút mở màn hình khám (dùng cho màn hình cần lượt khám)
+    // Khối thông báo "chưa có lượt
     public static JComponent khoiChuaCoLuotKham() {
         JPanel p = new JPanel(new BorderLayout(0, 10));
         p.setOpaque(false);
@@ -529,9 +528,9 @@ public class TienIch {
         return p;
     }
 
-    // ===================== Hộp thoại =====================
+    // Hộp thoại
 
-    // Báo lỗi bắt được từ service: lỗi nghiệp vụ hiện nguyên câu, lỗi hệ thống thì ghi Console và hiện câu chung
+    // Báo lỗi bắt được từ service
     public static void baoLoi(RuntimeException e) {
         if (e instanceof NghiepVuException) {
             loi(e.getMessage());
@@ -551,7 +550,7 @@ public class TienIch {
         hienHop(noiDung, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Hộp xác nhận Có / Không; trả về true nếu chọn Có
+    // Hộp xác nhận Có / Không
     public static boolean xacNhan(String noiDung) {
         if (GraphicsEnvironment.isHeadless()) {
             hopCuoi = noiDung;
@@ -564,7 +563,7 @@ public class TienIch {
         return kq == JOptionPane.YES_OPTION;
     }
 
-    // Hộp nhập một dòng chữ (ví dụ lý do hủy); bấm Hủy thì trả về null
+    // Hộp nhập một dòng chữ
     public static String nhapChu(String tieuDe, String loiNhac) {
         if (GraphicsEnvironment.isHeadless()) {
             System.out.println("[Hộp nhập] " + loiNhac);
@@ -582,7 +581,7 @@ public class TienIch {
         JOptionPane.showMessageDialog(MainApp.cuaSo(), noiDungHop(noiDung), tieuDe, loai);
     }
 
-    // Nội dung dài thì cho xuống dòng trong hộp thoại (JOptionPane không tự xuống dòng)
+    // Nội dung dài thì cho xuống dòng
     private static Object noiDungHop(String noiDung) {
         JTextArea o = new JTextArea(noiDung);
         o.setEditable(false);

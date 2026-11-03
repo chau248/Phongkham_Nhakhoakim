@@ -1,16 +1,15 @@
 package nhakhoakim.entity;
 
-// Các hằng chuỗi dùng chung: vai trò nhân viên, trạng thái lưu trong CSDL và loại dịch vụ.
-// Dùng hằng này thay vì gõ chuỗi để không sai chính tả.
+// Các hằng chuỗi dùng chung
 public class HangSo {
 
-    // Vai trò của nhân viên (cột NhanVien.vaiTro)
+    // Vai trò của nhân viên
     public static final String VAI_TRO_NHA_SI = "Nha sĩ";
     public static final String VAI_TRO_Y_TA = "Y tá";
     public static final String VAI_TRO_LE_TAN = "Lễ tân";
     public static final String VAI_TRO_QUAN_LY = "Quản lý";
 
-    // Trạng thái của bệnh nhân, hồ sơ, lượt khám, răng, liệu trình
+    // Trạng thái của bệnh nhân, hồ sơ
     public static final String DANG_DIEU_TRI = "Đang điều trị";
     public static final String NGUNG_THEO_DOI = "Ngừng theo dõi";
     public static final String HO_SO_DANG_MO = "Đang mở";
@@ -27,7 +26,7 @@ public class HangSo {
     public static final String RANG_CAU_RANG = "Cầu răng";
     public static final String LIEU_TRINH_DANG_THUC_HIEN = "Đang thực hiện";
 
-    // Loại dịch vụ (cột DichVu.loaiDichVu) mà chương trình cần so sánh khi cảnh báo và gợi ý
+    // Loại dịch vụ mà chương trình cần so sánh
     public static final String LOAI_KHAM = "Khám";
     public static final String LOAI_VE_SINH = "Vệ sinh";
     public static final String LOAI_TRAM = "Trám";

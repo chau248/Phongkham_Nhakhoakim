@@ -11,11 +11,11 @@ import nhakhoakim.MainApp;
 import nhakhoakim.controller.LichHenController;
 import nhakhoakim.entity.LichHen;
 
-// Màn hình xác nhận lịch hẹn (LH-07): các lịch Chờ xác nhận từ hôm nay trở đi, kể cả lịch tái khám do nha sĩ tạo
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình xác nhận lịch hẹn
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
-    private static final int SO_NGAY_TOI = 90; // xem các lịch chờ trong 90 ngày tới
+    private static final int SO_NGAY_TOI = 90; // Xem các lịch chờ
 
     private LichHenController lichHenController = new LichHenController();
     private BangTen ten = new BangTen();
@@ -44,7 +44,7 @@ public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc 
         tai();
     }
 
-    // Tải các lịch Chờ xác nhận từ hôm nay đến 90 ngày tới
+    // Tải các lịch Chờ xác nhận
     private void tai() {
         try {
             dsLich = new ArrayList<>();

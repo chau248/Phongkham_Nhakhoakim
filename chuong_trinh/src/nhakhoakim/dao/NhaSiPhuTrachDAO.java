@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.Map;
 import nhakhoakim.entity.HangSo;
 
-// Truy vấn để hiện tên nha sĩ phụ trách trên màn hình bệnh nhân và lượt khám (chỉ đọc)
-// Hỏi một lần cho cả danh sách, không hỏi từng dòng, để bảng nhiều dòng vẫn nhanh
+// Truy vấn để hiện tên nha
 public class NhaSiPhuTrachDAO {
 
-    // Họ tên của các nhân viên theo mã: trả về bảng tra mã -> họ tên (mã không có trong CSDL thì không có trong bảng)
+    // Họ tên của các nhân viên theo mã
     public Map<String, String> layTen(Collection<String> dsMaNV) {
         Map<String, String> kq = new HashMap<>();
         List<String> ds = boTrungVaRong(dsMaNV);
@@ -39,8 +38,7 @@ public class NhaSiPhuTrachDAO {
         return kq;
     }
 
-    // Mã nha sĩ của lượt khám gần nhất (không tính lượt đã hủy) của từng bệnh nhân: trả về bảng tra mã bệnh nhân -> mã nha sĩ
-    // Bệnh nhân chưa khám lần nào thì không có trong bảng
+    // Mã nha sĩ của lượt khám
     public Map<String, String> layNhaSiKhamGanNhat(Collection<String> dsMaBN) {
         Map<String, String> kq = new HashMap<>();
         List<String> ds = boTrungVaRong(dsMaBN);
@@ -66,7 +64,7 @@ public class NhaSiPhuTrachDAO {
         return kq;
     }
 
-    // Bỏ mã rỗng và mã trùng (giữ nguyên thứ tự)
+    // Bỏ mã rỗng và mã trùng
     private static List<String> boTrungVaRong(Collection<String> ds) {
         LinkedHashSet<String> gon = new LinkedHashSet<>();
         if (ds != null) {
@@ -79,7 +77,7 @@ public class NhaSiPhuTrachDAO {
         return new ArrayList<>(gon);
     }
 
-    // Chuỗi "?, ?, ?" với n dấu hỏi để dùng trong IN (...)
+    // Chuỗi "?, ?, ?" với n dấu hỏi để dùng
     private static String dauHoi(int n) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {

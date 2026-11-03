@@ -9,19 +9,20 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import nhakhoakim.entity.ChiTietHoaDon;
+import nhakhoakim.entity.HoaDon;
 
-// Truy cập bảng ChiTietHoaDon (chỉ lớp DAO được viết SQL). Dòng chi tiết được thêm cùng hóa đơn trong HoaDonDAO.themKemChiTiet.
+// Truy cập bảng ChiTietHoaDon
 public class ChiTietHoaDonDAO {
 
     static final String CAC_COT = "maChiTiet, maHoaDon, maDichVu, soLuong, donGia, giamGia, soFDIRang, ghiChu";
     static final String SQL_THEM = "INSERT INTO dbo.ChiTietHoaDon (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     static final String SQL_THEO_HOA_DON = "SELECT " + CAC_COT + " FROM dbo.ChiTietHoaDon WHERE maHoaDon = ? ORDER BY maChiTiet";
 
-    // Thêm một dòng chi tiết bằng kết nối có sẵn (để nằm trong cùng transaction với hóa đơn); soFDIRang = 0 nghĩa là không gắn răng
+    // Thêm một dòng chi tiết
     void them(Connection c, ChiTietHoaDon ct) throws SQLException {
         try (PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
             ps.setString(1, ct.getMaChiTiet());
-            ps.setString(2, ct.getMaHoaDon());
+            ps.setString(2, ct.getMaHoaDon().getMaHoaDon());
             ps.setString(3, ct.getMaDichVu());
             ps.setInt(4, ct.getSoLuong());
             ps.setBigDecimal(5, ct.getDonGia());
@@ -45,12 +46,14 @@ public class ChiTietHoaDonDAO {
                 while (rs.next()) {
                     ChiTietHoaDon ct = new ChiTietHoaDon();
                     ct.setMaChiTiet(rs.getString("maChiTiet"));
-                    ct.setMaHoaDon(rs.getString("maHoaDon"));
+                    HoaDon hd = new HoaDon();
+                    hd.setMaHoaDon(rs.getString("maHoaDon"));
+                    ct.setMaHoaDon(hd);
                     ct.setMaDichVu(rs.getString("maDichVu"));
                     ct.setSoLuong(rs.getInt("soLuong"));
                     ct.setDonGia(rs.getBigDecimal("donGia"));
                     ct.setGiamGia(rs.getBigDecimal("giamGia"));
-                    ct.setSoFDIRang(rs.getInt("soFDIRang")); // NULL đọc thành 0 (không gắn răng)
+                    ct.setSoFDIRang(rs.getInt("soFDIRang")); // NULL đọc thành 0
                     ct.setGhiChu(rs.getString("ghiChu"));
                     ds.add(ct);
                 }

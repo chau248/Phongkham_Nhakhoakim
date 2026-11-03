@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nhakhoakim.entity.LuotKhamDichVu;
 
-// Truy cập bảng LuotKhamDichVu (dịch vụ không gắn răng của lượt khám)
+// Truy cập bảng LuotKhamDichVu
 public class LuotKhamDichVuDAO {
 
     // Thêm một dịch vụ vào lượt khám
@@ -25,8 +25,7 @@ public class LuotKhamDichVuDAO {
         }
     }
 
-    // Xóa một dòng dịch vụ theo số thứ tự dòng và mã lượt khám (để không xóa nhầm dòng của lượt khác);
-    // trả về true nếu xóa được một dòng
+    // Xóa một dòng dịch vụ theo số thứ tự dòng
     public boolean xoa(String maLuotKham, int maDong) {
         String sql = "DELETE FROM dbo.LuotKhamDichVu WHERE maDong = ? AND maLuotKham = ?";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -38,7 +37,7 @@ public class LuotKhamDichVuDAO {
         }
     }
 
-    // Các dịch vụ không gắn răng của một lượt khám
+    // Các dịch vụ không gắn răng
     public List<LuotKhamDichVu> layTheoLuotKham(String maLuotKham) {
         List<LuotKhamDichVu> ds = new ArrayList<>();
         String sql = "SELECT maDong, maLuotKham, maDichVu, soLuong, ghiChu FROM dbo.LuotKhamDichVu WHERE maLuotKham = ? ORDER BY maDong";

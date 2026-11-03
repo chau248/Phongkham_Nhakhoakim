@@ -15,8 +15,8 @@ import nhakhoakim.entity.HoaDon;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.VaiTro;
 
-// Màn hình thanh toán và in hóa đơn (HD-05, HD-06): chọn hóa đơn, chọn hình thức, thanh toán; in sau khi đã thanh toán; Quản lý được hủy hóa đơn chưa thanh toán
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình thanh toán và in hóa đơn
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
 
     private static final String TAT_CA = "Tất cả";
@@ -32,13 +32,13 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
             new int[] {280, 70, 80, 120, 130}, "Chọn một hóa đơn để xem chi tiết.");
     private JComboBox<String> cmbHinhThuc = new JComboBox<>(HoaDonController.HINH_THUC.toArray(new String[0]));
     private JLabel lblTong = TienIch.chuThuong(" ", true);
-    private String maChon; // hóa đơn mở sẵn khi vào từ màn hình lập hóa đơn
+    private String maChon; // Hóa đơn mở sẵn
 
     public ManHinhThanhToan() {
         this(null);
     }
 
-    // Mở sẵn một hóa đơn (vừa lập xong) hoặc để trống để người dùng tự chọn
+    // Mở sẵn một hóa đơn hoặc để trống
     public ManHinhThanhToan(String maHoaDon) {
         this.maChon = maHoaDon;
         cmbLoc.setFont(TienIch.FONT);
@@ -48,7 +48,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
             if (!e.getValueIsAdjusting()) {
                 int vt = tblHoaDon.getSelectedRow();
                 if (vt >= 0 && vt < dsHoaDon.size()) {
-                    maChon = dsHoaDon.get(vt).getMaHoaDon(); // nhớ hóa đơn đang chọn để tải lại vẫn chọn đúng dòng đó
+                    maChon = dsHoaDon.get(vt).getMaHoaDon(); // Nhớ hóa đơn đang chọn
                 }
                 xemChiTiet();
             }
@@ -77,7 +77,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         tai();
     }
 
-    // Tải các hóa đơn theo bộ lọc trạng thái; có hóa đơn mở sẵn thì chọn luôn dòng đó
+    // Tải các hóa đơn theo bộ lọc trạng thái
     private void tai() {
         try {
             String loc = (String) cmbLoc.getSelectedItem();
@@ -116,7 +116,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         return dsHoaDon.get(vt);
     }
 
-    // Hiện các dòng chi tiết và tổng tiền của hóa đơn đang chọn
+    // Hiện các dòng chi tiết
     private void xemChiTiet() {
         int vt = tblHoaDon.getSelectedRow();
         if (vt < 0 || vt >= dsHoaDon.size()) {
@@ -138,7 +138,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Thanh toán hóa đơn đang chọn bằng hình thức đang chọn
+    // Thanh toán hóa đơn đang chọn
     private void thanhToan() {
         HoaDon hd = dangChon();
         if (hd == null) {
@@ -153,14 +153,14 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
             hoaDonController.thanhToan(hd.getMaHoaDon(), hinhThuc);
             maChon = hd.getMaHoaDon();
             TienIch.thongTin("Đã thanh toán hóa đơn " + hd.getMaHoaDon() + ". Bạn có thể bấm In hóa đơn.");
-            cmbLoc.setSelectedItem(HoaDonController.DA_THANH_TOAN); // chuyển sang danh sách Đã thanh toán để hóa đơn vừa trả vẫn được chọn
+            cmbLoc.setSelectedItem(HoaDonController.DA_THANH_TOAN); // Chuyển sang danh sách Đã thanh toán
             tai();
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }
     }
 
-    // Xem trước và in hóa đơn đang chọn (chỉ hóa đơn đã thanh toán)
+    // Xem trước và in hóa đơn đang chọn
     private void in() {
         HoaDon hd = dangChon();
         if (hd == null) {
@@ -173,7 +173,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Hủy hóa đơn chưa thanh toán (Quản lý), hỏi lý do
+    // Hủy hóa đơn chưa thanh toán, hỏi lý
     private void huy() {
         HoaDon hd = dangChon();
         if (hd == null) {

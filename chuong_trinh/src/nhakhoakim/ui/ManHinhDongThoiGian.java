@@ -22,8 +22,8 @@ import nhakhoakim.entity.DongThoiGian;
 import nhakhoakim.entity.DongThoiGian.SuKienDieuTri;
 import nhakhoakim.entity.HoSoBenhAn;
 
-// Màn hình dòng thời gian điều trị: toàn bộ quá trình điều trị của một bệnh nhân trên một trục thời gian (mới nhất ở trên)
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình dòng thời gian điều trị
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhDongThoiGian extends JPanel {
 
     private static final String TAT_CA = "Tất cả";
@@ -33,22 +33,22 @@ public class ManHinhDongThoiGian extends JPanel {
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();
     private JComboBox<String> cmbLoc = new JComboBox<>(new String[] {TAT_CA, SuKienDieuTri.LOAI_KHAM, SuKienDieuTri.LOAI_LIEU_TRINH,
-        SuKienDieuTri.LOAI_TAI_KHAM, SuKienDieuTri.LOAI_DANG_KY});   // lọc theo loại sự kiện
-    private JPanel khuTomTat = new JPanel();                         // cảnh báo dị ứng và các ô tóm tắt
-    private JPanel khuTrucThoiGian = new JPanel();                   // trục thời gian
-    private DongThoiGian dongThoiGian;                               // dữ liệu đang xem
+        SuKienDieuTri.LOAI_TAI_KHAM, SuKienDieuTri.LOAI_DANG_KY}); // Lọc theo loại sự kiện
+    private JPanel khuTomTat = new JPanel(); // Cảnh báo dị ứng
+    private JPanel khuTrucThoiGian = new JPanel(); // Trục thời gian
+    private DongThoiGian dongThoiGian; // Dữ liệu đang xem
 
     public ManHinhDongThoiGian() {
         this(null);
     }
 
-    // Mở sẵn dòng thời gian của một bệnh nhân (null thì để người dùng tự chọn)
+    // Mở sẵn dòng thời gian của một bệnh nhân
     public ManHinhDongThoiGian(BenhNhan benhNhan) {
         JButton btnXem = TienIch.nutChinh("Xem dòng thời gian");
         btnXem.addActionListener(e -> xem());
         cmbLoc.setFont(TienIch.FONT);
         cmbLoc.addActionListener(e -> veTruc());
-        // Đổi bệnh nhân ở ô chọn thì xóa trục đang hiện, tránh nhìn nhầm dữ liệu của người trước
+        // Đổi bệnh nhân ở ô chọn
         chonBenhNhan.addChonListener(e -> {
             dongThoiGian = null;
             khuTomTat.removeAll();
@@ -64,7 +64,7 @@ public class ManHinhDongThoiGian extends JPanel {
                 TienIch.dong(TienIch.nhan("Bệnh nhân"), chonBenhNhan, btnXem, TienIch.nhan("Lọc"), cmbLoc), khuTomTat, khuTrucThoiGian);
 
         if (benhNhan != null) {
-            chonBenhNhan.setBenhNhan(benhNhan); // chưa có trong danh sách thì thêm vào đầu rồi chọn
+            chonBenhNhan.setBenhNhan(benhNhan); // Chưa có trong danh sách
             xem();
         }
     }
@@ -107,7 +107,7 @@ public class ManHinhDongThoiGian extends JPanel {
         khuTomTat.revalidate();
     }
 
-    // Một ô tóm tắt gồm nhãn nhỏ và giá trị lớn
+    // Một ô tóm tắt gồm nhãn nhỏ
     private JComponent oTomTat(String nhan, String giaTri) {
         JLabel lblNhan = new JLabel(nhan);
         lblNhan.setFont(TienIch.FONT.deriveFont(12f));
@@ -146,7 +146,7 @@ public class ManHinhDongThoiGian extends JPanel {
         khuTrucThoiGian.repaint();
     }
 
-    // Cột chấm tròn nối bằng đường dọc của trục thời gian (chấm đặc nếu đã qua, chấm rỗng nếu sắp tới)
+    // Cột chấm tròn nối bằng đường
     private static class CotCham extends JComponent {
         private Color mau;
         private boolean daQua;
@@ -178,7 +178,7 @@ public class ManHinhDongThoiGian extends JPanel {
         }
     }
 
-    // Một dòng của trục thời gian: ngày giờ, chấm màu nối bằng đường dọc, thẻ nội dung
+    // Một dòng của trục thời gian
     private JComponent taoDong(SuKienDieuTri sk) {
         Color mau = mauTheoLoai(sk.getLoai());
         boolean coGio = !(sk.getThoiGian().getHour() == 0 && sk.getThoiGian().getMinute() == 0);
@@ -206,7 +206,7 @@ public class ManHinhDongThoiGian extends JPanel {
         viTriThe.setBorder(BorderFactory.createEmptyBorder(0, 0, 14, 0));
         viTriThe.add(the, BorderLayout.CENTER);
 
-        JPanel traiVaCot = new JPanel(new BorderLayout(10, 0)); // ngày giờ bên trái, cột chấm tròn bên phải
+        JPanel traiVaCot = new JPanel(new BorderLayout(10, 0)); // Ngày giờ bên trái
         traiVaCot.setOpaque(false);
         traiVaCot.add(lblNgay, BorderLayout.WEST);
         traiVaCot.add(new CotCham(mau, sk.isDaQua()), BorderLayout.CENTER);
@@ -231,7 +231,7 @@ public class ManHinhDongThoiGian extends JPanel {
         return new Color(0x78909C);
     }
 
-    // Cách đây bao lâu, ví dụ "2 năm 3 tháng trước", "hôm nay"
+    // Cách đây bao lâu
     private String cachDay(LocalDate ngay) {
         Period p = Period.between(ngay, LocalDate.now());
         if (p.isNegative() || (p.getYears() == 0 && p.getMonths() == 0 && p.getDays() == 0)) {

@@ -20,8 +20,7 @@ import nhakhoakim.entity.LuotKhamDichVu;
 import nhakhoakim.entity.RangDieuTri;
 import nhakhoakim.entity.DongThoiGian.SuKienDieuTri;
 
-// Dòng thời gian điều trị: gom đăng ký, liệu trình, lượt khám (kèm răng, dịch vụ, đơn thuốc) và hẹn tái khám
-// của một bệnh nhân thành một trục thời gian, mới nhất trước. Chỉ đọc dữ liệu có sẵn, không ghi gì.
+// Dòng thời gian điều trị
 public class DongThoiGianController {
 
     private BenhNhanController benhNhanService = new BenhNhanController();
@@ -40,10 +39,10 @@ public class DongThoiGianController {
         HoSoBenhAn hs = hoSoService.timTheoBenhNhan(maBN);
         DongThoiGian ketQua = new DongThoiGian();
         List<SuKienDieuTri> ds = ketQua.getSuKien();
-        Map<String, DichVu> bangDichVu = layBangDichVu(); // nạp danh mục dịch vụ một lần rồi tra, không gọi lại trong vòng lặp
+        Map<String, DichVu> bangDichVu = layBangDichVu(); // Nạp danh mục dịch vụ một lần
         List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(maBN);
         List<LuotKham> dsLuotKham = hoSoService.layLichSuKham(hs.getMaHoSo());
-        List<String> dsMaNhaSi = new ArrayList<>(); // hỏi tên nha sĩ một lần cho cả liệu trình lẫn lượt khám
+        List<String> dsMaNhaSi = new ArrayList<>(); // Hỏi tên nha sĩ một lần
         for (LieuTrinh lt : dsLieuTrinh) {
             dsMaNhaSi.add(lt.getMaNhaSiPhuTrach());
         }
@@ -75,7 +74,7 @@ public class DongThoiGianController {
             ds.add(new SuKienDieuTri(lk.getGioBatDau(), SuKienDieuTri.LOAI_KHAM,
                     "Lượt khám " + lk.getMaLuotKham() + " (" + lk.getTrangThai() + ")", moTaLuotKham(lk, bangDichVu, tenNhaSi)));
             if (lk.getNgayTaiKham() != null) {
-                // Hẹn tái khám chỉ có ngày: so theo ngày để hẹn hôm nay vẫn là "sắp tới" chứ không bị coi là đã qua
+                // Hẹn tái khám chỉ có ngày
                 boolean daQua = lk.getNgayTaiKham().isBefore(homNay);
                 ds.add(new SuKienDieuTri(lk.getNgayTaiKham().atStartOfDay(), SuKienDieuTri.LOAI_TAI_KHAM, "Hẹn tái khám",
                         "Theo chỉ định của lượt khám " + lk.getMaLuotKham(), daQua));
@@ -103,7 +102,7 @@ public class DongThoiGianController {
         return ketQua;
     }
 
-    // Danh mục dịch vụ dưới dạng bảng tra theo mã dịch vụ
+    // Danh mục dịch vụ dưới dạng bảng tra
     private Map<String, DichVu> layBangDichVu() {
         Map<String, DichVu> bang = new HashMap<>();
         for (DichVu dv : dichVuService.layTatCa()) {
@@ -112,7 +111,7 @@ public class DongThoiGianController {
         return bang;
     }
 
-    // Nội dung chi tiết của một lượt khám: lý do, chẩn đoán, hướng điều trị, đơn thuốc, răng và dịch vụ đã làm
+    // Nội dung chi tiết của một lượt khám
     private String moTaLuotKham(LuotKham lk, Map<String, DichVu> bangDichVu, Map<String, String> tenNhaSi) {
         StringBuilder sb = new StringBuilder();
         them(sb, "Nha sĩ", NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()));
@@ -130,7 +129,7 @@ public class DongThoiGianController {
             if (dv != null) {
                 rang.append(" (").append(dv.getTenDichVu()).append(")");
             } else if (r.getMaDichVu() != null) {
-                rang.append(" (").append(r.getMaDichVu()).append(")"); // dịch vụ không còn trong danh mục thì hiện mã
+                rang.append(" (").append(r.getMaDichVu()).append(")"); // Dịch vụ đã xóa thì hiện mã
             }
         }
         them(sb, "Răng", rang.toString());
@@ -150,7 +149,7 @@ public class DongThoiGianController {
         return sb.length() == 0 ? "(chưa ghi nội dung)" : sb.toString();
     }
 
-    // Thêm một dòng "nhãn: giá trị" nếu giá trị không rỗng
+    // Thêm dòng nhãn: giá trị
     private void them(StringBuilder sb, String nhan, String giaTri) {
         if (giaTri != null && !giaTri.trim().isEmpty()) {
             if (sb.length() > 0) {
@@ -160,7 +159,7 @@ public class DongThoiGianController {
         }
     }
 
-    // Đoạn chữ ghi tên nha sĩ để nối vào mô tả; không có mã nha sĩ thì không thêm gì
+    // Đoạn chữ ghi tên nha sĩ để nối vào mô tả
     private String dongNhaSi(String nhan, Map<String, String> tenNhaSi, String maNhaSi) {
         return maNhaSi == null ? "" : "." + nhan + NhaSiPhuTrachController.tenHoacMa(tenNhaSi, maNhaSi);
     }

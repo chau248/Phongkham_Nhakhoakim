@@ -3,24 +3,24 @@ package nhakhoakim.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-// Bản tạm do Hậu viết để chạy thử; Trường thay bằng bản đầy đủ của mình (giữ nguyên tên getter/setter).
+// Bản tạm do Hậu viết để chạy thử
 
 // Lịch hẹn khám
 public class LichHen {
 
-    private String maLichHen; // mã lịch hẹn, dạng LH000001
-    private String maBN; // mã bệnh nhân
-    private String maNhanVien; // mã nha sĩ
-    private String maDichVu; // mã dịch vụ
-    private LocalDate ngayHen; // ngày hẹn
-    private LocalTime gioHen; // giờ hẹn
-    private String trangThai; // Chờ xác nhận, Đã xác nhận, Hoàn thành, Không đến hoặc Đã hủy
-    private String phong; // phòng khám
-    private int thoiLuongDuKien; // thời lượng dự kiến (phút)
-    private String maHoSo; // mã hồ sơ bệnh án (có thể null nếu chưa có hồ sơ)
-    private String hinhThucDat; // hình thức đặt: trực tiếp, online
-    private boolean daNhacHen; // trạng thái nhắc hẹn: chưa nhắc, đã nhắc, không nhắc (bệnh nhân không muốn nhận nhắc hẹn)
-    private String lyDoHuy; // lý do hủy (có thể null nếu chưa hủy)
+    private String maLichHen; // Mã lịch hẹn, dạng LH000001
+    private String maBN; // Mã bệnh nhân
+    private String maNhanVien; // Mã nha sĩ
+    private String maDichVu; // Mã dịch vụ
+    private LocalDate ngayHen; // Ngày hẹn
+    private LocalTime gioHen; // Giờ hẹn
+    private String trangThai; // Chờ xác nhận, Đã xác nhận
+    private String phong; // Phòng khám
+    private int thoiLuongDuKien; // Thời lượng dự kiến
+    private String maHoSo; // Mã hồ sơ bệnh án
+    private String hinhThucDat; // Hình thức đặt
+    private boolean daNhacHen; // Trạng thái nhắc hẹn
+    private String lyDoHuy; // Lý do hủy
     
     public String getMaLichHen() {
         return maLichHen;

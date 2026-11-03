@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nhakhoakim.entity.DichVu;
 
-// Truy cập bảng DichVu (chỉ lớp DAO được viết SQL). Không có hàm xóa: dịch vụ chỉ chuyển sang ngừng hoạt động (CH-02).
+// Truy cập bảng DichVu
 public class DichVuDAO {
 
     static final String CAC_COT = "maDichVu, tenDichVu, gia, thoiGianDuKien, moTa, loaiDichVu, donViTinh, trangThaiHoatDong,"
@@ -20,18 +20,18 @@ public class DichVuDAO {
     static final String SQL_CAP_NHAT = "UPDATE dbo.DichVu SET tenDichVu = ?, gia = ?, thoiGianDuKien = ?, moTa = ?, loaiDichVu = ?,"
             + " donViTinh = ?, trangThaiHoatDong = ?, yeuCauLieuTrinh = ?, lienQuanImplantCauRang = ? WHERE maDichVu = ?";
 
-    // Tất cả dịch vụ (kể cả đã ngừng), theo mã
+    // Tất cả dịch vụ, theo mã
     public List<DichVu> layTatCa() {
         return layDanhSach(SQL_TAT_CA, null);
     }
 
-    // Tìm dịch vụ theo mã; không có thì trả về null
+    // Tìm dịch vụ theo mã
     public DichVu timTheoMa(String ma) {
         List<DichVu> ds = layDanhSach(SQL_THEO_MA, ma);
         return ds.isEmpty() ? null : ds.get(0);
     }
 
-    // Tìm dịch vụ theo tên (so khớp theo collation của CSDL, không phân biệt hoa thường); không có thì trả về null
+    // Tìm dịch vụ theo tên
     public DichVu timTheoTen(String ten) {
         List<DichVu> ds = layDanhSach(SQL_THEO_TEN, ten);
         return ds.isEmpty() ? null : ds.get(0);
@@ -56,7 +56,7 @@ public class DichVuDAO {
         }
     }
 
-    // Cập nhật dịch vụ (không đổi mã)
+    // Cập nhật dịch vụ
     public void capNhat(DichVu dv) {
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_CAP_NHAT)) {
             ps.setString(1, dv.getTenDichVu());
@@ -75,7 +75,7 @@ public class DichVuDAO {
         }
     }
 
-    // Chạy câu SELECT (có hoặc không có một tham số chuỗi) và đọc tất cả dòng
+    // Chạy câu SELECT và đọc tất cả dòng
     private List<DichVu> layDanhSach(String sql, String thamSo) {
         List<DichVu> ds = new ArrayList<>();
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

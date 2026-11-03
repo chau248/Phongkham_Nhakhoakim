@@ -22,9 +22,8 @@ import nhakhoakim.entity.GoiYDieuTri.UocTinhChiPhi;
 import nhakhoakim.entity.HoSoBenhAn;
 import nhakhoakim.entity.LuotKham;
 
-// Màn hình gợi ý điều trị và ước tính chi phí cho lượt khám đang khám: hệ thống đọc sơ đồ răng và lịch sử khám để gợi ý dịch vụ,
-// nha sĩ tích chọn gợi ý muốn thêm và xem trước chi phí tạm tính (đã gồm VAT)
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình gợi ý điều trị
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhGoiYDieuTri extends JPanel {
 
     private GoiYDieuTriController goiYService = new GoiYDieuTriController();
@@ -33,14 +32,14 @@ public class ManHinhGoiYDieuTri extends JPanel {
     private BenhNhanController benhNhanService = new BenhNhanController();
     private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
-    private LuotKham luotKham;                                  // lượt khám đang khám
-    private List<GoiYDieuTri> dsGoiY = new ArrayList<>();       // dữ liệu bảng gợi ý
+    private LuotKham luotKham; // Lượt khám đang khám
+    private List<GoiYDieuTri> dsGoiY = new ArrayList<>(); // Dữ liệu bảng gợi ý
     private JTable tblGoiY = TienIch.taoBang(new String[] {"Mức độ", "Răng", "Lý do gợi ý", "Dịch vụ gợi ý", "Giá (đồng)", "Lưu ý"},
-            new int[] {95, 50, 400, 150, 90, 260}, "Không có gợi ý nào, tình trạng răng ổn.");    // bảng gợi ý
+            new int[] {95, 50, 400, 150, 90, 260}, "Không có gợi ý nào, tình trạng răng ổn."); // Bảng gợi ý
     private JTable tblChiPhi = TienIch.taoBang(new String[] {"Dịch vụ đã ghi trong lượt khám", "Số lượng", "Đơn giá (đồng)", "Thành tiền (đồng)"},
-            new int[] {330, 80, 130, 150}, "Chưa ghi dịch vụ nào trong lượt khám này.");        // bảng chi phí hiện tại
-    private JLabel lblTong = TienIch.chuThuong(" ", true);      // tổng chi phí hiện tại
-    private JLabel lblThem = TienIch.chuThuong(" ", true);      // chi phí nếu thêm các gợi ý đã chọn
+            new int[] {330, 80, 130, 150}, "Chưa ghi dịch vụ nào trong lượt khám này."); // Bảng chi phí
+    private JLabel lblTong = TienIch.chuThuong(" ", true); // Tổng chi phí
+    private JLabel lblThem = TienIch.chuThuong(" ", true); // Chi phí nếu thêm các gợi
 
     public ManHinhGoiYDieuTri() {
         List<Component> cacKhoi = new ArrayList<>();
@@ -61,7 +60,7 @@ public class ManHinhGoiYDieuTri extends JPanel {
         }
     }
 
-    // Dựng màn hình: thông tin lượt khám, bảng gợi ý, bảng chi phí
+    // Dựng màn hình
     private void dung(List<Component> cacKhoi) {
         HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
         BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
@@ -127,14 +126,14 @@ public class ManHinhGoiYDieuTri extends JPanel {
         return kq;
     }
 
-    // Hiện số tiền phát sinh nếu thêm các gợi ý đã chọn
+    // Hiện số tiền phát sinh
     private void capNhatTienThem() {
         List<GoiYDieuTri> chon = dangChon();
         lblThem.setText(chon.isEmpty() ? " " : "Thêm " + chon.size() + " dịch vụ sẽ tăng thêm "
                 + TienIch.tien(goiYService.tinhTienThem(chon)) + " đồng (đã gồm VAT)");
     }
 
-    // Thêm các gợi ý đã chọn vào lượt khám: gom cảnh báo của từng dịch vụ và hỏi xác nhận một lần, rồi thêm tất cả cùng lúc
+    // Thêm các gợi ý đã chọn vào lượt khám
     private void themDaChon() {
         List<GoiYDieuTri> chon = dangChon();
         if (chon.isEmpty()) {
@@ -143,7 +142,7 @@ public class ManHinhGoiYDieuTri extends JPanel {
         }
         try {
             StringBuilder canhBao = new StringBuilder();
-            Set<String> daXet = new HashSet<>(); // một dịch vụ chỉ cảnh báo một lần dù được gợi ý cho nhiều răng
+            Set<String> daXet = new HashSet<>(); // Một dịch vụ chỉ cảnh báo
             for (GoiYDieuTri g : chon) {
                 String ma = g.getDichVu().getMaDichVu();
                 if (!daXet.add(ma)) {

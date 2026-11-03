@@ -13,17 +13,16 @@ import nhakhoakim.controller.NhanVienController;
 import nhakhoakim.entity.NhanVien;
 import nhakhoakim.entity.VaiTro;
 
-// Màn hình cập nhật hồ sơ nhân viên (NV-01 đến NV-03): chỉ Quản lý; có cảnh báo chứng chỉ hành nghề sắp hết hạn;
-// không xóa nhân viên, chỉ chuyển sang Nghỉ việc (tài khoản của họ bị khóa)
-@SuppressWarnings("serial") // lớp giao diện Swing, không cần serialVersionUID
+// Màn hình cập nhật hồ sơ nhân viên
+@SuppressWarnings("serial") // Lớp giao diện Swing
 public class ManHinhHoSoNhanVien extends JPanel {
 
     private static final String TAT_CA = "Tất cả";
 
     private NhanVienController nhanVienController = new NhanVienController();
 
-    private JPanel khuCanhBao = new JPanel(new java.awt.BorderLayout());     // chỗ đặt cảnh báo chứng chỉ
-    private JTextField txtTim = TienIch.oNhap(20);                           // tìm theo mã hoặc họ tên
+    private JPanel khuCanhBao = new JPanel(new java.awt.BorderLayout()); // Chỗ đặt cảnh báo chứng
+    private JTextField txtTim = TienIch.oNhap(20); // Tìm theo mã hoặc họ tên
     private JComboBox<String> cmbLocVaiTro = new JComboBox<>(new String[] {TAT_CA, VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY});
     private JComboBox<String> cmbLocTrangThai = new JComboBox<>(new String[] {TAT_CA, NhanVienController.DANG_LAM, NhanVienController.NGHI_VIEC});
     private JTable tblNhanVien = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Vai trò", "SĐT", "Chuyên khoa", "Hạn chứng chỉ", "Trạng thái"},
@@ -39,7 +38,7 @@ public class ManHinhHoSoNhanVien extends JPanel {
     private JTextField txtSoCCHN = TienIch.oNhap(16);
     private JTextField txtHanCCHN = TienIch.oNhap(10);
     private JComboBox<String> cmbTrangThai = new JComboBox<>(new String[] {NhanVienController.DANG_LAM, NhanVienController.NGHI_VIEC});
-    private NhanVien dangSua; // nhân viên đang chọn để sửa (null là đang nhập người mới)
+    private NhanVien dangSua; // Nhân viên đang chọn để sửa
 
     public ManHinhHoSoNhanVien() {
         for (JComboBox<String> c : List.of(cmbLocVaiTro, cmbLocTrangThai, cmbVaiTro, cmbGioiTinh, cmbTrangThai)) {
@@ -75,7 +74,7 @@ public class ManHinhHoSoNhanVien extends JPanel {
         tai();
     }
 
-    // Tải lại cảnh báo chứng chỉ và danh sách nhân viên
+    // Tải lại cảnh báo chứng
     private void tai() {
         try {
             khuCanhBao.removeAll();
@@ -96,7 +95,7 @@ public class ManHinhHoSoNhanVien extends JPanel {
         }
     }
 
-    // Lọc danh sách theo từ khóa, vai trò, trạng thái
+    // Lọc danh sách theo từ khóa, vai trò
     private void loc() {
         try {
             String tu = txtTim.getText().trim().toLowerCase();
