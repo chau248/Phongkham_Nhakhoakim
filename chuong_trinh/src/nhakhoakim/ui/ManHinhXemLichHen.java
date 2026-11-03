@@ -54,7 +54,9 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         JButton btnKhongDen = TienIch.nutDo("Đánh dấu không đến");
         btnKhongDen.addActionListener(e -> danhDauKhongDen());
         JButton btnDat = TienIch.nutPhu("Đặt lịch hẹn mới");
-        btnDat.addActionListener(e -> MainApp.doiNoiDung(new ManHinhDatLichHen()));
+        btnDat.addActionListener(e -> moHopThoaiDatLich());
+        JButton btnXacNhan = TienIch.nutPhu("Xác nhận lịch hẹn");
+        btnXacNhan.addActionListener(e -> moMucXacNhanLichHen());
 
         lblKetQua.setFont(TienIch.FONT);
         lblKetQua.setForeground(TienIch.MAU_XAM);
@@ -73,7 +75,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
                 return l;
             }
         });
-        JButton btnNapNhaSi = TienIch.nutPhu("Nha sĩ có ca trong ngày");
+        JButton btnNapNhaSi = TienIch.nutPhu("Tải lại danh sách nha sĩ có ca trực");
         btnNapNhaSi.addActionListener(e -> napNhaSi());
         JButton btnGioTrong = TienIch.nutChinh("Xem giờ trống");
         btnGioTrong.addActionListener(e -> xemGioTrong());
@@ -82,10 +84,9 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
         TienIch.xepManHinh(this, TienIch.tieuDe("Xem lịch hẹn"),
                 TienIch.dong(TienIch.nhan("Ngày"), txtNgay, cmbKieu, btnXem, btnTruoc, btnSau, btnHomNay), lblKetQua,
-                TienIch.cuonBang(tblLich, 300), TienIch.dong(btnKhongDen, btnDat),
+                TienIch.cuonBang(tblLich, 300), TienIch.dong(btnKhongDen, btnDat, btnXacNhan),
                 TienIch.chuThuong("Khung giờ trống của nha sĩ (ngày đang chọn ở trên)", true),
                 TienIch.dong(btnNapNhaSi, cmbNhaSi, cmbDichVu, btnGioTrong), lblGioTrong);
-        xem();
     }
 
     @Override
@@ -129,6 +130,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
             TienIch.napBang(tblLich, dong);
             lblKetQua.setText((cmbKieu.getSelectedIndex() == 1 ? "Tuần " + TienIch.ngay(tu) + " - " + TienIch.ngay(den) : "Ngày " + TienIch.ngay(tu))
                     + ": " + dong.size() + " lịch hẹn.");
+            napNhaSi();
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }
@@ -145,13 +147,13 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
             TienIch.baoLoi(e);
         }
     }
-
+ 
     // Hiện các giờ còn trống của nha sĩ đang chọn cho dịch vụ đang chọn
     private void xemGioTrong() {
         NhanVien nv = (NhanVien) cmbNhaSi.getSelectedItem();
         DichVu dv = (DichVu) cmbDichVu.getSelectedItem();
         if (nv == null || dv == null) {
-            TienIch.thongTin("Hãy chọn nha sĩ (bấm \"Nha sĩ có ca trong ngày\" trước) và dịch vụ.");
+            TienIch.thongTin("Hãy chọn nha sĩ và dịch vụ trước. (bấm \\\"Nha sĩ có ca trong ngày\\\" trước nếu chưa tải danh sách nha sĩ)");
             return;
         }
         try {
@@ -187,5 +189,18 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }
+    }
+    private void moHopThoaiDatLich() {
+        try {
+            if (HopThoaiDatLichHen.moPopupDatLich()) {
+                xem();
+            }
+        } catch (RuntimeException e) {
+            TienIch.baoLoi(e);
+        }
+    }
+    private void moMucXacNhanLichHen() {
+        ManHinhXacNhanLichHen mh = new ManHinhXacNhanLichHen();
+        MainApp.thayNoiDung(mh);
     }
 }

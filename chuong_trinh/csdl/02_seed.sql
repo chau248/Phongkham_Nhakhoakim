@@ -287,3 +287,12 @@ GO
 
 PRINT N'Hoàn tất nạp dữ liệu mẫu.';
 GO
+
+/* Tạo người dùng để đăng nhập vào phần mềm. Người dùng này sẽ nhập thông tin, hệ thống sẽ lưu thông tin
+tài khoản đã nhập nếu tồn tại. Từ chức vụ của tài khoản các controller sẽ xác định quyền truy cập vào các chức năng.
+*/
+create login NhaKhoa with password = N'123456', check_policy = off;
+create user NhaKhoa for login NhaKhoa;
+
+exec sp_addrolemember 'db_datareader','NhaKhoa'
+exec sp_addrolemember 'db_datawriter','NhaKhoa'
