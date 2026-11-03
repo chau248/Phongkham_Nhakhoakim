@@ -80,8 +80,6 @@ public class HopThoaiDatLichHen extends JPanel {
                 TienIch.doanChu("Chọn bệnh nhân, dịch vụ và ngày, bấm Tìm nha sĩ có ca trực, rồi chọn nha sĩ và giờ còn trống. Giờ hẹn tròn 30 phút trong ca Sáng 08:00-12:00 "
                         + "hoặc ca Chiều 13:00-17:00. Lịch mới ở trạng thái Chờ xác nhận.", TienIch.MAU_XAM),
                 TienIch.the(form, lblThongTin, TienIch.dong(btnDat)));
-        napNhaSi();
-        napGio();
     }
 
     // Đổ danh sách nha sĩ có ca trực Có mặt trong ngày đang chọn

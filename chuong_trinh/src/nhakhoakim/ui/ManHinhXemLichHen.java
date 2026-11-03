@@ -87,7 +87,6 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
                 TienIch.cuonBang(tblLich, 300), TienIch.dong(btnKhongDen, btnDat, btnXacNhan),
                 TienIch.chuThuong("Khung giờ trống của nha sĩ (ngày đang chọn ở trên)", true),
                 TienIch.dong(btnNapNhaSi, cmbNhaSi, cmbDichVu, btnGioTrong), lblGioTrong);
-        xem();
     }
 
     @Override
