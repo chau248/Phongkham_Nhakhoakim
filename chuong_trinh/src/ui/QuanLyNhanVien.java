@@ -11,11 +11,11 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import controller.NhanVienController;
 import entity.NhanVien;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Màn hình cập nhật hồ sơ nhân viên
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhHoSoNhanVien extends JPanel {
+public class QuanLyNhanVien extends JPanel {
 
     private static final String TAT_CA = "Tất cả";
 
@@ -23,14 +23,14 @@ public class ManHinhHoSoNhanVien extends JPanel {
 
     private JPanel khuCanhBao = new JPanel(new java.awt.BorderLayout()); // Chỗ đặt cảnh báo chứng
     private JTextField txtTim = TienIch.oNhap(20); // Tìm theo mã hoặc họ tên
-    private JComboBox<String> cmbLocVaiTro = new JComboBox<>(new String[] {TAT_CA, VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY});
+    private JComboBox<String> cmbLocVaiTro = new JComboBox<>(new String[] {TAT_CA, HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY});
     private JComboBox<String> cmbLocTrangThai = new JComboBox<>(new String[] {TAT_CA, NhanVienController.DANG_LAM, NhanVienController.NGHI_VIEC});
     private JTable tblNhanVien = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Vai trò", "SĐT", "Chuyên khoa", "Hạn chứng chỉ", "Trạng thái"},
             new int[] {90, 190, 90, 100, 130, 110, 110}, "Không có nhân viên nào.");
     private List<NhanVien> dsHienThi = new ArrayList<>();
 
     private JTextField txtHoTen = TienIch.oNhap(26);
-    private JComboBox<String> cmbVaiTro = new JComboBox<>(new String[] {VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY});
+    private JComboBox<String> cmbVaiTro = new JComboBox<>(new String[] {HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY});
     private JComboBox<String> cmbGioiTinh = new JComboBox<>(new String[] {"", "Nam", "Nữ", "Khác"});
     private JTextField txtSdt = TienIch.oNhap(12);
     private JTextField txtChuyenKhoa = TienIch.oNhap(20);
@@ -40,7 +40,7 @@ public class ManHinhHoSoNhanVien extends JPanel {
     private JComboBox<String> cmbTrangThai = new JComboBox<>(new String[] {NhanVienController.DANG_LAM, NhanVienController.NGHI_VIEC});
     private NhanVien dangSua; // Nhân viên đang chọn để sửa
 
-    public ManHinhHoSoNhanVien() {
+    public QuanLyNhanVien() {
         for (JComboBox<String> c : List.of(cmbLocVaiTro, cmbLocTrangThai, cmbVaiTro, cmbGioiTinh, cmbTrangThai)) {
             c.setFont(TienIch.FONT);
         }

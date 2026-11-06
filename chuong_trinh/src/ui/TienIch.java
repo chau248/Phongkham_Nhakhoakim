@@ -523,7 +523,7 @@ public class TienIch {
         p.setOpaque(false);
         p.add(doanChu("Chưa có lượt khám đang khám. Hãy bắt đầu khám ở \"Khám và ghi nhận điều trị\" trước.", Color.BLACK), BorderLayout.NORTH);
         JButton btnKham = nutChinh("Đến màn hình khám");
-        btnKham.addActionListener(e -> MainApp.doiNoiDung(new ManHinhKhamDieuTri()));
+        btnKham.addActionListener(e -> MainApp.doiNoiDung(new KhamBenh()));
         p.add(dong(btnKham), BorderLayout.CENTER);
         return p;
     }
@@ -592,5 +592,14 @@ public class TienIch {
         o.setColumns(40);
         o.setRows(Math.min(14, Math.max(2, noiDung.length() / 40 + noiDung.split("\n").length)));
         return o;
+    }
+
+    // Dòng thông tin ở đầu các màn hình làm việc trên lượt khám: bệnh nhân, nha sĩ phụ trách, mã lượt khám, giờ bắt đầu
+    static JLabel dongThongTinLuotKham(entity.LuotKham luotKham) {
+        JLabel lbl = chuThuong("Bệnh nhân: " + luotKham.getMaHoSo().getMaBN().getHoTen() + "   |   Nha sĩ phụ trách: "
+                + luotKham.getMaNhanVienPhuTrach().getHoTen() + "   |   Lượt khám " + luotKham.getMaLuotKham()
+                + "   |   Bắt đầu " + ngayGio(luotKham.getGioBatDau()), true);
+        lbl.setToolTipText("Mã nha sĩ: " + luotKham.getMaNhanVienPhuTrach().getMaNV());
+        return lbl;
     }
 }

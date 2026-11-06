@@ -22,7 +22,7 @@ import entity.NhanVien;
 
 // Màn hình hồ sơ bệnh án
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhHoSoBenhAn extends JPanel {
+public class XemHoSoBenhAn extends JPanel {
 
     private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
 
@@ -43,12 +43,12 @@ public class ManHinhHoSoBenhAn extends JPanel {
     private HoSoBenhAn hoSoBanDau; // Bản sao hồ sơ lúc mở
     private JButton btnDongHoSo = TienIch.nutPhu("Đóng hồ sơ"); // Chỉ quản lý thấy
 
-    public ManHinhHoSoBenhAn() {
+    public XemHoSoBenhAn() {
         this(null);
     }
 
     // Mở sẵn hồ sơ của một bệnh nhân
-    public ManHinhHoSoBenhAn(BenhNhan benhNhan) {
+    public XemHoSoBenhAn(BenhNhan benhNhan) {
         JButton btnXem = TienIch.nutChinh("Xem hồ sơ");
         btnXem.addActionListener(e -> xemHoSo());
         JButton btnThoiGian = TienIch.nutPhu("Dòng thời gian điều trị");
@@ -56,7 +56,7 @@ public class ManHinhHoSoBenhAn extends JPanel {
             if (chonBenhNhan.getBenhNhan() == null) {
                 TienIch.thongTin("Vui lòng chọn một bệnh nhân.");
             } else {
-                MainApp.doiNoiDung(new ManHinhDongThoiGian(chonBenhNhan.getBenhNhan()));
+                MainApp.doiNoiDung(new XemDongThoiGian(chonBenhNhan.getBenhNhan()));
             }
         });
 

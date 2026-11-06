@@ -8,7 +8,7 @@ import dao.NhanVienDAO;
 import dao.TaiKhoanDAO;
 import entity.NhanVien;
 import entity.TaiKhoan;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Nghiệp vụ tài khoản
 public class TaiKhoanController {
@@ -84,19 +84,19 @@ public class TaiKhoanController {
 
     // Tất cả tài khoản
     public List<TaiKhoan> layTatCa() {
-        TienIchController.yeuCau(nguoiDung, "xem danh sách tài khoản", VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "xem danh sách tài khoản", HangSo.VAI_TRO_QUAN_LY);
         return taiKhoanDAO.layTatCa();
     }
 
     // Tài khoản của người đang đăng nhập
     public TaiKhoan layTaiKhoanCuaToi() {
-        NhanVien nv = TienIchController.yeuCau(nguoiDung, "xem tài khoản của mình", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nv = TienIchController.yeuCau(nguoiDung, "xem tài khoản của mình", HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         return taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
     }
 
     // Tạo tài khoản cho một nhân viên
     public TaiKhoan taoTaiKhoan(String maNV, String tenDangNhap, String matKhau) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "tạo tài khoản", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "tạo tài khoản", HangSo.VAI_TRO_QUAN_LY);
         NhanVien nv = maNV == null ? null : nhanVienDAO.timTheoMa(maNV);
         if (nv == null) {
             throw new NghiepVuException("Chưa chọn nhân viên");
@@ -128,7 +128,7 @@ public class TaiKhoanController {
 
     // Người đang đăng nhập đổi mật
     public void doiMatKhauCuaToi(String matKhauCu, String matKhauMoi) {
-        NhanVien nv = TienIchController.yeuCau(nguoiDung, "đổi mật khẩu", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nv = TienIchController.yeuCau(nguoiDung, "đổi mật khẩu", HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         TaiKhoan tk = taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
         if (tk == null) {
             throw new NghiepVuException("Nhân viên này chưa có tài khoản");
@@ -146,7 +146,7 @@ public class TaiKhoanController {
 
     // Quản lý cấp lại mật khẩu
     public void capLaiMatKhau(String maTaiKhoan, String matKhauMoi) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "cấp lại mật khẩu", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "cấp lại mật khẩu", HangSo.VAI_TRO_QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
         kiemTraMatKhauMoi(matKhauMoi);
         taiKhoanDAO.doiMatKhau(tk.getMaTaiKhoan(), TienIchController.bamMatKhau(matKhauMoi), false);
@@ -155,7 +155,7 @@ public class TaiKhoanController {
 
     // Khóa tài khoản
     public void khoa(String maTaiKhoan) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "khóa tài khoản", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "khóa tài khoản", HangSo.VAI_TRO_QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
         if (tk.getMaNV().getMaNV().equals(nguoi.getMaNV())) {
             throw new NghiepVuException("Không thể tự khóa tài khoản của chính mình");
@@ -163,7 +163,7 @@ public class TaiKhoanController {
         if (tk.isTrangThaiKhoa()) {
             throw new NghiepVuException("Tài khoản này đã bị khóa");
         }
-        if (VaiTro.QUAN_LY.equals(tk.getVaiTro()) && taiKhoanDAO.demQuanLyHoatDong() <= 1) {
+        if (HangSo.VAI_TRO_QUAN_LY.equals(tk.getVaiTro()) && taiKhoanDAO.demQuanLyHoatDong() <= 1) {
             throw new NghiepVuException("Đây là tài khoản Quản lý hoạt động cuối cùng, không thể khóa");
         }
         taiKhoanDAO.datKhoa(maTaiKhoan, true);
@@ -172,7 +172,7 @@ public class TaiKhoanController {
 
     // Mở khóa tài khoản
     public void moKhoa(String maTaiKhoan) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "mở khóa tài khoản", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "mở khóa tài khoản", HangSo.VAI_TRO_QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
         if (!tk.isTrangThaiKhoa()) {
             throw new NghiepVuException("Tài khoản này đang hoạt động, không cần mở khóa");

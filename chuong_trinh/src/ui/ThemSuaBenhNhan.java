@@ -12,7 +12,7 @@ import entity.BenhNhan;
 
 // Màn hình thêm mới hoặc cập
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhHoSoBenhNhan extends JPanel {
+public class ThemSuaBenhNhan extends JPanel {
 
     private BenhNhanController benhNhanService = new BenhNhanController();
 
@@ -30,7 +30,7 @@ public class ManHinhHoSoBenhNhan extends JPanel {
     private JTextField txtGhiChu = TienIch.oNhap(32);
 
     // Truyền bệnh nhân để sửa, hoặc null
-    public ManHinhHoSoBenhNhan(BenhNhan benhNhan) {
+    public ThemSuaBenhNhan(BenhNhan benhNhan) {
         this.benhNhan = benhNhan;
 
         lblMa.setFont(TienIch.FONT);
@@ -98,7 +98,7 @@ public class ManHinhHoSoBenhNhan extends JPanel {
             if (benhNhan == null) {
                 BenhNhan moi = benhNhanService.them(bn);
                 TienIch.thongTin("Đã thêm bệnh nhân " + moi.getMaBN() + " và tạo hồ sơ bệnh án rỗng.");
-                MainApp.thayNoiDung(new ManHinhHoSoBenhAn(moi)); // Thêm xong thì không cần quay
+                MainApp.thayNoiDung(new XemHoSoBenhAn(moi)); // Thêm xong thì không cần quay
             } else {
                 benhNhanService.capNhat(bn);
                 chepThongTin(bn, benhNhan);

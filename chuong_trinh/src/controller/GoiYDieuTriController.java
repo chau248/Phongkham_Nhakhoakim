@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import entity.BenhNhan;
 import entity.DichVu;
-import entity.GoiYDieuTri;
+import entity.KetQuaHienThi.GoiYDieuTri;
 import entity.HangSo;
 import entity.HoSoBenhAn;
 import entity.LieuTrinh;
@@ -21,7 +21,7 @@ import entity.LuotKham;
 import entity.LuotKhamDichVu;
 import entity.NhanVien;
 import entity.RangDieuTri;
-import entity.GoiYDieuTri.UocTinhChiPhi;
+import entity.KetQuaHienThi.GoiYDieuTri.UocTinhChiPhi;
 
 // Gợi ý điều trị từ sơ đồ răng
 public class GoiYDieuTriController {
@@ -154,6 +154,9 @@ public class GoiYDieuTriController {
             if (dv == null || !dv.isTrangThaiHoatDong()) {
                 throw new NghiepVuException("Dịch vụ \"" + g.getDichVu().getTenDichVu() + "\" không tồn tại hoặc đã ngừng cung cấp");
             }
+            if ("Răng".equals(dv.getDonViTinh())) {
+                throw new NghiepVuException("Dịch vụ \"" + dv.getTenDichVu() + "\" tính theo răng, hãy ghi ở màn hình Sơ đồ răng");
+            }
             if (daCo.contains(ma)) {
                 throw new NghiepVuException("Dịch vụ \"" + dv.getTenDichVu() + "\" đã có trong lượt khám này");
             }
@@ -203,7 +206,10 @@ public class GoiYDieuTriController {
                 continue;
             }
             String luuY = dv.isYeuCauLieuTrinh() && dangLam.isEmpty()
-                    ? "Dịch vụ này cần theo liệu trình, bệnh nhân chưa có liệu trình đang thực hiện" : "";
+                    ? "Dịch vụ này cần theo liệu trình, bệnh nhân chưa có liệu trình đang thực hiện. " : "";
+            if ("Răng".equals(dv.getDonViTinh())) {
+                luuY += "Tính theo răng: ghi ở màn hình Sơ đồ răng, không thêm ở đây.";
+            }
             kq.add(new GoiYDieuTri(soRang, mucDo, lyDo, dv, luuY));
             return;
         }

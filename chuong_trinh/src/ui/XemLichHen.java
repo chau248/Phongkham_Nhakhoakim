@@ -20,7 +20,7 @@ import controller.DichVuController;
 
 // Màn hình xem lịch hẹn theo ngày
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
+public class XemLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private LichHenController lichHenController = new LichHenController();
     private DichVuController dichVuController = new DichVuController();
@@ -35,7 +35,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
     private JComboBox<DichVu> cmbDichVu; // Dịch vụ cần đặt
     private JLabel lblGioTrong = new JLabel(" ");
 
-    public ManHinhXemLichHen() {
+    public XemLichHen() {
         txtNgay.setText(TienIch.ngay(LocalDate.now()));
         cmbKieu.setFont(TienIch.FONT);
         JButton btnXem = TienIch.nutChinh("Xem lịch");
@@ -53,7 +53,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
         JButton btnKhongDen = TienIch.nutDo("Đánh dấu không đến");
         btnKhongDen.addActionListener(e -> danhDauKhongDen());
         JButton btnDat = TienIch.nutPhu("Đặt lịch hẹn mới");
-        btnDat.addActionListener(e -> MainApp.doiNoiDung(new ManHinhDatLichHen()));
+        btnDat.addActionListener(e -> MainApp.doiNoiDung(new DatLichHen()));
 
         lblKetQua.setFont(TienIch.FONT);
         lblKetQua.setForeground(TienIch.MAU_XAM);

@@ -16,7 +16,7 @@ import entity.HoaDon;
 
 // Màn hình lập hóa đơn
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhLapHoaDon extends JPanel {
+public class LapHoaDon extends JPanel {
 
     private HoaDonController hoaDonController = new HoaDonController();
     private String maLuotKham;
@@ -30,7 +30,7 @@ public class ManHinhLapHoaDon extends JPanel {
     private JLabel lblThue = TienIch.chuThuong(" ", false);
     private JLabel lblTong = TienIch.chuThuong(" ", true);
 
-    public ManHinhLapHoaDon(String maLuotKham) {
+    public LapHoaDon(String maLuotKham) {
         this.maLuotKham = maLuotKham;
         txtGiamGia.setText("0");
         JButton btnXem = TienIch.nutPhu("Tính lại");
@@ -86,7 +86,7 @@ public class ManHinhLapHoaDon extends JPanel {
         try {
             HoaDon hd = hoaDonController.lapHoaDon(maLuotKham, docGiamGia(), txtGhiChu.getText());
             TienIch.thongTin("Đã lập hóa đơn " + hd.getMaHoaDon() + ", tổng " + HoaDonController.dinhDangTien(hd.getTongTien()) + " đồng. Chuyển sang thanh toán.");
-            MainApp.thayNoiDung(new ManHinhThanhToan(hd.getMaHoaDon()));
+            MainApp.thayNoiDung(new ThanhToan(hd.getMaHoaDon()));
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }

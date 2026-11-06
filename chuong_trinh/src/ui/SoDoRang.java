@@ -34,7 +34,7 @@ import entity.RangDieuTri;
 
 // Màn hình sơ đồ răng điều trị
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhSoDoRang extends JPanel {
+public class SoDoRang extends JPanel {
 
     private static final int TUOI_HIEN_RANG_SUA = 6; // Bệnh nhân dưới tuổi này
 
@@ -109,7 +109,7 @@ public class ManHinhSoDoRang extends JPanel {
     private JComboBox<RangDieuTri> cmbBanGhi = new JComboBox<>(); // Các bản ghi của răng đang chọn
     private JButton btnGo = TienIch.nutPhu("Gỡ bản ghi đã chọn");
 
-    public ManHinhSoDoRang() {
+    public SoDoRang() {
         List<Component> cacKhoi = new ArrayList<>();
         cacKhoi.add(TienIch.tieuDe("Sơ đồ răng điều trị"));
         try {
@@ -131,7 +131,7 @@ public class ManHinhSoDoRang extends JPanel {
 
     // Dựng công tắc răng vĩnh viễn / răng sữa
     private void dung(List<Component> cacKhoi) {
-        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
+        cacKhoi.add(TienIch.dongThongTinLuotKham(luotKham));
         // Răng vĩnh viễn, hàm trên
         khungVinhVien.setOpaque(false);
         TienIch.xep(khungVinhVien, 8, taoHang(new int[] {18, 17, 16, 15, 14, 13, 12, 11}, new int[] {21, 22, 23, 24, 25, 26, 27, 28}),

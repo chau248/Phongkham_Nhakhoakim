@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 import entity.BenhNhan;
 import entity.DichVu;
-import entity.DongThoiGian;
+import entity.KetQuaHienThi.DongThoiGian;
 import entity.HangSo;
 import entity.HoSoBenhAn;
 import entity.LieuTrinh;
 import entity.LuotKham;
 import entity.LuotKhamDichVu;
 import entity.RangDieuTri;
-import entity.DongThoiGian.SuKienDieuTri;
+import entity.KetQuaHienThi.DongThoiGian.SuKienDieuTri;
 
 // Dòng thời gian điều trị
 public class DongThoiGianController {

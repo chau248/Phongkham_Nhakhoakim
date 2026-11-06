@@ -22,7 +22,7 @@ import entity.NhanVien;
 
 // Màn hình đặt lịch hẹn
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhDatLichHen extends JPanel {
+public class DatLichHen extends JPanel {
 
     private LichHenController lichHenController = new LichHenController();
     private DichVuController dichVuController = new DichVuController();
@@ -35,7 +35,7 @@ public class ManHinhDatLichHen extends JPanel {
     private JComboBox<String> cmbHinhThuc = new JComboBox<>(LichHenController.HINH_THUC.toArray(new String[0]));
     private JLabel lblThongTin = new JLabel(" ");
 
-    public ManHinhDatLichHen() {
+    public DatLichHen() {
         cmbDichVu = TienIch.taoChonDichVu(dichVuController.layDangHoatDong(), "Chọn dịch vụ");
         txtNgay.setText(TienIch.ngay(LocalDate.now().plusDays(1)));
         cmbNhaSi.setFont(TienIch.FONT);
@@ -124,7 +124,7 @@ public class ManHinhDatLichHen extends JPanel {
                     LocalTime.parse(gioChu), (String) cmbHinhThuc.getSelectedItem());
             TienIch.thongTin("Đã đặt lịch " + lh.getMaLichHen() + " cho " + bn.getHoTen() + " lúc " + TienIch.gio(lh.getGioHen()) + " ngày "
                     + TienIch.ngay(lh.getNgayHen()) + " (" + lh.getPhong() + "). Lịch đang Chờ xác nhận.");
-            MainApp.thayNoiDung(new ManHinhXemLichHen());
+            MainApp.thayNoiDung(new XemLichHen());
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }

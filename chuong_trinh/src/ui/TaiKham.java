@@ -16,7 +16,7 @@ import entity.LuotKham;
 
 // Màn hình chỉ định tái khám
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhChiDinhTaiKham extends JPanel {
+public class TaiKham extends JPanel {
 
     private LuotKhamController luotKhamService = new LuotKhamController();
     private DichVuController dichVuService = new DichVuController();
@@ -26,7 +26,7 @@ public class ManHinhChiDinhTaiKham extends JPanel {
     private JComboBox<DichVu> cmbDichVu; // Dịch vụ của buổi tái khám
     private JButton btnHuy = TienIch.nutPhu("Hủy lịch tái khám đã tạo"); // Chỉ hiện khi lượt khám đã
 
-    public ManHinhChiDinhTaiKham() {
+    public TaiKham() {
         List<Component> cacKhoi = new ArrayList<>();
         cacKhoi.add(TienIch.tieuDe("Chỉ định tái khám"));
         try {
@@ -44,7 +44,7 @@ public class ManHinhChiDinhTaiKham extends JPanel {
 
     // Dựng form chọn ngày và dịch vụ
     private void dung(List<Component> cacKhoi) {
-        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
+        cacKhoi.add(TienIch.dongThongTinLuotKham(luotKham));
         cmbDichVu =TienIch.taoChonDichVu(dichVuService.layTatCa(), "Chọn dịch vụ");
         txtNgay.setText(TienIch.ngay(LocalDate.now().plusDays(7)));
         txtNgay.setToolTipText("Ngày/tháng/năm, ví dụ 25/12/2026");

@@ -12,7 +12,7 @@ import controller.HoaDonController.DongChoThanhToan;
 
 // Màn hình danh sách chờ thanh toán
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
+public class ChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
 
     private HoaDonController hoaDonController = new HoaDonController();
 
@@ -21,7 +21,7 @@ public class ManHinhChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
     private List<DongChoThanhToan> dsCho = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
 
-    public ManHinhChoThanhToan() {
+    public ChoThanhToan() {
         JButton btnLap = TienIch.nutChinh("Lập hóa đơn cho lượt khám đã chọn");
         btnLap.addActionListener(e -> lap());
         JButton btnTai = TienIch.nutPhu("Tải lại");
@@ -62,6 +62,6 @@ public class ManHinhChoThanhToan extends JPanel implements MainApp.LamMoiDuoc {
             TienIch.thongTin("Vui lòng chọn một lượt khám trong bảng.");
             return;
         }
-        MainApp.doiNoiDung(new ManHinhLapHoaDon(dsCho.get(vt).luotKham.getMaLuotKham()));
+        MainApp.doiNoiDung(new LapHoaDon(dsCho.get(vt).luotKham.getMaLuotKham()));
     }
 }

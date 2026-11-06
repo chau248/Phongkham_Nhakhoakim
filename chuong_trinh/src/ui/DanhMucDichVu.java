@@ -12,13 +12,12 @@ import nhakhoakim.MainApp;
 import controller.DichVuController;
 import controller.PhienLamViec;
 import entity.DichVu;
-import entity.LoaiDichVu;
 import entity.NhanVien;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Màn hình danh mục dịch vụ và bảng giá
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
+public class DanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
 
     private static final String TAT_CA = "Tất cả";
 
@@ -33,12 +32,12 @@ public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
     private List<DichVu> dsHienThi = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
 
-    public ManHinhDanhMucDichVu() {
+    public DanhMucDichVu() {
         NhanVien nv = PhienLamViec.getNhanVienHienTai();
-        laQuanLy = nv != null && VaiTro.QUAN_LY.equals(nv.getVaiTro());
+        laQuanLy = nv != null && HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro());
         cmbLoai.addItem(TAT_CA);
-        for (String loai : new String[] {LoaiDichVu.KHAM, LoaiDichVu.VE_SINH, LoaiDichVu.TRAM, LoaiDichVu.NHO_RANG, LoaiDichVu.NOI_NHA, LoaiDichVu.THAM_MY,
-            LoaiDichVu.IMPLANT, LoaiDichVu.PHUC_HINH, "Chỉnh nha", "Chẩn đoán"}) {
+        for (String loai : new String[] {HangSo.LOAI_KHAM, HangSo.LOAI_VE_SINH, HangSo.LOAI_TRAM, HangSo.LOAI_NHO_RANG, HangSo.LOAI_NOI_NHA, HangSo.LOAI_THAM_MY,
+            HangSo.LOAI_IMPLANT, HangSo.LOAI_PHUC_HINH, "Chỉnh nha", "Chẩn đoán"}) {
             cmbLoai.addItem(loai);
         }
         cmbLoai.setFont(TienIch.FONT);
@@ -49,7 +48,7 @@ public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
         cmbLoai.addActionListener(e -> loc());
         cmbTrangThai.addActionListener(e -> loc());
         JButton btnThem = TienIch.nutPhu("Thêm dịch vụ");
-        btnThem.addActionListener(e -> MainApp.doiNoiDung(new ManHinhSuaDichVu(null)));
+        btnThem.addActionListener(e -> MainApp.doiNoiDung(new SuaDichVu(null)));
         JButton btnSua = TienIch.nutPhu("Sửa dịch vụ đã chọn");
         btnSua.addActionListener(e -> sua());
         btnThem.setVisible(laQuanLy);
@@ -79,7 +78,7 @@ public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
             int tt = cmbTrangThai.getSelectedIndex();
             dsHienThi = new ArrayList<>();
             List<String[]> dong = new ArrayList<>();
-            for (DichVu dv : dichVuController.layChoVaiTro(nv == null ? VaiTro.QUAN_LY : nv.getVaiTro())) {
+            for (DichVu dv : dichVuController.layChoVaiTro(nv == null ? HangSo.VAI_TRO_QUAN_LY : nv.getVaiTro())) {
                 if (!tu.isEmpty() && !dv.getTenDichVu().toLowerCase().contains(tu)) {
                     continue;
                 }
@@ -108,6 +107,6 @@ public class ManHinhDanhMucDichVu extends JPanel implements MainApp.LamMoiDuoc {
             TienIch.thongTin("Vui lòng chọn một dịch vụ trong bảng.");
             return;
         }
-        MainApp.doiNoiDung(new ManHinhSuaDichVu(dsHienThi.get(vt)));
+        MainApp.doiNoiDung(new SuaDichVu(dsHienThi.get(vt)));
     }
 }

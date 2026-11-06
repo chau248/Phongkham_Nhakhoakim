@@ -15,7 +15,7 @@ import entity.NhanVien;
 
 // Màn hình xem lịch làm việc theo tuần
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhLichLamViec extends JPanel {
+public class LichLamViec extends JPanel {
 
     private LichHenController lichHenController = new LichHenController();
 
@@ -24,7 +24,7 @@ public class ManHinhLichLamViec extends JPanel {
             new int[] {90, 60, 90, 60, 190, 180, 170, 110}, "Tuần này chưa có ca trực nào.");
     private JLabel lblKetQua = new JLabel();
 
-    public ManHinhLichLamViec() {
+    public LichLamViec() {
         txtNgay.setText(TienIch.ngay(LocalDate.now()));
         JButton btnXem = TienIch.nutChinh("Xem tuần");
         btnXem.addActionListener(e -> xem());

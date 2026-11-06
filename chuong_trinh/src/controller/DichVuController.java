@@ -8,7 +8,7 @@ import dao.TienIchDAO;
 import dao.NghiepVuException;
 import entity.DichVu;
 import entity.NhanVien;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Nghiệp vụ danh mục dịch vụ và bảng giá
 public class DichVuController {
@@ -47,7 +47,7 @@ public class DichVuController {
 
     // Danh mục dịch vụ theo vai trò
     public List<DichVu> layChoVaiTro(String vaiTro) {
-        return VaiTro.QUAN_LY.equals(vaiTro) ? layTatCa() : layDangHoatDong();
+        return HangSo.VAI_TRO_QUAN_LY.equals(vaiTro) ? layTatCa() : layDangHoatDong();
     }
 
     // Dịch vụ cùng một loại, kể cả đã ngừng
@@ -68,7 +68,7 @@ public class DichVuController {
 
     // Thêm dịch vụ mới
     public DichVu them(DichVu dv) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", HangSo.VAI_TRO_QUAN_LY);
         chuanHoa(dv);
         kiemTra(dv, null);
         dv.setMaDichVu(TienIchDAO.taoMa("DV"));
@@ -79,7 +79,7 @@ public class DichVuController {
 
     // Sửa dịch vụ
     public void capNhat(DichVu dv) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", HangSo.VAI_TRO_QUAN_LY);
         DichVu cu = dao.timTheoMa(dv.getMaDichVu());
         if (cu == null) {
             throw new NghiepVuException("Không tìm thấy dịch vụ " + dv.getMaDichVu());

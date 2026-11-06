@@ -11,18 +11,18 @@ import nhakhoakim.MainApp;
 import controller.DichVuController;
 import dao.NghiepVuException;
 import entity.DichVu;
-import entity.LoaiDichVu;
+import entity.HangSo;
 
 // Màn hình thêm hoặc sửa một dịch vụ
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhSuaDichVu extends JPanel {
+public class SuaDichVu extends JPanel {
 
     private DichVuController dichVuController = new DichVuController();
     private DichVu dichVu; // Dịch vụ đang sửa
 
     private JTextField txtTen = TienIch.oNhap(32);
-    private JComboBox<String> cmbLoai = new JComboBox<>(new String[] {LoaiDichVu.KHAM, LoaiDichVu.VE_SINH, LoaiDichVu.TRAM, LoaiDichVu.NHO_RANG,
-        LoaiDichVu.NOI_NHA, LoaiDichVu.THAM_MY, LoaiDichVu.IMPLANT, LoaiDichVu.PHUC_HINH, "Chỉnh nha", "Chẩn đoán"});
+    private JComboBox<String> cmbLoai = new JComboBox<>(new String[] {HangSo.LOAI_KHAM, HangSo.LOAI_VE_SINH, HangSo.LOAI_TRAM, HangSo.LOAI_NHO_RANG,
+        HangSo.LOAI_NOI_NHA, HangSo.LOAI_THAM_MY, HangSo.LOAI_IMPLANT, HangSo.LOAI_PHUC_HINH, "Chỉnh nha", "Chẩn đoán"});
     private JTextField txtGia = TienIch.oNhap(14); // Giá
     private JTextField txtThoiGian = TienIch.oNhap(6); // Thời gian dự kiến
     private JComboBox<String> cmbDonVi = new JComboBox<>(DichVuController.DON_VI_TINH.toArray(new String[0]));
@@ -31,7 +31,7 @@ public class ManHinhSuaDichVu extends JPanel {
     private JCheckBox chkImplantCauRang = new JCheckBox("Là dịch vụ Implant hoặc cầu răng (dùng cho răng đã nhổ)");
     private JCheckBox chkHoatDong = new JCheckBox("Đang hoạt động (bỏ chọn là ngừng cung cấp)");
 
-    public ManHinhSuaDichVu(DichVu dichVu) {
+    public SuaDichVu(DichVu dichVu) {
         this.dichVu = dichVu;
         cmbLoai.setEditable(true); // Cho gõ loại mới ngoài danh
         cmbLoai.setFont(TienIch.FONT);
@@ -94,7 +94,7 @@ public class ManHinhSuaDichVu extends JPanel {
                 dichVuController.capNhat(dv);
                 TienIch.thongTin("Đã lưu dịch vụ " + dv.getMaDichVu() + ".");
             }
-            MainApp.thayNoiDung(new ManHinhDanhMucDichVu());
+            MainApp.thayNoiDung(new DanhMucDichVu());
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }

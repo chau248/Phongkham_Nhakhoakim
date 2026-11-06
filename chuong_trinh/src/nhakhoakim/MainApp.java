@@ -35,29 +35,29 @@ import javax.swing.UIManager;
 import controller.TaiKhoanController;
 import controller.PhienLamViec;
 import entity.NhanVien;
-import ui.ChucNang;
+import ui.DanhSachChucNang.ChucNang;
 import ui.DanhSachChucNang;
-import ui.HopThoaiDangNhap;
-import ui.ManHinhChiDinhTaiKham;
-import ui.ManHinhChoThanhToan;
-import ui.ManHinhDanhMucDichVu;
-import ui.ManHinhDatLichHen;
-import ui.ManHinhDoiHuyLichHen;
-import ui.ManHinhDongThoiGian;
-import ui.ManHinhGoiYDieuTri;
-import ui.ManHinhHoSoBenhAn;
-import ui.ManHinhHoSoBenhNhan;
-import ui.ManHinhHoSoNhanVien;
-import ui.ManHinhKhamDieuTri;
-import ui.ManHinhLichLamViec;
-import ui.ManHinhPhanCongCaTruc;
-import ui.ManHinhSoDoRang;
-import ui.ManHinhTaiKhoan;
-import ui.ManHinhTaiKhoanCuaToi;
-import ui.ManHinhThanhToan;
-import ui.ManHinhTraCuuBenhNhan;
-import ui.ManHinhXacNhanLichHen;
-import ui.ManHinhXemLichHen;
+import ui.HopThoai;
+import ui.TaiKham;
+import ui.ChoThanhToan;
+import ui.DanhMucDichVu;
+import ui.DatLichHen;
+import ui.DoiHuyLichHen;
+import ui.XemDongThoiGian;
+import ui.XemGoiYDieuTri;
+import ui.XemHoSoBenhAn;
+import ui.ThemSuaBenhNhan;
+import ui.QuanLyNhanVien;
+import ui.KhamBenh;
+import ui.LichLamViec;
+import ui.PhanCongCaTruc;
+import ui.SoDoRang;
+import ui.QuanLyTaiKhoan;
+import ui.TaiKhoanCuaToi;
+import ui.ThanhToan;
+import ui.TraCuuBenhNhan;
+import ui.XacNhanLichHen;
+import ui.XemLichHen;
 import ui.TienIch;
 
 @SuppressWarnings("serial") 
@@ -134,7 +134,7 @@ public class MainApp {
 
     // Hiện hộp đăng nhập
     private static void batDau() {
-        NhanVien nv = HopThoaiDangNhap.hien();
+        NhanVien nv = HopThoai.dangNhap();
         if (nv == null) {
             System.exit(0);
             return;
@@ -298,35 +298,35 @@ public class MainApp {
     // Đăng ký màn hình cho từng chức năng
     private void dangKyManHinh() {
         // Hậu: menu Bệnh nhân và menu Lượt khám
-        manHinh.put("Tìm kiếm bệnh nhân", ManHinhTraCuuBenhNhan::new);
-        manHinh.put("Thêm / cập nhật hồ sơ bệnh nhân", () -> new ManHinhHoSoBenhNhan(null));
-        manHinh.put("Xem hồ sơ bệnh án", ManHinhHoSoBenhAn::new); // Ba chức năng dùng chung
-        manHinh.put("Cập nhật tiền sử & dị ứng", ManHinhHoSoBenhAn::new);
-        manHinh.put("Xem liệu trình đang thực hiện", ManHinhHoSoBenhAn::new);
-        manHinh.put("Khám & ghi nhận điều trị", ManHinhKhamDieuTri::new); // Hai chức năng dùng chung
-        manHinh.put("Kê đơn thuốc", ManHinhKhamDieuTri::new);
-        manHinh.put("Sơ đồ răng điều trị", ManHinhSoDoRang::new);
-        manHinh.put("Chỉ định tái khám", ManHinhChiDinhTaiKham::new);
-        manHinh.put("Dòng thời gian điều trị", ManHinhDongThoiGian::new);
-        manHinh.put("Gợi ý điều trị & ước tính chi phí", ManHinhGoiYDieuTri::new);
+        manHinh.put("Tìm kiếm bệnh nhân", TraCuuBenhNhan::new);
+        manHinh.put("Thêm / cập nhật hồ sơ bệnh nhân", () -> new ThemSuaBenhNhan(null));
+        manHinh.put("Xem hồ sơ bệnh án", XemHoSoBenhAn::new); // Ba chức năng dùng chung
+        manHinh.put("Cập nhật tiền sử & dị ứng", XemHoSoBenhAn::new);
+        manHinh.put("Xem liệu trình đang thực hiện", XemHoSoBenhAn::new);
+        manHinh.put("Khám & ghi nhận điều trị", KhamBenh::new); // Hai chức năng dùng chung
+        manHinh.put("Kê đơn thuốc", KhamBenh::new);
+        manHinh.put("Sơ đồ răng điều trị", SoDoRang::new);
+        manHinh.put("Chỉ định tái khám", TaiKham::new);
+        manHinh.put("Dòng thời gian điều trị", XemDongThoiGian::new);
+        manHinh.put("Gợi ý điều trị & ước tính chi phí", XemGoiYDieuTri::new);
 
         // Trường: menu Lịch hẹn và menu Hóa đơn
-        manHinh.put("Xem lịch hẹn", ManHinhXemLichHen::new);
-        manHinh.put("Đặt lịch hẹn", ManHinhDatLichHen::new);
-        manHinh.put("Dời / hủy lịch hẹn", ManHinhDoiHuyLichHen::new);
-        manHinh.put("Xác nhận lịch hẹn", ManHinhXacNhanLichHen::new);
-        manHinh.put("Xem lịch làm việc", ManHinhLichLamViec::new);
-        manHinh.put("Danh sách chờ thanh toán", ManHinhChoThanhToan::new);
-        manHinh.put("Lập hóa đơn", ManHinhChoThanhToan::new); // Chọn lượt khám chờ thanh toán
-        manHinh.put("Thanh toán & in hóa đơn", ManHinhThanhToan::new);
+        manHinh.put("Xem lịch hẹn", XemLichHen::new);
+        manHinh.put("Đặt lịch hẹn", DatLichHen::new);
+        manHinh.put("Dời / hủy lịch hẹn", DoiHuyLichHen::new);
+        manHinh.put("Xác nhận lịch hẹn", XacNhanLichHen::new);
+        manHinh.put("Xem lịch làm việc", LichLamViec::new);
+        manHinh.put("Danh sách chờ thanh toán", ChoThanhToan::new);
+        manHinh.put("Lập hóa đơn", ChoThanhToan::new); // Chọn lượt khám chờ thanh toán
+        manHinh.put("Thanh toán & in hóa đơn", ThanhToan::new);
 
         // Tâm: menu Dịch vụ, Nhân viên, Tài khoản
-        manHinh.put("Xem danh mục dịch vụ & giá", ManHinhDanhMucDichVu::new);
-        manHinh.put("Thêm / sửa dịch vụ", ManHinhDanhMucDichVu::new); // Quản lý thấy thêm nút Thêm
-        manHinh.put("Cập nhật hồ sơ nhân viên", ManHinhHoSoNhanVien::new);
-        manHinh.put("Phân công ca trực", ManHinhPhanCongCaTruc::new);
-        manHinh.put("Đăng nhập / Đăng xuất", ManHinhTaiKhoanCuaToi::new);
-        manHinh.put("Tạo tài khoản & gán vai trò", ManHinhTaiKhoan::new);
+        manHinh.put("Xem danh mục dịch vụ & giá", DanhMucDichVu::new);
+        manHinh.put("Thêm / sửa dịch vụ", DanhMucDichVu::new); // Quản lý thấy thêm nút Thêm
+        manHinh.put("Cập nhật hồ sơ nhân viên", QuanLyNhanVien::new);
+        manHinh.put("Phân công ca trực", PhanCongCaTruc::new);
+        manHinh.put("Đăng nhập / Đăng xuất", TaiKhoanCuaToi::new);
+        manHinh.put("Tạo tài khoản & gán vai trò", QuanLyTaiKhoan::new);
     }
 
     // Dựng màn hình của chức năng

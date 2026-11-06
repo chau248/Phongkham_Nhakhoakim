@@ -13,7 +13,7 @@ import entity.LichHen;
 
 // Màn hình xác nhận lịch hẹn
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc {
+public class XacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private static final int SO_NGAY_TOI = 90; // Xem các lịch chờ
 
@@ -24,7 +24,7 @@ public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc 
     private List<LichHen> dsLich = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
 
-    public ManHinhXacNhanLichHen() {
+    public XacNhanLichHen() {
         JButton btnXacNhan = TienIch.nutChinh("Xác nhận lịch đã chọn");
         btnXacNhan.addActionListener(e -> xacNhan());
         JButton btnTai = TienIch.nutPhu("Tải lại");

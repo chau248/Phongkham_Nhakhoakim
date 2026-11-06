@@ -17,11 +17,11 @@ import controller.CaTrucController;
 import controller.NhanVienController;
 import entity.CaTruc;
 import entity.NhanVien;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Màn hình phân công ca trực theo tuần
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhPhanCongCaTruc extends JPanel {
+public class PhanCongCaTruc extends JPanel {
 
     private CaTrucController caTrucController = new CaTrucController();
     private NhanVienController nhanVienController = new NhanVienController();
@@ -37,7 +37,7 @@ public class ManHinhPhanCongCaTruc extends JPanel {
     private JComboBox<String> cmbCa = new JComboBox<>(new String[] {CaTrucController.SANG, CaTrucController.CHIEU});
     private JComboBox<String> cmbPhong = new JComboBox<>(new String[] {"Phòng 1", "Phòng 2", "Phòng 3", CaTrucController.QUAY_LE_TAN});
 
-    public ManHinhPhanCongCaTruc() {
+    public PhanCongCaTruc() {
         txtTuan.setText(TienIch.ngay(LocalDate.now()));
         txtNgay.setText(TienIch.ngay(LocalDate.now()));
         cmbCa.setFont(TienIch.FONT);
@@ -54,7 +54,7 @@ public class ManHinhPhanCongCaTruc extends JPanel {
         });
         List<NhanVien> dsNhanVien = new ArrayList<>();
         for (NhanVien nv : nhanVienController.layTatCa()) {
-            if (NhanVienController.DANG_LAM.equals(nv.getTrangThai()) && !VaiTro.QUAN_LY.equals(nv.getVaiTro())) {
+            if (NhanVienController.DANG_LAM.equals(nv.getTrangThai()) && !HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro())) {
                 dsNhanVien.add(nv);
             }
         }

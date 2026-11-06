@@ -21,7 +21,7 @@ import entity.NhanVien;
 
 // Màn hình tìm kiếm bệnh nhân theo mã
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
+public class TraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
 
     private BenhNhanController benhNhanService = new BenhNhanController();
     private NhanVienController nhanVienService = new NhanVienController();
@@ -38,7 +38,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
     private JButton btnNgung = TienIch.nutPhu("Ngừng theo dõi");
     private JButton btnMoLai = TienIch.nutPhu("Mở lại điều trị");
 
-    public ManHinhTraCuuBenhNhan() {
+    public TraCuuBenhNhan() {
         txtTuKhoa.setToolTipText("Nhập mã, họ tên hoặc số điện thoại");
         txtTuKhoa.addActionListener(e -> tim());
         JButton btnTim = TienIch.nutChinh("Tìm kiếm");
@@ -62,10 +62,10 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
         btnSua.addActionListener(e -> {
             BenhNhan bn = dangChon();
             if (bn != null) {
-                MainApp.doiNoiDung(new ManHinhHoSoBenhNhan(bn));
+                MainApp.doiNoiDung(new ThemSuaBenhNhan(bn));
             }
         });
-        btnThem.addActionListener(e -> MainApp.doiNoiDung(new ManHinhHoSoBenhNhan(null)));
+        btnThem.addActionListener(e -> MainApp.doiNoiDung(new ThemSuaBenhNhan(null)));
         btnNgung.addActionListener(e -> doiTrangThai(HangSo.NGUNG_THEO_DOI));
         btnMoLai.addActionListener(e -> doiTrangThai(HangSo.DANG_DIEU_TRI));
 
@@ -155,7 +155,7 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
     private void xemHoSo() {
         BenhNhan bn = dangChon();
         if (bn != null) {
-            MainApp.doiNoiDung(new ManHinhHoSoBenhAn(bn));
+            MainApp.doiNoiDung(new XemHoSoBenhAn(bn));
         }
     }
 }

@@ -13,11 +13,11 @@ import controller.PhienLamViec;
 import entity.ChiTietHoaDon;
 import entity.HoaDon;
 import entity.NhanVien;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Màn hình thanh toán và in hóa đơn
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
+public class ThanhToan extends JPanel implements MainApp.LamMoiDuoc {
 
     private static final String TAT_CA = "Tất cả";
 
@@ -33,12 +33,12 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
     private JLabel lblTong = TienIch.chuThuong(" ", true);
     private String maChon; // Hóa đơn mở sẵn
 
-    public ManHinhThanhToan() {
+    public ThanhToan() {
         this(null);
     }
 
     // Mở sẵn một hóa đơn hoặc để trống
-    public ManHinhThanhToan(String maHoaDon) {
+    public ThanhToan(String maHoaDon) {
         this.maChon = maHoaDon;
         cmbLoc.setFont(TienIch.FONT);
         cmbHinhThuc.setFont(TienIch.FONT);
@@ -59,7 +59,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         JButton btnHuy = TienIch.nutDo("Hủy hóa đơn");
         btnHuy.addActionListener(e -> huy());
         NhanVien nv = PhienLamViec.getNhanVienHienTai();
-        btnHuy.setVisible(nv != null && VaiTro.QUAN_LY.equals(nv.getVaiTro()));
+        btnHuy.setVisible(nv != null && HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro()));
         lblTong.setForeground(TienIch.MAU_DAM);
         TienIch.xepManHinh(this, TienIch.tieuDe("Thanh toán & in hóa đơn"),
                 TienIch.dong(TienIch.nhan("Hiện"), cmbLoc), TienIch.cuonBang(tblHoaDon, 200),
@@ -166,7 +166,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
             return;
         }
         try {
-            HopThoaiInHoaDon.hien(hoaDonController.taoNoiDungIn(hd.getMaHoaDon()));
+            HopThoai.inHoaDon(hoaDonController.taoNoiDungIn(hd.getMaHoaDon()));
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }

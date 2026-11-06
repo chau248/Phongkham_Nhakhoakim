@@ -18,13 +18,13 @@ import javax.swing.JPanel;
 import controller.DongThoiGianController;
 import controller.HoSoBenhAnController;
 import entity.BenhNhan;
-import entity.DongThoiGian;
-import entity.DongThoiGian.SuKienDieuTri;
+import entity.KetQuaHienThi.DongThoiGian;
+import entity.KetQuaHienThi.DongThoiGian.SuKienDieuTri;
 import entity.HoSoBenhAn;
 
 // Màn hình dòng thời gian điều trị
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhDongThoiGian extends JPanel {
+public class XemDongThoiGian extends JPanel {
 
     private static final String TAT_CA = "Tất cả";
 
@@ -38,12 +38,12 @@ public class ManHinhDongThoiGian extends JPanel {
     private JPanel khuTrucThoiGian = new JPanel(); // Trục thời gian
     private DongThoiGian dongThoiGian; // Dữ liệu đang xem
 
-    public ManHinhDongThoiGian() {
+    public XemDongThoiGian() {
         this(null);
     }
 
     // Mở sẵn dòng thời gian của một bệnh nhân
-    public ManHinhDongThoiGian(BenhNhan benhNhan) {
+    public XemDongThoiGian(BenhNhan benhNhan) {
         JButton btnXem = TienIch.nutChinh("Xem dòng thời gian");
         btnXem.addActionListener(e -> xem());
         cmbLoc.setFont(TienIch.FONT);

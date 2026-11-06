@@ -13,13 +13,13 @@ import javax.swing.ListSelectionModel;
 import controller.GoiYDieuTriController;
 import controller.LuotKhamController;
 import controller.PhienLamViec;
-import entity.GoiYDieuTri;
-import entity.GoiYDieuTri.UocTinhChiPhi;
+import entity.KetQuaHienThi.GoiYDieuTri;
+import entity.KetQuaHienThi.GoiYDieuTri.UocTinhChiPhi;
 import entity.LuotKham;
 
 // Màn hình gợi ý điều trị
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhGoiYDieuTri extends JPanel {
+public class XemGoiYDieuTri extends JPanel {
 
     private GoiYDieuTriController goiYService = new GoiYDieuTriController();
     private LuotKhamController luotKhamService = new LuotKhamController();
@@ -33,7 +33,7 @@ public class ManHinhGoiYDieuTri extends JPanel {
     private JLabel lblTong = TienIch.chuThuong(" ", true); // Tổng chi phí
     private JLabel lblThem = TienIch.chuThuong(" ", true); // Chi phí nếu thêm các gợi
 
-    public ManHinhGoiYDieuTri() {
+    public XemGoiYDieuTri() {
         List<Component> cacKhoi = new ArrayList<>();
         cacKhoi.add(TienIch.tieuDe("Gợi ý điều trị và ước tính chi phí"));
         try {
@@ -54,7 +54,7 @@ public class ManHinhGoiYDieuTri extends JPanel {
 
     // Dựng màn hình
     private void dung(List<Component> cacKhoi) {
-        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
+        cacKhoi.add(TienIch.dongThongTinLuotKham(luotKham));
         cacKhoi.add(TienIch.doanChu("Gợi ý chỉ để tham khảo, nha sĩ quyết định. Chọn các dòng muốn thêm (giữ Ctrl để chọn nhiều) rồi bấm Thêm vào lượt khám.",
                 TienIch.MAU_XAM));
 

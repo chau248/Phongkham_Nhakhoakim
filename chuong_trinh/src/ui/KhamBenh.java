@@ -28,7 +28,7 @@ import entity.RangDieuTri;
 
 // Màn hình khám và ghi nhận điều trị
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhKhamDieuTri extends JPanel implements MainApp.LamMoiDuoc {
+public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
 
     private LuotKhamController luotKhamService = new LuotKhamController();
     private DichVuController dichVuService = new DichVuController();
@@ -48,12 +48,12 @@ public class ManHinhKhamDieuTri extends JPanel implements MainApp.LamMoiDuoc {
             new int[] {300, 100, 80, 140}, "Chưa ghi dịch vụ nào."); // Tổng hợp dịch vụ sẽ vào hóa đơn
     private List<LuotKhamDichVu> dichVuDaChon = new ArrayList<>(); // Dữ liệu của bảng dịch vụ
 
-    public ManHinhKhamDieuTri() {
+    public KhamBenh() {
         this(null);
     }
 
     // Mở màn hình khám cho một lịch hẹn
-    public ManHinhKhamDieuTri(LichHen lichHen) {
+    public KhamBenh(LichHen lichHen) {
         this.lichHen = lichHen;
         dung();
     }
@@ -137,7 +137,7 @@ public class ManHinhKhamDieuTri extends JPanel implements MainApp.LamMoiDuoc {
 
     // Form khám của lượt khám đang khám
     private void dungFormKham(List<Component> cacKhoi) {
-        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
+        cacKhoi.add(TienIch.dongThongTinLuotKham(luotKham));
 
         if (luotKham.getGioBatDau().toLocalDate().isBefore(LocalDate.now())) {
             cacKhoi.add(nhanCanhBao("Lượt khám này mở từ ngày " + TienIch.ngay(luotKham.getGioBatDau().toLocalDate())
@@ -164,9 +164,9 @@ public class ManHinhKhamDieuTri extends JPanel implements MainApp.LamMoiDuoc {
         JButton btnLuu = TienIch.nutChinh("Lưu nội dung khám");
         btnLuu.addActionListener(e -> luuNoiDung(true));
         JButton btnSoDo = TienIch.nutPhu("Sơ đồ răng");
-        btnSoDo.addActionListener(e -> MainApp.doiNoiDung(new ManHinhSoDoRang()));
+        btnSoDo.addActionListener(e -> MainApp.doiNoiDung(new SoDoRang()));
         JButton btnTaiKham = TienIch.nutPhu("Chỉ định tái khám");
-        btnTaiKham.addActionListener(e -> MainApp.doiNoiDung(new ManHinhChiDinhTaiKham()));
+        btnTaiKham.addActionListener(e -> MainApp.doiNoiDung(new TaiKham()));
         JButton btnHoanTat = TienIch.nutChinh("Hoàn tất khám");
         btnHoanTat.addActionListener(e -> hoanTat());
         JButton btnHuy = TienIch.nutDo("Hủy lượt khám");
@@ -224,7 +224,7 @@ public class ManHinhKhamDieuTri extends JPanel implements MainApp.LamMoiDuoc {
 
     // Mở hộp thoại chọn dịch vụ
     private void themDichVu() {
-        DichVu dv = HopThoaiChonDichVu.chon();
+        DichVu dv = HopThoai.chonDichVu();
         if (dv == null) {
             return;
         }

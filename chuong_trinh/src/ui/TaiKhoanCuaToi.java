@@ -12,7 +12,7 @@ import entity.TaiKhoan;
 
 // Màn hình "Đăng nhập / Đăng xuất"
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhTaiKhoanCuaToi extends JPanel {
+public class TaiKhoanCuaToi extends JPanel {
 
     private TaiKhoanController taiKhoanController = new TaiKhoanController();
 
@@ -20,7 +20,7 @@ public class ManHinhTaiKhoanCuaToi extends JPanel {
     private JPasswordField txtMoi = new JPasswordField(20);
     private JPasswordField txtNhapLai = new JPasswordField(20);
 
-    public ManHinhTaiKhoanCuaToi() {
+    public TaiKhoanCuaToi() {
         NhanVien nv = PhienLamViec.getNhanVienHienTai();
         String ten = "";
         String lanCuoi = "";

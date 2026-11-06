@@ -12,7 +12,7 @@ import dao.NghiepVuException;
 import entity.CaTruc;
 import entity.LichHen;
 import entity.NhanVien;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Nghiệp vụ phân công ca trực
 public class CaTrucController {
@@ -86,7 +86,7 @@ public class CaTrucController {
 
     // Phân công một ca trực
     public CaTruc phanCong(String maNV, LocalDate ngay, String caLam, String phong) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "phân công ca trực", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "phân công ca trực", HangSo.VAI_TRO_QUAN_LY);
         NhanVien nv = nhanVienController.timTheoMa(maNV);
         if (nv == null) {
             throw new NghiepVuException("Chưa chọn nhân viên");
@@ -94,7 +94,7 @@ public class CaTrucController {
         if (!NhanVienController.DANG_LAM.equals(nv.getTrangThai())) {
             throw new NghiepVuException("Chỉ xếp ca cho nhân viên đang làm việc (" + nv.getHoTen() + " đã nghỉ việc)");
         }
-        if (VaiTro.QUAN_LY.equals(nv.getVaiTro())) {
+        if (HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro())) {
             throw new NghiepVuException("Quản lý không có ca trực, chỉ xếp ca cho Nha sĩ, Y tá và Lễ tân");
         }
         if (ngay == null) {
@@ -106,10 +106,10 @@ public class CaTrucController {
         if (!SANG.equals(caLam) && !CHIEU.equals(caLam)) {
             throw new NghiepVuException("Ca làm chỉ có thể là Sáng hoặc Chiều");
         }
-        if (VaiTro.NHA_SI.equals(nv.getVaiTro()) && !nhanVienController.chungChiConHan(maNV, ngay)) {
+        if (HangSo.VAI_TRO_NHA_SI.equals(nv.getVaiTro()) && !nhanVienController.chungChiConHan(maNV, ngay)) {
             throw new NghiepVuException("Chứng chỉ hành nghề của " + nv.getHoTen() + " đã hết hạn trước ngày " + ngay + ", không được xếp ca");
         }
-        if (VaiTro.LE_TAN.equals(nv.getVaiTro())) {
+        if (HangSo.VAI_TRO_LE_TAN.equals(nv.getVaiTro())) {
             phong = QUAY_LE_TAN;
         } else if (phong == null || !PHONG_KHAM.contains(phong)) {
             throw new NghiepVuException("Nha sĩ và Y tá phải xếp vào Phòng 1, Phòng 2 hoặc Phòng 3");
@@ -118,7 +118,7 @@ public class CaTrucController {
             if (ca.getMaNV().getMaNV().equals(maNV)) {
                 throw new NghiepVuException(nv.getHoTen() + " đã có ca " + caLam.toLowerCase() + " ngày " + ngay + " (" + ca.getPhong() + ")");
             }
-            if (VaiTro.NHA_SI.equals(nv.getVaiTro()) && VaiTro.NHA_SI.equals(ca.getMaNV().getVaiTro()) && phong.equals(ca.getPhong())) {
+            if (HangSo.VAI_TRO_NHA_SI.equals(nv.getVaiTro()) && HangSo.VAI_TRO_NHA_SI.equals(ca.getMaNV().getVaiTro()) && phong.equals(ca.getPhong())) {
                 throw new NghiepVuException(phong + " ca " + caLam.toLowerCase() + " ngày " + ngay + " đã có nha sĩ " + ca.getMaNV().getHoTen() + " (mỗi phòng một nha sĩ)");
             }
         }
@@ -136,7 +136,7 @@ public class CaTrucController {
 
     // Đổi trạng thái ca
     public void doiTrangThai(String maCaTruc, String trangThai) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "đổi trạng thái ca trực", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "đổi trạng thái ca trực", HangSo.VAI_TRO_QUAN_LY);
         CaTruc ca = layCa(maCaTruc);
         if (!List.of(CO_MAT, VANG, DIEU_CHUYEN).contains(trangThai)) {
             throw new NghiepVuException("Trạng thái ca chỉ có thể là Có mặt, Vắng hoặc Điều chuyển");
@@ -150,7 +150,7 @@ public class CaTrucController {
 
     // Xóa ca đã xếp nhầm
     public void xoa(String maCaTruc) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "xóa ca trực", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "xóa ca trực", HangSo.VAI_TRO_QUAN_LY);
         CaTruc ca = layCa(maCaTruc);
         if (ca.getNgay().isBefore(LocalDate.now())) {
             throw new NghiepVuException("Không xóa ca trực đã qua (cần giữ lịch sử làm việc)");
@@ -171,7 +171,7 @@ public class CaTrucController {
 
     // Nha sĩ có lịch hẹn còn hiệu lực
     private void kiemTraKhongCoLichHen(CaTruc ca, String viec) {
-        if (!VaiTro.NHA_SI.equals(ca.getMaNV().getVaiTro())) {
+        if (!HangSo.VAI_TRO_NHA_SI.equals(ca.getMaNV().getVaiTro())) {
             return;
         }
         LocalTime tu = gioBatDauCa(ca.getCaLam());

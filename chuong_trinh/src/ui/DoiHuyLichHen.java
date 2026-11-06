@@ -15,7 +15,7 @@ import entity.LichHen;
 
 // Màn hình dời hoặc hủy lịch hẹn
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
+public class DoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private LichHenController lichHenController = new LichHenController();
 
@@ -27,7 +27,7 @@ public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
     private JTextField txtNgayMoi = TienIch.oNhap(10); // Ngày mới khi dời
     private JComboBox<String> cmbGioMoi = new JComboBox<>(cacGio()); // Giờ mới khi dời
 
-    public ManHinhDoiHuyLichHen() {
+    public DoiHuyLichHen() {
         txtTu.setText(TienIch.ngay(LocalDate.now()));
         txtDen.setText(TienIch.ngay(LocalDate.now().plusDays(30)));
         txtNgayMoi.setText(TienIch.ngay(LocalDate.now().plusDays(1)));

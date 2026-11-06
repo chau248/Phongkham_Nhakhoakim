@@ -23,7 +23,7 @@ import entity.TaiKhoan;
 
 // Màn hình tạo tài khoản và gán vai trò
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhTaiKhoan extends JPanel {
+public class QuanLyTaiKhoan extends JPanel {
 
     private TaiKhoanController taiKhoanController = new TaiKhoanController();
     private NhanVienController nhanVienController = new NhanVienController();
@@ -38,7 +38,7 @@ public class ManHinhTaiKhoan extends JPanel {
     private JPasswordField txtMatKhau = new JPasswordField(20);
     private JLabel lblVaiTro = TienIch.chuThuong(" ", false);
 
-    public ManHinhTaiKhoan() {
+    public QuanLyTaiKhoan() {
         cmbNhanVien.setFont(TienIch.FONT);
         txtMatKhau.setFont(TienIch.FONT);
         cmbNhanVien.setRenderer(new DefaultListCellRenderer() {

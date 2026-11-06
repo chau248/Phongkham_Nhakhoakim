@@ -25,8 +25,7 @@ import entity.LuotKham;
 import entity.LuotKhamDichVu;
 import entity.NhanVien;
 import entity.RangDieuTri;
-import entity.TrangThai;
-import entity.VaiTro;
+import entity.HangSo;
 
 // Nghiệp vụ hóa đơn: danh sách chờ thanh toán, lập hóa đơn từ lượt khám đã hoàn tất, thanh toán, hủy, in
 public class HoaDonController {
@@ -54,7 +53,7 @@ public class HoaDonController {
 
     // Các lượt khám Hoàn thành chưa có hóa đơn
     public List<DongChoThanhToan> layChoThanhToan() {
-        TienIchController.yeuCau(nguoiDung, "xem danh sách chờ thanh toán", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "xem danh sách chờ thanh toán", HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         List<DongChoThanhToan> kq = new ArrayList<>();
         for (LuotKham lk : luotKhamDAO.layChoThanhToan()) {
             BenhNhan bn = lk.getMaHoSo().getMaBN();
@@ -71,7 +70,7 @@ public class HoaDonController {
 
     // Tất cả hóa đơn, mới nhất trước
     public List<HoaDon> layTatCa() {
-        TienIchController.yeuCau(nguoiDung, "xem hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "xem hóa đơn", HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         return hoaDonDAO.layTatCa();
     }
 
@@ -94,7 +93,7 @@ public class HoaDonController {
 
     // Lập hóa đơn cho lượt khám đã hoàn thành (Lễ tân, Quản lý). Đơn giá lấy theo giá dịch vụ lúc lập và lưu cố định.
     public HoaDon lapHoaDon(String maLuotKham, BigDecimal tienGiamGia, String ghiChu) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "lập hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "lập hóa đơn", HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         LuotKham lk = layLuotKhamLapDuoc(maLuotKham);
         String ghiChuGon = TienIchController.rongThanhNull(ghiChu);
         TienIchController.doDai(ghiChuGon, 255, "Ghi chú");
@@ -113,7 +112,7 @@ public class HoaDonController {
 
     // Thanh toán hóa đơn Chưa thanh toán bằng một trong bốn hình thức
     public void thanhToan(String maHoaDon, String hinhThuc) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thanh toán hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thanh toán hóa đơn", HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         HoaDon hd = timTheoMa(maHoaDon);
         if (!CHUA_THANH_TOAN.equals(hd.getTrangThai())) {
             throw new NghiepVuException("Chỉ thanh toán được hóa đơn Chưa thanh toán (hóa đơn này đang \"" + hd.getTrangThai() + "\")");
@@ -129,7 +128,7 @@ public class HoaDonController {
 
     // Hủy hóa đơn chưa thanh toán (chỉ Quản lý, cần lý do); lượt khám quay về danh sách chờ thanh toán
     public void huyHoaDon(String maHoaDon, String lyDo) {
-        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "hủy hóa đơn", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "hủy hóa đơn", HangSo.VAI_TRO_QUAN_LY);
         String lyDoHuy = TienIchController.rongThanhNull(lyDo);
         if (lyDoHuy == null || lyDoHuy.length() < 5) {
             throw new NghiepVuException("Phải nhập lý do hủy hóa đơn (ít nhất 5 ký tự)");
@@ -152,9 +151,9 @@ public class HoaDonController {
 
     // Nội dung hóa đơn dạng chữ để xem trước và in; chỉ in hóa đơn đã thanh toán
     public String taoNoiDungIn(String maHoaDon) {
-        TienIchController.yeuCau(nguoiDung, "in hóa đơn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "in hóa đơn", HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         HoaDon hd = timTheoMa(maHoaDon);
-        if (TrangThai.DA_HUY.equals(hd.getTrangThai())) {
+        if (HangSo.DA_HUY.equals(hd.getTrangThai())) {
             throw new NghiepVuException("Hóa đơn đã hủy không được in");
         }
         if (!DA_THANH_TOAN.equals(hd.getTrangThai())) {
@@ -227,7 +226,7 @@ public class HoaDonController {
         if (lk == null) {
             throw new NghiepVuException("Chưa chọn lượt khám");
         }
-        if (!TrangThai.HOAN_THANH.equals(lk.getTrangThai())) {
+        if (!HangSo.HOAN_THANH.equals(lk.getTrangThai())) {
             throw new NghiepVuException("Chỉ lập hóa đơn cho lượt khám đã hoàn thành (lượt " + maLuotKham + " đang \"" + lk.getTrangThai() + "\")");
         }
         if (lk.getMaHoaDon() != null) {
