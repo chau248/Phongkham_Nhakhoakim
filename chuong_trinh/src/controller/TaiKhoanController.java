@@ -2,10 +2,9 @@ package controller;
 
 import java.util.List;
 import java.util.function.Supplier;
-import dao.MaGenerator;
+import dao.TienIchDAO;
 import dao.NghiepVuException;
 import dao.NhanVienDAO;
-import dao.PhienLamViec;
 import dao.TaiKhoanDAO;
 import entity.NhanVien;
 import entity.TaiKhoan;
@@ -20,7 +19,6 @@ public class TaiKhoanController {
 
     private TaiKhoanDAO taiKhoanDAO;
     private NhanVienDAO nhanVienDAO;
-    private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
     // Dùng DAO thật
@@ -43,35 +41,35 @@ public class TaiKhoanController {
         String ten = tenDangNhap.trim();
         TaiKhoan tk = taiKhoanDAO.timTheoTenDangNhap(ten);
         if (tk == null) {
-            nhatKy.ghiNhatKy(null, "Đăng nhập thất bại", "TaiKhoan", null, "Tên đăng nhập không tồn tại: " + ten);
+            TienIchController.ghiNhatKy(null, "Đăng nhập thất bại", "TaiKhoan", null, "Tên đăng nhập không tồn tại: " + ten);
             throw new NghiepVuException("Sai tên đăng nhập hoặc mật khẩu");
         }
         String maNV = tk.getMaNV().getMaNV();
         if (tk.isTrangThaiKhoa()) {
-            nhatKy.ghiNhatKy(maNV, "Đăng nhập thất bại", "TaiKhoan", tk.getMaTaiKhoan(), "Tài khoản đang bị khóa");
+            TienIchController.ghiNhatKy(maNV, "Đăng nhập thất bại", "TaiKhoan", tk.getMaTaiKhoan(), "Tài khoản đang bị khóa");
             throw new NghiepVuException("Tài khoản đã bị khóa. Hãy liên hệ quản lý để được mở khóa");
         }
         NhanVien nv = nhanVienDAO.timTheoMa(maNV);
         if (nv == null || !NhanVienController.DANG_LAM.equals(nv.getTrangThai())) {
-            nhatKy.ghiNhatKy(maNV, "Đăng nhập thất bại", "TaiKhoan", tk.getMaTaiKhoan(), "Nhân viên đã nghỉ việc");
+            TienIchController.ghiNhatKy(maNV, "Đăng nhập thất bại", "TaiKhoan", tk.getMaTaiKhoan(), "Nhân viên đã nghỉ việc");
             throw new NghiepVuException("Nhân viên này đã nghỉ việc nên không đăng nhập được");
         }
-        if (!MatKhau.khop(matKhau, tk.getMatKhauHash())) {
+        if (!TienIchController.khopMatKhau(matKhau, tk.getMatKhauHash())) {
             int soLanSai = tk.getSoLanDangNhapSai() + 1;
             boolean khoa = soLanSai >= SO_LAN_SAI_TOI_DA;
             taiKhoanDAO.ghiNhanDangNhapSai(tk.getMaTaiKhoan(), soLanSai, khoa);
-            nhatKy.ghiNhatKy(maNV, khoa ? "Khóa tài khoản do đăng nhập sai" : "Đăng nhập thất bại", "TaiKhoan", tk.getMaTaiKhoan(),
+            TienIchController.ghiNhatKy(maNV, khoa ? "Khóa tài khoản do đăng nhập sai" : "Đăng nhập thất bại", "TaiKhoan", tk.getMaTaiKhoan(),
                     "Sai mật khẩu lần " + soLanSai);
             if (khoa) {
                 throw new NghiepVuException("Sai mật khẩu " + SO_LAN_SAI_TOI_DA + " lần liên tiếp nên tài khoản đã bị khóa. Hãy liên hệ quản lý");
             }
             throw new NghiepVuException("Sai tên đăng nhập hoặc mật khẩu (còn " + (SO_LAN_SAI_TOI_DA - soLanSai) + " lần thử)");
         }
-        if (!MatKhau.daBam(tk.getMatKhauHash())) {
-            taiKhoanDAO.nangCapBam(tk.getMaTaiKhoan(), MatKhau.bam(matKhau)); // Mật khẩu cũ chữ thường
+        if (!TienIchController.daBamMatKhau(tk.getMatKhauHash())) {
+            taiKhoanDAO.nangCapBam(tk.getMaTaiKhoan(), TienIchController.bamMatKhau(matKhau)); // Mật khẩu cũ chữ thường
         }
         taiKhoanDAO.ghiNhanDangNhapDung(tk.getMaTaiKhoan());
-        nhatKy.ghiNhatKy(maNV, "Đăng nhập", "TaiKhoan", tk.getMaTaiKhoan(), null);
+        TienIchController.ghiNhatKy(maNV, "Đăng nhập", "TaiKhoan", tk.getMaTaiKhoan(), null);
         return nv;
     }
 
@@ -79,26 +77,26 @@ public class TaiKhoanController {
     public void dangXuat() {
         NhanVien nv = nguoiDung.get();
         if (nv != null) {
-            nhatKy.ghiNhatKy(nv.getMaNV(), "Đăng xuất", "TaiKhoan", null, null);
+            TienIchController.ghiNhatKy(nv.getMaNV(), "Đăng xuất", "TaiKhoan", null, null);
         }
         PhienLamViec.dangXuat();
     }
 
     // Tất cả tài khoản
     public List<TaiKhoan> layTatCa() {
-        Quyen.yeuCau(nguoiDung, "xem danh sách tài khoản", VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "xem danh sách tài khoản", VaiTro.QUAN_LY);
         return taiKhoanDAO.layTatCa();
     }
 
     // Tài khoản của người đang đăng nhập
     public TaiKhoan layTaiKhoanCuaToi() {
-        NhanVien nv = Quyen.yeuCau(nguoiDung, "xem tài khoản của mình", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nv = TienIchController.yeuCau(nguoiDung, "xem tài khoản của mình", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
         return taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
     }
 
     // Tạo tài khoản cho một nhân viên
     public TaiKhoan taoTaiKhoan(String maNV, String tenDangNhap, String matKhau) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "tạo tài khoản", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "tạo tài khoản", VaiTro.QUAN_LY);
         NhanVien nv = maNV == null ? null : nhanVienDAO.timTheoMa(maNV);
         if (nv == null) {
             throw new NghiepVuException("Chưa chọn nhân viên");
@@ -116,48 +114,48 @@ public class TaiKhoanController {
         }
         kiemTraMatKhauMoi(matKhau);
         TaiKhoan tk = new TaiKhoan();
-        tk.setMaTaiKhoan(MaGenerator.taoMa("TK"));
+        tk.setMaTaiKhoan(TienIchDAO.taoMa("TK"));
         tk.setMaNV(nv);
         tk.setTenDangNhap(ten);
-        tk.setMatKhauHash(MatKhau.bam(matKhau));
+        tk.setMatKhauHash(TienIchController.bamMatKhau(matKhau));
         tk.setVaiTro(nv.getVaiTro());
         tk.setYeuCauDoiMatKhau(false);
         taiKhoanDAO.them(tk);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Tạo tài khoản và gán vai trò", "TaiKhoan", tk.getMaTaiKhoan(),
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Tạo tài khoản và gán vai trò", "TaiKhoan", tk.getMaTaiKhoan(),
                 ten + " - " + nv.getHoTen() + " - " + nv.getVaiTro());
         return tk;
     }
 
     // Người đang đăng nhập đổi mật
     public void doiMatKhauCuaToi(String matKhauCu, String matKhauMoi) {
-        NhanVien nv = Quyen.yeuCau(nguoiDung, "đổi mật khẩu", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nv = TienIchController.yeuCau(nguoiDung, "đổi mật khẩu", VaiTro.NHA_SI, VaiTro.Y_TA, VaiTro.LE_TAN, VaiTro.QUAN_LY);
         TaiKhoan tk = taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
         if (tk == null) {
             throw new NghiepVuException("Nhân viên này chưa có tài khoản");
         }
-        if (!MatKhau.khop(matKhauCu, tk.getMatKhauHash())) {
+        if (!TienIchController.khopMatKhau(matKhauCu, tk.getMatKhauHash())) {
             throw new NghiepVuException("Mật khẩu hiện tại không đúng");
         }
         kiemTraMatKhauMoi(matKhauMoi);
         if (matKhauMoi.equals(matKhauCu)) {
             throw new NghiepVuException("Mật khẩu mới phải khác mật khẩu hiện tại");
         }
-        taiKhoanDAO.doiMatKhau(tk.getMaTaiKhoan(), MatKhau.bam(matKhauMoi), false);
-        nhatKy.ghiNhatKy(nv.getMaNV(), "Đổi mật khẩu", "TaiKhoan", tk.getMaTaiKhoan(), null);
+        taiKhoanDAO.doiMatKhau(tk.getMaTaiKhoan(), TienIchController.bamMatKhau(matKhauMoi), false);
+        TienIchController.ghiNhatKy(nv.getMaNV(), "Đổi mật khẩu", "TaiKhoan", tk.getMaTaiKhoan(), null);
     }
 
     // Quản lý cấp lại mật khẩu
     public void capLaiMatKhau(String maTaiKhoan, String matKhauMoi) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "cấp lại mật khẩu", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "cấp lại mật khẩu", VaiTro.QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
         kiemTraMatKhauMoi(matKhauMoi);
-        taiKhoanDAO.doiMatKhau(tk.getMaTaiKhoan(), MatKhau.bam(matKhauMoi), false);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Cấp lại mật khẩu", "TaiKhoan", tk.getMaTaiKhoan(), tk.getTenDangNhap());
+        taiKhoanDAO.doiMatKhau(tk.getMaTaiKhoan(), TienIchController.bamMatKhau(matKhauMoi), false);
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Cấp lại mật khẩu", "TaiKhoan", tk.getMaTaiKhoan(), tk.getTenDangNhap());
     }
 
     // Khóa tài khoản
     public void khoa(String maTaiKhoan) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "khóa tài khoản", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "khóa tài khoản", VaiTro.QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
         if (tk.getMaNV().getMaNV().equals(nguoi.getMaNV())) {
             throw new NghiepVuException("Không thể tự khóa tài khoản của chính mình");
@@ -169,12 +167,12 @@ public class TaiKhoanController {
             throw new NghiepVuException("Đây là tài khoản Quản lý hoạt động cuối cùng, không thể khóa");
         }
         taiKhoanDAO.datKhoa(maTaiKhoan, true);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
     }
 
     // Mở khóa tài khoản
     public void moKhoa(String maTaiKhoan) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "mở khóa tài khoản", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "mở khóa tài khoản", VaiTro.QUAN_LY);
         TaiKhoan tk = layTaiKhoan(maTaiKhoan);
         if (!tk.isTrangThaiKhoa()) {
             throw new NghiepVuException("Tài khoản này đang hoạt động, không cần mở khóa");
@@ -183,7 +181,7 @@ public class TaiKhoanController {
             throw new NghiepVuException("Nhân viên đã nghỉ việc nên không mở khóa tài khoản");
         }
         taiKhoanDAO.datKhoa(maTaiKhoan, false);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Mở khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Mở khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
     }
 
     private TaiKhoan layTaiKhoan(String maTaiKhoan) {

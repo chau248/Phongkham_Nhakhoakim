@@ -13,8 +13,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 import controller.BenhNhanController;
-import controller.NhaSiPhuTrachController;
-import dao.PhienLamViec;
+import controller.NhanVienController;
+import controller.PhienLamViec;
 import entity.BenhNhan;
 import entity.HangSo;
 import entity.NhanVien;
@@ -24,7 +24,7 @@ import entity.NhanVien;
 public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
 
     private BenhNhanController benhNhanService = new BenhNhanController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
+    private NhanVienController nhanVienService = new NhanVienController();
 
     private JTextField txtTuKhoa = TienIch.oNhap(28); // Từ khóa tìm kiếm
     private JTable tblBenhNhan = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Ngày sinh", "Giới tính", "Số điện thoại", "Địa chỉ", "Nha sĩ khám gần nhất", "Trạng thái"},
@@ -110,10 +110,10 @@ public class ManHinhTraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc 
             for (BenhNhan bn : dsBenhNhan) {
                 dsMa.add(bn.getMaBN());
             }
-            Map<String, String> nhaSi = nhaSiService.layTenNhaSiKhamGanNhat(dsMa); // Hỏi một lần cho cả bảng
+            Map<String, NhanVien> nhaSi = nhanVienService.layNhaSiKhamGanNhat(dsMa); // Hỏi một lần cho cả bảng
             List<String[]> dong = new ArrayList<>();
             for (BenhNhan bn : dsBenhNhan) {
-                String tenNhaSi = nhaSi.containsKey(bn.getMaBN()) ? nhaSi.get(bn.getMaBN()) : "Chưa khám";
+                String tenNhaSi = nhaSi.containsKey(bn.getMaBN()) ? nhaSi.get(bn.getMaBN()).getHoTen() : "Chưa khám";
                 dong.add(new String[] {bn.getMaBN(), bn.getHoTen(), TienIch.ngay(bn.getNgaySinh()), TienIch.chu(bn.getGioiTinh()),
                     TienIch.chu(bn.getSdt()), TienIch.chu(bn.getDiaChi()), tenNhaSi, TienIch.chu(bn.getTrangThai())});
             }

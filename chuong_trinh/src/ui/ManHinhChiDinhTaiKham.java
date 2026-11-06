@@ -8,15 +8,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import controller.BenhNhanController;
 import controller.DichVuController;
-import controller.HoSoBenhAnController;
 import controller.LuotKhamController;
-import controller.NhaSiPhuTrachController;
-import dao.PhienLamViec;
-import entity.BenhNhan;
+import controller.PhienLamViec;
 import entity.DichVu;
-import entity.HoSoBenhAn;
 import entity.LuotKham;
 
 // Màn hình chỉ định tái khám
@@ -25,9 +20,6 @@ public class ManHinhChiDinhTaiKham extends JPanel {
 
     private LuotKhamController luotKhamService = new LuotKhamController();
     private DichVuController dichVuService = new DichVuController();
-    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
-    private BenhNhanController benhNhanService = new BenhNhanController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private LuotKham luotKham; // Lượt khám đang khám
     private JTextField txtNgay = TienIch.oNhap(14); // Ngày tái khám dd/MM/yyyy
@@ -52,10 +44,7 @@ public class ManHinhChiDinhTaiKham extends JPanel {
 
     // Dựng form chọn ngày và dịch vụ
     private void dung(List<Component> cacKhoi) {
-        HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
-        BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
-        cacKhoi.add(DongThongTinLuotKham.tao(bn == null ? hs.getMaBN() : bn.getHoTen(),
-                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
+        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
         cmbDichVu =TienIch.taoChonDichVu(dichVuService.layTatCa(), "Chọn dịch vụ");
         txtNgay.setText(TienIch.ngay(LocalDate.now().plusDays(7)));
         txtNgay.setToolTipText("Ngày/tháng/năm, ví dụ 25/12/2026");

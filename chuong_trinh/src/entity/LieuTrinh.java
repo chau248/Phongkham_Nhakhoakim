@@ -1,49 +1,24 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
+// Liệu trình điều trị nhiều buổi (niềng răng, implant, nội nha...)
 public class LieuTrinh {
 
     private String maLieuTrinh; // Mã liệu trình, dạng LT000001
-    private String maBN; // Mã bệnh nhân
+    private BenhNhan maBN; // Bệnh nhân
     private String loaiDichVu; // Loại dịch vụ của liệu trình
     private int soBuoiDuKien; // Số buổi dự kiến
-    private String giaiDoanHienTai; // Giai đoạn
+    private String giaiDoanHienTai; // Giai đoạn hiện tại
     private LocalDate ngayBatDau; // Ngày bắt đầu
     private LocalDate ngayDuKienKetThuc; // Ngày dự kiến kết thúc
     private LocalDate ngayKetThucThucTe; // Ngày kết thúc thực tế
     private long tongChiPhiDuKien; // Tổng chi phí dự kiến
-    private String trangThai; // Đang thực
-    private String maNhaSiPhuTrach; // Mã nha sĩ phụ trách
+    private String trangThai; // Đang thực hiện, Hoàn thành hoặc Đã hủy
+    private NhanVien maNhaSiPhuTrach; // Nha sĩ phụ trách
     private String ghiChu; // Ghi chú
-    
-    
-    
-    
 
-    public LieuTrinh() {
-    }
-
-    public LieuTrinh(String maLieuTrinh, String maBN, String loaiDichVu, int soBuoiDuKien, String giaiDoanHienTai,
-			LocalDate ngayBatDau, LocalDate ngayDuKienKetThuc, LocalDate ngayKetThucThucTe, long tongChiPhiDuKien,
-			String trangThai, String maNhaSiPhuTrach, String ghiChu) {
-		super();
-		this.maLieuTrinh = maLieuTrinh;
-		this.maBN = maBN;
-		this.loaiDichVu = loaiDichVu;
-		this.soBuoiDuKien = soBuoiDuKien;
-		this.giaiDoanHienTai = giaiDoanHienTai;
-		this.ngayBatDau = ngayBatDau;
-		this.ngayDuKienKetThuc = ngayDuKienKetThuc;
-		this.ngayKetThucThucTe = ngayKetThucThucTe;
-		this.tongChiPhiDuKien = tongChiPhiDuKien;
-		this.trangThai = trangThai;
-		this.maNhaSiPhuTrach = maNhaSiPhuTrach;
-		this.ghiChu = ghiChu;
-	}
-
-	public String getMaLieuTrinh() {
+    public String getMaLieuTrinh() {
         return maLieuTrinh;
     }
 
@@ -51,11 +26,11 @@ public class LieuTrinh {
         this.maLieuTrinh = maLieuTrinh;
     }
 
-    public String getMaBN() {
+    public BenhNhan getMaBN() {
         return maBN;
     }
 
-    public void setMaBN(String maBN) {
+    public void setMaBN(BenhNhan maBN) {
         this.maBN = maBN;
     }
 
@@ -123,11 +98,11 @@ public class LieuTrinh {
         this.trangThai = trangThai;
     }
 
-    public String getMaNhaSiPhuTrach() {
+    public NhanVien getMaNhaSiPhuTrach() {
         return maNhaSiPhuTrach;
     }
 
-    public void setMaNhaSiPhuTrach(String maNhaSiPhuTrach) {
+    public void setMaNhaSiPhuTrach(NhanVien maNhaSiPhuTrach) {
         this.maNhaSiPhuTrach = maNhaSiPhuTrach;
     }
 

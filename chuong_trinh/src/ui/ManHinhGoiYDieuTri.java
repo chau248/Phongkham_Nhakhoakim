@@ -10,16 +10,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import controller.BenhNhanController;
 import controller.GoiYDieuTriController;
-import controller.HoSoBenhAnController;
 import controller.LuotKhamController;
-import controller.NhaSiPhuTrachController;
-import dao.PhienLamViec;
-import entity.BenhNhan;
+import controller.PhienLamViec;
 import entity.GoiYDieuTri;
 import entity.GoiYDieuTri.UocTinhChiPhi;
-import entity.HoSoBenhAn;
 import entity.LuotKham;
 
 // Màn hình gợi ý điều trị
@@ -28,9 +23,6 @@ public class ManHinhGoiYDieuTri extends JPanel {
 
     private GoiYDieuTriController goiYService = new GoiYDieuTriController();
     private LuotKhamController luotKhamService = new LuotKhamController();
-    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
-    private BenhNhanController benhNhanService = new BenhNhanController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private LuotKham luotKham; // Lượt khám đang khám
     private List<GoiYDieuTri> dsGoiY = new ArrayList<>(); // Dữ liệu bảng gợi ý
@@ -62,10 +54,7 @@ public class ManHinhGoiYDieuTri extends JPanel {
 
     // Dựng màn hình
     private void dung(List<Component> cacKhoi) {
-        HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
-        BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
-        cacKhoi.add(DongThongTinLuotKham.tao(bn == null ? hs.getMaBN() : bn.getHoTen(),
-                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
+        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
         cacKhoi.add(TienIch.doanChu("Gợi ý chỉ để tham khảo, nha sĩ quyết định. Chọn các dòng muốn thêm (giữ Ctrl để chọn nhiều) rồi bấm Thêm vào lượt khám.",
                 TienIch.MAU_XAM));
 

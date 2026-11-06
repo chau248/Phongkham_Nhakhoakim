@@ -19,7 +19,6 @@ import entity.HoaDon;
 public class ManHinhLapHoaDon extends JPanel {
 
     private HoaDonController hoaDonController = new HoaDonController();
-    private BangTen ten = new BangTen();
     private String maLuotKham;
 
     private JTable tblChiTiet = TienIch.taoBang(new String[] {"Dịch vụ", "Răng", "Số lượng", "Đơn giá", "Thành tiền"},
@@ -67,7 +66,7 @@ public class ManHinhLapHoaDon extends JPanel {
             List<String[]> dong = new ArrayList<>();
             for (ChiTietHoaDon ct : hd.getDsChiTiet()) {
                 BigDecimal thanhTien = ct.getDonGia().multiply(BigDecimal.valueOf(ct.getSoLuong()));
-                dong.add(new String[] {ten.dichVu(ct.getMaDichVu()), ct.getSoFDIRang() > 0 ? String.valueOf(ct.getSoFDIRang()) : "", String.valueOf(ct.getSoLuong()),
+                dong.add(new String[] {ct.getMaDichVu().getTenDichVu(), ct.getSoFDIRang() > 0 ? String.valueOf(ct.getSoFDIRang()) : "", String.valueOf(ct.getSoLuong()),
                     HoaDonController.dinhDangTien(ct.getDonGia()), HoaDonController.dinhDangTien(thanhTien)});
             }
             TienIch.napBang(tblChiTiet, dong);

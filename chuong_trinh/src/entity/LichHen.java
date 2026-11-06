@@ -3,25 +3,22 @@ package entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-// Bản tạm do Hậu viết để chạy thử
-
-// Lịch hẹn khám
+// Lịch hẹn khám của bệnh nhân với một nha sĩ
 public class LichHen {
 
     private String maLichHen; // Mã lịch hẹn, dạng LH000001
-    private String maBN; // Mã bệnh nhân
-    private String maNhanVien; // Mã nha sĩ
-    private String maDichVu; // Mã dịch vụ
+    private BenhNhan maBN; // Bệnh nhân
+    private NhanVien maNhanVien; // Nha sĩ
+    private DichVu maDichVu; // Dịch vụ
     private LocalDate ngayHen; // Ngày hẹn
     private LocalTime gioHen; // Giờ hẹn
-    private String trangThai; // Chờ xác nhận, Đã xác nhận
+    private String trangThai; // Chờ xác nhận, Đã xác nhận, Hoàn thành, Không đến hoặc Đã hủy
     private String phong; // Phòng khám
-    private int thoiLuongDuKien; // Thời lượng dự kiến
-    private String maHoSo; // Mã hồ sơ bệnh án
-    private String hinhThucDat; // Hình thức đặt
-    private boolean daNhacHen; // Trạng thái nhắc hẹn
+    private int thoiLuongDuKien; // Thời lượng dự kiến (phút)
+    private String hinhThucDat; // Trực tiếp, Điện thoại hoặc Online
+    private boolean daNhacHen; // Đã nhắc hẹn chưa
     private String lyDoHuy; // Lý do hủy
-    
+
     public String getMaLichHen() {
         return maLichHen;
     }
@@ -30,27 +27,27 @@ public class LichHen {
         this.maLichHen = maLichHen;
     }
 
-    public String getMaBN() {
+    public BenhNhan getMaBN() {
         return maBN;
     }
 
-    public void setMaBN(String maBN) {
+    public void setMaBN(BenhNhan maBN) {
         this.maBN = maBN;
     }
 
-    public String getMaNhanVien() {
+    public NhanVien getMaNhanVien() {
         return maNhanVien;
     }
 
-    public void setMaNhanVien(String maNhanVien) {
+    public void setMaNhanVien(NhanVien maNhanVien) {
         this.maNhanVien = maNhanVien;
     }
 
-    public String getMaDichVu() {
+    public DichVu getMaDichVu() {
         return maDichVu;
     }
 
-    public void setMaDichVu(String maDichVu) {
+    public void setMaDichVu(DichVu maDichVu) {
         this.maDichVu = maDichVu;
     }
 
@@ -94,52 +91,6 @@ public class LichHen {
         this.thoiLuongDuKien = thoiLuongDuKien;
     }
 
-    public LichHen(String maLichHen, String maBN, String maNhanVien, String maDichVu, LocalDate ngayHen,
-            LocalTime gioHen, String hinhThucDat, boolean daNhacHen, String phong, int thoiLuongDuKien) {
-        setMaLichHen(maLichHen);
-        setGioHen(gioHen);
-        setMaBN(maBN);
-        setMaDichVu(maDichVu);
-        setMaNhanVien(maNhanVien);
-        setNgayHen(ngayHen);
-        setPhong(phong);
-        setThoiLuongDuKien(thoiLuongDuKien);
-        setTrangThai("Chưa hoàn thành");
-        setMaHoSo(null);
-        setHinhThucDat(hinhThucDat);
-        setDaNhacHen(daNhacHen);
-        setLyDoHuy(null);
-    }
-    public LichHen() {
-        setMaLichHen("none");
-        setGioHen(null);
-        setMaBN("");
-        setMaDichVu("");
-        setMaNhanVien("");
-        setNgayHen(null);
-        setPhong("");
-        setTrangThai("Chưa hoàn thành");
-        setThoiLuongDuKien(0);
-        setMaHoSo(null);
-        setHinhThucDat("");
-        setDaNhacHen(false);
-        setLyDoHuy(null);
-    }
-    @Override
-    public String toString() {
-        return "LichHen [maLichHen=" + maLichHen + ", maBN=" + maBN + ", maNhanVien=" + maNhanVien + ", maDichVu="
-                + maDichVu + ", ngayHen=" + ngayHen + ", gioHen=" + gioHen + ", trangThai=" + trangThai + ", phong="
-                + phong + ", thoiLuongDuKien=" + thoiLuongDuKien + "]";
-    }
-
-    public String getMaHoSo() {
-        return maHoSo;
-    }
-
-    public void setMaHoSo(String maHoSo) {
-        this.maHoSo = maHoSo;
-    }
-
     public String getHinhThucDat() {
         return hinhThucDat;
     }
@@ -163,5 +114,5 @@ public class LichHen {
     public void setLyDoHuy(String lyDoHuy) {
         this.lyDoHuy = lyDoHuy;
     }
-    
+
 }

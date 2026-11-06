@@ -24,7 +24,6 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private LichHenController lichHenController = new LichHenController();
     private DichVuController dichVuController = new DichVuController();
-    private BangTen ten = new BangTen();
 
     private JTextField txtNgay = TienIch.oNhap(10); // Ngày xem
     private JComboBox<String> cmbKieu = new JComboBox<>(new String[] {"Theo ngày", "Theo tuần"});
@@ -123,8 +122,8 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
             dsLich = lichHenController.layTheoKhoang(tu, den);
             List<String[]> dong = new ArrayList<>();
             for (LichHen lh : dsLich) {
-                dong.add(new String[] {TienIch.ngay(lh.getNgayHen()), TienIch.gio(lh.getGioHen()), ten.benhNhan(lh.getMaBN()),
-                    ten.dichVu(lh.getMaDichVu()), ten.nhaSi(lh.getMaNhanVien()), TienIch.chu(lh.getPhong()), lh.getTrangThai(), lh.getMaLichHen()});
+                dong.add(new String[] {TienIch.ngay(lh.getNgayHen()), TienIch.gio(lh.getGioHen()), lh.getMaBN().getHoTen(),
+                    lh.getMaDichVu().getTenDichVu(), lh.getMaNhanVien().getHoTen(), TienIch.chu(lh.getPhong()), lh.getTrangThai(), lh.getMaLichHen()});
             }
             TienIch.napBang(tblLich, dong);
             lblKetQua.setText((cmbKieu.getSelectedIndex() == 1 ? "Tuần " + TienIch.ngay(tu) + " - " + TienIch.ngay(den) : "Ngày " + TienIch.ngay(tu))
@@ -178,7 +177,7 @@ public class ManHinhXemLichHen extends JPanel implements MainApp.LamMoiDuoc {
             return;
         }
         LichHen lh = dsLich.get(vt);
-        if (!TienIch.xacNhan("Đánh dấu bệnh nhân " + ten.benhNhan(lh.getMaBN()) + " không đến lịch " + lh.getMaLichHen() + "?")) {
+        if (!TienIch.xacNhan("Đánh dấu bệnh nhân " + lh.getMaBN().getHoTen() + " không đến lịch " + lh.getMaLichHen() + "?")) {
             return;
         }
         try {

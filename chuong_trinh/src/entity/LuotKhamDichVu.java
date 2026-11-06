@@ -1,11 +1,11 @@
 package entity;
 
-// Dịch vụ không gắn với răng cụ thể
+// Dịch vụ không gắn răng đã làm trong một lượt khám (khám tổng quát, lấy cao răng...)
 public class LuotKhamDichVu {
 
     private int maDong; // Số thứ tự dòng
-    private String maLuotKham; // Mã lượt khám
-    private String maDichVu; // Mã dịch vụ
+    private LuotKham maLuotKham; // Lượt khám
+    private DichVu maDichVu; // Dịch vụ
     private int soLuong; // Số lượng
     private String ghiChu; // Ghi chú
 
@@ -17,19 +17,19 @@ public class LuotKhamDichVu {
         this.maDong = maDong;
     }
 
-    public String getMaLuotKham() {
+    public LuotKham getMaLuotKham() {
         return maLuotKham;
     }
 
-    public void setMaLuotKham(String maLuotKham) {
+    public void setMaLuotKham(LuotKham maLuotKham) {
         this.maLuotKham = maLuotKham;
     }
 
-    public String getMaDichVu() {
+    public DichVu getMaDichVu() {
         return maDichVu;
     }
 
-    public void setMaDichVu(String maDichVu) {
+    public void setMaDichVu(DichVu maDichVu) {
         this.maDichVu = maDichVu;
     }
 

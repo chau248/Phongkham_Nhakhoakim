@@ -1,101 +1,87 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import entity.NhanVien;
 
 // Truy cập bảng NhanVien
 public class NhanVienDAO {
 
-    static final String CAC_COT = "maNV, hoTen, vaiTro, soChungChiHanhNghe, ngayHetHanChungChi, gioiTinh, sdt, chuyenKhoa, ngayVaoLam, trangThai";
-    static final String SQL_TAT_CA = "SELECT " + CAC_COT + " FROM dbo.NhanVien ORDER BY maNV";
-    static final String SQL_THEO_MA = "SELECT " + CAC_COT + " FROM dbo.NhanVien WHERE maNV = ?";
-    static final String SQL_THEM = "INSERT INTO dbo.NhanVien (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    static final String SQL_CAP_NHAT = "UPDATE dbo.NhanVien SET hoTen = ?, vaiTro = ?, soChungChiHanhNghe = ?, ngayHetHanChungChi = ?,"
-            + " gioiTinh = ?, sdt = ?, chuyenKhoa = ?, ngayVaoLam = ?, trangThai = ? WHERE maNV = ?";
+    static final String[] COT = {"maNV", "hoTen", "vaiTro", "soChungChiHanhNghe", "ngayHetHanChungChi", "gioiTinh", "sdt", "chuyenKhoa",
+        "ngayVaoLam", "trangThai"};
+    static final String CAC_COT = String.join(", ", COT);
+    // Cột để nối vào câu SELECT của bảng khác (bí danh nv, tên cột có tiền tố nv_)
+    static final String COT_NOI = TienIchDAO.cot(COT, "nv", "nv_");
+
+    // ----- Tìm -----
 
     // Tất cả nhân viên, theo mã
     public List<NhanVien> layTatCa() {
-        List<NhanVien> ds = new ArrayList<>();
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_TAT_CA);
-                ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                ds.add(doc(rs));
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được danh sách nhân viên: " + e.getMessage(), e);
-        }
-        return ds;
+        return TienIchDAO.layDanhSach("SELECT " + CAC_COT + " FROM dbo.NhanVien ORDER BY maNV", rs -> doc(rs, ""));
     }
 
-    // Tìm nhân viên theo mã
+    // Tìm nhân viên theo mã, không có thì null
     public NhanVien timTheoMa(String maNV) {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEO_MA)) {
-            ps.setString(1, maNV);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() ? doc(rs) : null;
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được nhân viên: " + e.getMessage(), e);
-        }
+        return TienIchDAO.layMot("SELECT " + CAC_COT + " FROM dbo.NhanVien WHERE maNV = ?", rs -> doc(rs, ""), maNV);
     }
+
+    // Nha sĩ của lượt khám gần nhất (không tính lượt đã hủy) của từng bệnh nhân: mã bệnh nhân -> nha sĩ
+    public Map<String, NhanVien> layNhaSiKhamGanNhat(Collection<String> dsMaBN) {
+        Map<String, NhanVien> kq = new HashMap<>();
+        if (dsMaBN.isEmpty()) {
+            return kq;
+        }
+        String dauHoi = String.join(", ", java.util.Collections.nCopies(dsMaBN.size(), "?"));
+        String sql = "SELECT h.maBN AS maBN_khach, " + COT_NOI + " FROM dbo.HoSoBenhAn h"
+                + " CROSS APPLY (SELECT TOP 1 x.maNhanVienPhuTrach FROM dbo.LuotKham x"
+                + " WHERE x.maHoSo = h.maHoSo AND x.trangThai <> N'Đã hủy' ORDER BY x.gioBatDau DESC) k"
+                + " JOIN dbo.NhanVien nv ON nv.maNV = k.maNhanVienPhuTrach WHERE h.maBN IN (" + dauHoi + ")";
+        TienIchDAO.layDanhSach(sql, rs -> kq.put(rs.getString("maBN_khach"), doc(rs, "nv_")), dsMaBN.toArray());
+        return kq;
+    }
+
+    // ----- Thêm, sửa -----
 
     // Thêm nhân viên mới
     public void them(NhanVien nv) {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
-            ps.setString(1, nv.getMaNV());
-            ps.setString(2, nv.getHoTen());
-            ps.setString(3, nv.getVaiTro());
-            ps.setString(4, nv.getSoChungChiHanhNghe());
-            ps.setObject(5, nv.getNgayHetHanChungChi());
-            ps.setString(6, nv.getGioiTinh());
-            ps.setString(7, nv.getSdt());
-            ps.setString(8, nv.getChuyenKhoa());
-            ps.setObject(9, nv.getNgayVaoLam());
-            ps.setString(10, nv.getTrangThai());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không thêm được nhân viên: " + e.getMessage(), e);
-        }
+        TienIchDAO.thucThi("INSERT INTO dbo.NhanVien (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                nv.getMaNV(), nv.getHoTen(), nv.getVaiTro(), nv.getSoChungChiHanhNghe(), nv.getNgayHetHanChungChi(),
+                nv.getGioiTinh(), nv.getSdt(), nv.getChuyenKhoa(), nv.getNgayVaoLam(), nv.getTrangThai());
     }
 
     // Cập nhật hồ sơ nhân viên
     public void capNhat(NhanVien nv) {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_CAP_NHAT)) {
-            ps.setString(1, nv.getHoTen());
-            ps.setString(2, nv.getVaiTro());
-            ps.setString(3, nv.getSoChungChiHanhNghe());
-            ps.setObject(4, nv.getNgayHetHanChungChi());
-            ps.setString(5, nv.getGioiTinh());
-            ps.setString(6, nv.getSdt());
-            ps.setString(7, nv.getChuyenKhoa());
-            ps.setObject(8, nv.getNgayVaoLam());
-            ps.setString(9, nv.getTrangThai());
-            ps.setString(10, nv.getMaNV());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không cập nhật được nhân viên: " + e.getMessage(), e);
-        }
+        TienIchDAO.thucThi("UPDATE dbo.NhanVien SET hoTen = ?, vaiTro = ?, soChungChiHanhNghe = ?, ngayHetHanChungChi = ?,"
+                + " gioiTinh = ?, sdt = ?, chuyenKhoa = ?, ngayVaoLam = ?, trangThai = ? WHERE maNV = ?",
+                nv.getHoTen(), nv.getVaiTro(), nv.getSoChungChiHanhNghe(), nv.getNgayHetHanChungChi(), nv.getGioiTinh(),
+                nv.getSdt(), nv.getChuyenKhoa(), nv.getNgayVaoLam(), nv.getTrangThai(), nv.getMaNV());
     }
 
-    // Đổi một dòng kết quả thành
-    private NhanVien doc(ResultSet rs) throws SQLException {
+    // ----- Đọc dòng kết quả -----
+
+    // Đọc nhân viên với tiền tố cột ("" nếu đọc từ bảng NhanVien, "nv_" nếu nối từ bảng khác)
+    static NhanVien doc(ResultSet rs, String tienTo) throws SQLException {
         NhanVien nv = new NhanVien();
-        nv.setMaNV(rs.getString("maNV"));
-        nv.setHoTen(rs.getString("hoTen"));
-        nv.setVaiTro(rs.getString("vaiTro"));
-        nv.setSoChungChiHanhNghe(rs.getString("soChungChiHanhNghe"));
-        nv.setNgayHetHanChungChi(rs.getObject("ngayHetHanChungChi", LocalDate.class));
-        nv.setGioiTinh(rs.getString("gioiTinh"));
-        nv.setSdt(rs.getString("sdt"));
-        nv.setChuyenKhoa(rs.getString("chuyenKhoa"));
-        nv.setNgayVaoLam(rs.getObject("ngayVaoLam", LocalDate.class));
-        nv.setTrangThai(rs.getString("trangThai"));
+        nv.setMaNV(rs.getString(tienTo + "maNV"));
+        nv.setHoTen(rs.getString(tienTo + "hoTen"));
+        nv.setVaiTro(rs.getString(tienTo + "vaiTro"));
+        nv.setSoChungChiHanhNghe(rs.getString(tienTo + "soChungChiHanhNghe"));
+        nv.setNgayHetHanChungChi(rs.getObject(tienTo + "ngayHetHanChungChi", LocalDate.class));
+        nv.setGioiTinh(rs.getString(tienTo + "gioiTinh"));
+        nv.setSdt(rs.getString(tienTo + "sdt"));
+        nv.setChuyenKhoa(rs.getString(tienTo + "chuyenKhoa"));
+        nv.setNgayVaoLam(rs.getObject(tienTo + "ngayVaoLam", LocalDate.class));
+        nv.setTrangThai(rs.getString(tienTo + "trangThai"));
         return nv;
+    }
+
+    // Đọc nhân viên nối từ bảng khác; không có (khóa ngoại null) thì trả về null
+    static NhanVien docNoi(ResultSet rs) throws SQLException {
+        return rs.getString("nv_maNV") == null ? null : doc(rs, "nv_");
     }
 }

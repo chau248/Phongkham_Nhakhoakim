@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import nhakhoakim.MainApp;
 import controller.TaiKhoanController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import entity.NhanVien;
 import entity.TaiKhoan;
 

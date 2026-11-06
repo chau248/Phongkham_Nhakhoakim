@@ -10,11 +10,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 import dao.BenhNhanDAO;
 import dao.CaTrucDAO;
-import dao.KiemTraNhap;
 import dao.LichHenDAO;
-import dao.MaGenerator;
+import dao.TienIchDAO;
 import dao.NghiepVuException;
-import dao.PhienLamViec;
 import entity.BenhNhan;
 import entity.CaTruc;
 import entity.DichVu;
@@ -34,32 +32,13 @@ public class LichHenController {
     public static final String HINH_THUC_MAC_DINH = "Trực tiếp";
     public static final List<String> HINH_THUC = List.of("Trực tiếp", "Điện thoại", "Online");
 
-    private LichHenDAO lichHenDAO;
-    private CaTrucDAO caTrucDAO;
-    private BenhNhanDAO benhNhanDAO;
-    private NhanVienController nhanVienController;
-    private CaTrucController caTrucController;
-    private DichVuController dichVuController;
-    private NhatKyController nhatKy = new NhatKyController();
-    private Supplier<NhanVien> nguoiDung;
-
-    // Dùng DAO và controller thật
-    public LichHenController() {
-        this(new LichHenDAO(), new CaTrucDAO(), new BenhNhanDAO(), new NhanVienController(), new CaTrucController(),
-                new DichVuController(), PhienLamViec::getNhanVienHienTai);
-    }
-
-    // Dùng các đối tượng truyền vào
-    public LichHenController(LichHenDAO lichHenDAO, CaTrucDAO caTrucDAO, BenhNhanDAO benhNhanDAO, NhanVienController nhanVienController,
-            CaTrucController caTrucController, DichVuController dichVuController, Supplier<NhanVien> nguoiDung) {
-        this.lichHenDAO = lichHenDAO;
-        this.caTrucDAO = caTrucDAO;
-        this.benhNhanDAO = benhNhanDAO;
-        this.nhanVienController = nhanVienController;
-        this.caTrucController = caTrucController;
-        this.dichVuController = dichVuController;
-        this.nguoiDung = nguoiDung;
-    }
+    private LichHenDAO lichHenDAO = new LichHenDAO();
+    private CaTrucDAO caTrucDAO = new CaTrucDAO();
+    private BenhNhanDAO benhNhanDAO = new BenhNhanDAO();
+    private NhanVienController nhanVienController = new NhanVienController();
+    private CaTrucController caTrucController = new CaTrucController();
+    private DichVuController dichVuController = new DichVuController();
+    private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
     // Hàm dùng chung và các hàm Hậu gọi
 
@@ -92,7 +71,7 @@ public class LichHenController {
         LichHen lh = ds.get(0);
         lichHenDAO.doiTrangThai(lh.getMaLichHen(), TrangThai.DA_HUY, "Hủy lịch tái khám do nha sĩ đặt nhầm");
         NhanVien nv = nguoiDung.get();
-        nhatKy.ghiNhatKy(nv == null ? null : nv.getMaNV(), "Hủy lịch hẹn", "LichHen", lh.getMaLichHen(), "Hủy lịch tái khám do nha sĩ đặt nhầm");
+        TienIchController.ghiNhatKy(nv == null ? null : nv.getMaNV(), "Hủy lịch hẹn", "LichHen", lh.getMaLichHen(), "Hủy lịch tái khám do nha sĩ đặt nhầm");
         return true;
     }
 
@@ -102,7 +81,7 @@ public class LichHenController {
         BenhNhan bn = layBenhNhanDangDieuTri(maBN);
         for (LocalTime gio : layKhungGioTrong(maNV, ngay, dv.getThoiGianDuKien())) {
             if (!benhNhanBan(maBN, ngay, gio, dv.getThoiGianDuKien(), null)) {
-                return luuLichMoi(bn.getMaBN(), maNV, dv, ngay, gio, HINH_THUC_MAC_DINH);
+                return luuLichMoi(bn, maNV, dv, ngay, gio, HINH_THUC_MAC_DINH);
             }
         }
         throw new NghiepVuException("Ngày " + ngay + " nha sĩ không có ca trực hoặc đã hết khung giờ trống cho dịch vụ \"" + dv.getTenDichVu()
@@ -113,7 +92,7 @@ public class LichHenController {
 
     // Lịch hẹn của mọi nha sĩ
     public List<LichHen> layTheoKhoang(LocalDate tu, LocalDate den) {
-        Quyen.yeuCau(nguoiDung, "xem lịch hẹn của mọi nha sĩ", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "xem lịch hẹn của mọi nha sĩ", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         return lichHenDAO.layTheoKhoang(tu, den);
     }
 
@@ -155,61 +134,55 @@ public class LichHenController {
 
     // Đặt lịch hẹn
     public LichHen datLich(String maBN, String maNhaSi, String maDichVu, LocalDate ngay, LocalTime gio, String hinhThucDat) {
-        Quyen.yeuCau(nguoiDung, "đặt lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        TienIchController.yeuCau(nguoiDung, "đặt lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         BenhNhan bn = layBenhNhanDangDieuTri(maBN);
         DichVu dv = layDichVuHoatDong(maDichVu);
         if (hinhThucDat != null && !HINH_THUC.contains(hinhThucDat)) {
             throw new NghiepVuException("Hình thức đặt chỉ có thể là Trực tiếp, Điện thoại hoặc Online");
         }
-        return luuLichMoi(bn.getMaBN(), maNhaSi, dv, ngay, gio, hinhThucDat == null ? HINH_THUC_MAC_DINH : hinhThucDat);
+        return luuLichMoi(bn, maNhaSi, dv, ngay, gio, hinhThucDat == null ? HINH_THUC_MAC_DINH : hinhThucDat);
     }
 
     // Dời lịch sang ngày giờ khác
     public void doiLich(String maLichHen, LocalDate ngayMoi, LocalTime gioMoi) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "dời lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "dời lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LichHen lh = layLichDoiDuoc(maLichHen);
-        DichVu dv = dichVuController.timTheoMa(lh.getMaDichVu());
-        if (dv == null) {
-            throw new NghiepVuException("Không tìm thấy dịch vụ của lịch hẹn " + maLichHen);
-        }
-        String phong = kiemTraXepLich(lh.getMaBN(), lh.getMaNhanVien(), dv, ngayMoi, gioMoi, lh.getMaLichHen());
+        DichVu dv = lh.getMaDichVu();
+        String phong = kiemTraXepLich(lh.getMaBN().getMaBN(), lh.getMaNhanVien().getMaNV(), dv, ngayMoi, gioMoi, lh.getMaLichHen());
         lichHenDAO.doiNgayGio(maLichHen, ngayMoi, gioMoi, phong, dv.getThoiGianDuKien());
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Dời lịch hẹn", "LichHen", maLichHen,
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Dời lịch hẹn", "LichHen", maLichHen,
                 "Từ " + lh.getNgayHen() + " " + lh.getGioHen() + " sang " + ngayMoi + " " + gioMoi);
     }
 
     // Hủy lịch hẹn
     public void huyLich(String maLichHen, String lyDo) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "hủy lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
-        String lyDoHuy = KiemTraNhap.rongThanhNull(lyDo);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "hủy lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        String lyDoHuy = TienIchController.rongThanhNull(lyDo);
         if (lyDoHuy == null || lyDoHuy.length() < 5) {
             throw new NghiepVuException("Phải nhập lý do hủy lịch (ít nhất 5 ký tự)");
         }
-        KiemTraNhap.doDai(lyDoHuy, 255, "Lý do hủy");
+        TienIchController.doDai(lyDoHuy, 255, "Lý do hủy");
         LichHen lh = layLichDoiDuoc(maLichHen);
         lichHenDAO.doiTrangThai(maLichHen, TrangThai.DA_HUY, lyDoHuy);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Hủy lịch hẹn", "LichHen", maLichHen, lh.getNgayHen() + " " + lh.getGioHen() + ": " + lyDoHuy);
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Hủy lịch hẹn", "LichHen", maLichHen, lh.getNgayHen() + " " + lh.getGioHen() + ": " + lyDoHuy);
     }
 
     // Xác nhận lịch Chờ xác nhận
     public void xacNhan(String maLichHen) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "xác nhận lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "xác nhận lịch hẹn", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LichHen lh = layLich(maLichHen);
         if (!CHO_XAC_NHAN.equals(lh.getTrangThai())) {
             throw new NghiepVuException("Chỉ xác nhận được lịch đang Chờ xác nhận (lịch này đang \"" + lh.getTrangThai() + "\")");
         }
-        DichVu dv = dichVuController.timTheoMa(lh.getMaDichVu());
-        if (dv == null) {
-            throw new NghiepVuException("Không tìm thấy dịch vụ của lịch hẹn " + maLichHen);
-        }
-        kiemTraXepLich(lh.getMaBN(), lh.getMaNhanVien(), dv, lh.getNgayHen(), lh.getGioHen(), lh.getMaLichHen());
+        DichVu dv = lh.getMaDichVu();
+        kiemTraXepLich(lh.getMaBN().getMaBN(), lh.getMaNhanVien().getMaNV(), dv, lh.getNgayHen(), lh.getGioHen(), lh.getMaLichHen());
         lichHenDAO.doiTrangThai(maLichHen, DA_XAC_NHAN, null);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Xác nhận lịch hẹn", "LichHen", maLichHen, null);
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Xác nhận lịch hẹn", "LichHen", maLichHen, null);
     }
 
     // Đánh dấu bệnh nhân Không
     public void danhDauKhongDen(String maLichHen) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "đánh dấu bệnh nhân không đến", VaiTro.LE_TAN, VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "đánh dấu bệnh nhân không đến", VaiTro.LE_TAN, VaiTro.QUAN_LY);
         LichHen lh = layLich(maLichHen);
         if (!DA_XAC_NHAN.equals(lh.getTrangThai())) {
             throw new NghiepVuException("Chỉ đánh dấu Không đến cho lịch Đã xác nhận");
@@ -221,14 +194,14 @@ public class LichHenController {
             throw new NghiepVuException("Lịch hẹn đang có lượt khám Đang khám");
         }
         lichHenDAO.doiTrangThai(maLichHen, KHONG_DEN, null);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Đánh dấu không đến", "LichHen", maLichHen, null);
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Đánh dấu không đến", "LichHen", maLichHen, null);
     }
 
     // Xem lịch làm việc
 
     // Lịch làm việc của người đang đăng nhập
     public List<DongLichLamViec> layLichLamViec(LocalDate tu, LocalDate den) {
-        NhanVien nv = Quyen.yeuCau(nguoiDung, "xem lịch làm việc", VaiTro.NHA_SI, VaiTro.Y_TA);
+        NhanVien nv = TienIchController.yeuCau(nguoiDung, "xem lịch làm việc", VaiTro.NHA_SI, VaiTro.Y_TA);
         Map<String, String> tenBenhNhan = new HashMap<>();
         Map<String, String> tenDichVu = new HashMap<>();
         for (DichVu dv : dichVuController.layTatCa()) {
@@ -274,8 +247,8 @@ public class LichHenController {
             DongLichLamViec d = new DongLichLamViec(ca.getNgay(), ca.getCaLam(), ca.getPhong());
             d.setGio(lh.getGioHen());
             d.setMaLichHen(lh.getMaLichHen());
-            d.setTenBenhNhan(tenBN(tenBenhNhan, lh.getMaBN()));
-            d.setTenDichVu(tenDichVu.getOrDefault(lh.getMaDichVu(), lh.getMaDichVu()));
+            d.setTenBenhNhan(lh.getMaBN().getHoTen());
+            d.setTenDichVu(lh.getMaDichVu().getTenDichVu());
             d.setTenNhaSi(tenNhaSi);
             d.setTrangThai(lh.getTrangThai());
             kq.add(d);
@@ -418,13 +391,13 @@ public class LichHenController {
     }
 
     // Lưu lịch mới ở trạng thái Chờ xác nhận
-    private LichHen luuLichMoi(String maBN, String maNhaSi, DichVu dv, LocalDate ngay, LocalTime gio, String hinhThuc) {
-        String phong = kiemTraXepLich(maBN, maNhaSi, dv, ngay, gio, null);
+    private LichHen luuLichMoi(BenhNhan bn, String maNhaSi, DichVu dv, LocalDate ngay, LocalTime gio, String hinhThuc) {
+        String phong = kiemTraXepLich(bn.getMaBN(), maNhaSi, dv, ngay, gio, null);
         LichHen lh = new LichHen();
-        lh.setMaLichHen(MaGenerator.taoMa("LH"));
-        lh.setMaBN(maBN);
-        lh.setMaNhanVien(maNhaSi);
-        lh.setMaDichVu(dv.getMaDichVu());
+        lh.setMaLichHen(TienIchDAO.taoMa("LH"));
+        lh.setMaBN(bn);
+        lh.setMaNhanVien(nhanVienController.timTheoMa(maNhaSi));
+        lh.setMaDichVu(dv);
         lh.setNgayHen(ngay);
         lh.setGioHen(gio);
         lh.setTrangThai(CHO_XAC_NHAN);

@@ -2,50 +2,21 @@ package entity;
 
 import java.time.LocalDateTime;
 
-// MaBanGhi : String
-
+// Tình trạng một răng được ghi trong một lượt khám
 public class RangDieuTri {
 
     private String maBanGhi; // Mã bản ghi, dạng BG000001
-    private String maLuotKham; // Mã lượt khám
+    private LuotKham maLuotKham; // Lượt khám
     private int soFDI; // Số răng theo hệ FDI
-    private String matRang; // Mặt răng
-    private String trangThai; // Bình thường, Sâu, Đã trám
+    private String trangThai; // Bình thường, Sâu, Đã trám, Bọc sứ, Đã nhổ, Implant, Cầu răng
     private String vatLieu; // Vật liệu sử dụng
     private LocalDateTime ngayGhiNhan; // Thời điểm ghi nhận
-    private String maDichVu; // Dịch vụ đã thực hiện trên
+    private DichVu maDichVu; // Dịch vụ đã làm trên răng này (có thể không có)
     private boolean daNho; // True nếu răng đã nhổ
     private String mauHienThi; // Màu hiển thị trên sơ đồ răng
     private String ghiChu; // Ghi chú
-    
-    
-    
-    
-    
-    
 
-    public RangDieuTri() {
-    }
-
-    public RangDieuTri(String maBanGhi, String maLuotKham, int soFDI, String matRang, String trangThai, String vatLieu,
-			LocalDateTime ngayGhiNhan, String maDichVu, boolean daNho, String mauHienThi, String ghiChu) {
-		super();
-		this.maBanGhi = maBanGhi;
-		this.maLuotKham = maLuotKham;
-		this.soFDI = soFDI;
-		this.matRang = matRang;
-		this.trangThai = trangThai;
-		this.vatLieu = vatLieu;
-		this.ngayGhiNhan = ngayGhiNhan;
-		this.maDichVu = maDichVu;
-		this.daNho = daNho;
-		this.mauHienThi = mauHienThi;
-		this.ghiChu = ghiChu;
-	}
-    
-    
-
-	public String getMaBanGhi() {
+    public String getMaBanGhi() {
         return maBanGhi;
     }
 
@@ -53,11 +24,11 @@ public class RangDieuTri {
         this.maBanGhi = maBanGhi;
     }
 
-    public String getMaLuotKham() {
+    public LuotKham getMaLuotKham() {
         return maLuotKham;
     }
 
-    public void setMaLuotKham(String maLuotKham) {
+    public void setMaLuotKham(LuotKham maLuotKham) {
         this.maLuotKham = maLuotKham;
     }
 
@@ -67,14 +38,6 @@ public class RangDieuTri {
 
     public void setSoFDI(int soFDI) {
         this.soFDI = soFDI;
-    }
-
-    public String getMatRang() {
-        return matRang;
-    }
-
-    public void setMatRang(String matRang) {
-        this.matRang = matRang;
     }
 
     public String getTrangThai() {
@@ -101,11 +64,11 @@ public class RangDieuTri {
         this.ngayGhiNhan = ngayGhiNhan;
     }
 
-    public String getMaDichVu() {
+    public DichVu getMaDichVu() {
         return maDichVu;
     }
 
-    public void setMaDichVu(String maDichVu) {
+    public void setMaDichVu(DichVu maDichVu) {
         this.maDichVu = maDichVu;
     }
 
@@ -133,12 +96,13 @@ public class RangDieuTri {
         this.ghiChu = ghiChu;
     }
 
-    // Kiểm tra số FDI có hợp lệ không
+
+    // Số răng FDI hợp lệ: răng vĩnh viễn 11-18, 21-28, 31-38, 41-48; răng sữa 51-55, 61-65, 71-75, 81-85
     public static boolean kiemTraSoFDI(int so) {
         return laRangVinhVien(so) || laRangSua(so);
     }
 
-    // Răng vĩnh viễn
+    // Răng vĩnh viễn: hàng 1 đến 4, răng số 1 đến 8
     public static boolean laRangVinhVien(int so) {
         int hang = so / 10;
         int rang = so % 10;
@@ -152,9 +116,9 @@ public class RangDieuTri {
         return hang >= 5 && hang <= 8 && rang >= 1 && rang <= 5;
     }
 
-    // Răng khôn
+    // Răng khôn (số 8 của răng vĩnh viễn)
     public static boolean laRangKhon(int so) {
         return laRangVinhVien(so) && so % 10 == 8;
     }
-    
+
 }

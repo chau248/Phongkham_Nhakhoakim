@@ -33,7 +33,7 @@ import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import controller.TaiKhoanController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import entity.NhanVien;
 import ui.ChucNang;
 import ui.DanhSachChucNang;

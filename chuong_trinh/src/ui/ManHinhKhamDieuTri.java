@@ -14,29 +14,23 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
-import controller.BenhNhanController;
 import controller.DichVuController;
-import controller.HoSoBenhAnController;
 import controller.LuotKhamController;
-import controller.NhaSiPhuTrachController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import controller.RangDieuTriController;
 import entity.BenhNhan;
 import entity.DichVu;
 import entity.HangSo;
-import entity.HoSoBenhAn;
 import entity.LichHen;
 import entity.LuotKham;
 import entity.LuotKhamDichVu;
+import entity.RangDieuTri;
 
 // Màn hình khám và ghi nhận điều trị
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class ManHinhKhamDieuTri extends JPanel {
+public class ManHinhKhamDieuTri extends JPanel implements MainApp.LamMoiDuoc {
 
     private LuotKhamController luotKhamService = new LuotKhamController();
-    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
-    private BenhNhanController benhNhanService = new BenhNhanController();
     private DichVuController dichVuService = new DichVuController();
     private RangDieuTriController rangService = new RangDieuTriController();
 
@@ -50,6 +44,8 @@ public class ManHinhKhamDieuTri extends JPanel {
     private JTextField txtGhiChu = TienIch.oNhap(50); // Ghi chú
     private JTable tblDichVu = TienIch.taoBang(new String[] {"Mã", "Dịch vụ", "Số lượng", "Đơn giá (đồng)"},
             new int[] {90, 260, 80, 120}, "Chưa chọn dịch vụ nào."); // Dịch vụ đã chọn
+    private JTable tblTongHop = TienIch.taoBang(new String[] {"Dịch vụ", "Răng", "Số lượng", "Thành tiền (đồng)"},
+            new int[] {300, 100, 80, 140}, "Chưa ghi dịch vụ nào."); // Tổng hợp dịch vụ sẽ vào hóa đơn
     private List<LuotKhamDichVu> dichVuDaChon = new ArrayList<>(); // Dữ liệu của bảng dịch vụ
 
     public ManHinhKhamDieuTri() {
@@ -98,10 +94,8 @@ public class ManHinhKhamDieuTri extends JPanel {
 
         List<Component> trongThe = new ArrayList<>();
         if (lichHen != null) {
-            BenhNhan bn = benhNhanService.timTheoMa(lichHen.getMaBN());
-            DichVu dv = dichVuService.timTheoMa(lichHen.getMaDichVu());
-            trongThe.add(TienIch.doanChu("Lịch hẹn " + lichHen.getMaLichHen() + ": " + (bn == null ? lichHen.getMaBN() : bn.getHoTen())
-                    + " - " + (dv == null ? lichHen.getMaDichVu() : dv.getTenDichVu()) + " lúc " + TienIch.gio(lichHen.getGioHen()), Color.BLACK));
+            trongThe.add(TienIch.doanChu("Lịch hẹn " + lichHen.getMaLichHen() + ": " + lichHen.getMaBN().getHoTen()
+                    + " - " + lichHen.getMaDichVu().getTenDichVu() + " lúc " + TienIch.gio(lichHen.getGioHen()), Color.BLACK));
             JButton btnTheoLich = TienIch.nutChinh("Bắt đầu khám theo lịch");
             btnTheoLich.setEnabled(laNhaSi);
             btnTheoLich.addActionListener(e -> {
@@ -143,20 +137,11 @@ public class ManHinhKhamDieuTri extends JPanel {
 
     // Form khám của lượt khám đang khám
     private void dungFormKham(List<Component> cacKhoi) {
-        HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
-        BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
-
-        cacKhoi.add(DongThongTinLuotKham.tao(bn == null ? hs.getMaBN() : bn.getHoTen(),
-                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
+        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
 
         if (luotKham.getGioBatDau().toLocalDate().isBefore(LocalDate.now())) {
             cacKhoi.add(nhanCanhBao("Lượt khám này mở từ ngày " + TienIch.ngay(luotKham.getGioBatDau().toLocalDate())
                     + " nhưng chưa hoàn tất. Hãy hoàn tất khám nếu đã khám xong, hoặc hủy lượt khám nếu bệnh nhân không còn ở phòng khám."));
-        }
-
-        String diUng = hs.coCanhBaoDiUng() ? TienIch.chu(hs.getCanhBaoDiUng()).trim() : "";
-        if (!diUng.isEmpty()) {
-            cacKhoi.add(TienIch.thongBao("CẢNH BÁO DỊ ỨNG: " + diUng, TienIch.MAU_DO_NEN, TienIch.MAU_DO_CHU, true));
         }
 
         txtLyDo.setText(TienIch.chu(luotKham.getLyDoKham()));
@@ -189,6 +174,8 @@ public class ManHinhKhamDieuTri extends JPanel {
 
         cacKhoi.add(TienIch.chuThuong("Dịch vụ thực hiện (không gắn răng cụ thể; dịch vụ gắn răng ghi ở Sơ đồ răng)", false));
         cacKhoi.add(TienIch.cuonBang(tblDichVu, 120));
+        cacKhoi.add(TienIch.chuThuong("Tổng hợp sẽ vào hóa đơn (gồm cả dịch vụ ghi ở Sơ đồ răng)", false));
+        cacKhoi.add(TienIch.cuonBang(tblTongHop, 140));
         cacKhoi.add(TienIch.dong(btnThemDV, btnXoaDV));
         cacKhoi.add(TienIch.dong(btnLuu, btnSoDo, btnTaiKham, btnHoanTat, btnHuy));
     }
@@ -196,17 +183,43 @@ public class ManHinhKhamDieuTri extends JPanel {
     // Nạp lại bảng dịch vụ của lượt khám
     private void napBangDichVu() {
         dichVuDaChon = luotKhamService.layDichVuKhongGanRang(luotKham.getMaLuotKham());
-        Map<String, DichVu> danhMuc = new HashMap<>();
-        for (DichVu dv : dichVuService.layTatCa()) {
-            danhMuc.put(dv.getMaDichVu(), dv);
-        }
         List<String[]> dong = new ArrayList<>();
         for (LuotKhamDichVu x : dichVuDaChon) {
-            DichVu dv = danhMuc.get(x.getMaDichVu());
-            dong.add(new String[] {x.getMaDichVu(), dv == null ? "" : dv.getTenDichVu(), String.valueOf(x.getSoLuong()),
-                dv == null ? "" : TienIch.tien(dv.getGia())});
+            DichVu dv = x.getMaDichVu();
+            dong.add(new String[] {dv.getMaDichVu(), dv.getTenDichVu(), String.valueOf(x.getSoLuong()), TienIch.tien(dv.getGia())});
         }
         TienIch.napBang(tblDichVu, dong);
+        napBangTongHop();
+    }
+
+    // Bảng tổng hợp mọi dịch vụ sẽ vào hóa đơn: dịch vụ gắn răng (ghi ở Sơ đồ răng) và dịch vụ không gắn răng
+    private void napBangTongHop() {
+        List<String[]> dong = new ArrayList<>();
+        java.util.Set<String> daTinh = new java.util.HashSet<>();
+        long tong = 0;
+        for (RangDieuTri r : rangService.layTheoLuotKham(luotKham.getMaLuotKham())) {
+            if (r.getMaDichVu() != null && daTinh.add(r.getSoFDI() + "|" + r.getMaDichVu().getMaDichVu())) {
+                dong.add(new String[] {r.getMaDichVu().getTenDichVu(), "Răng " + r.getSoFDI(), "1", TienIch.tien(r.getMaDichVu().getGia())});
+                tong += r.getMaDichVu().getGia();
+            }
+        }
+        for (LuotKhamDichVu x : dichVuDaChon) {
+            long thanhTien = x.getMaDichVu().getGia() * x.getSoLuong();
+            dong.add(new String[] {x.getMaDichVu().getTenDichVu(), "", String.valueOf(x.getSoLuong()), TienIch.tien(thanhTien)});
+            tong += thanhTien;
+        }
+        if (!dong.isEmpty()) {
+            dong.add(new String[] {"Tạm tính (chưa VAT)", "", "", TienIch.tien(tong)});
+        }
+        TienIch.napBang(tblTongHop, dong);
+    }
+
+    // Quay lại từ màn hình Sơ đồ răng thì nạp lại bảng tổng hợp
+    @Override
+    public void lamMoi() {
+        if (luotKham != null && tblTongHop != null) {
+            napBangDichVu();
+        }
     }
 
     // Mở hộp thoại chọn dịch vụ

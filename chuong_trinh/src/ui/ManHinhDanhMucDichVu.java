@@ -10,7 +10,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 import controller.DichVuController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import entity.DichVu;
 import entity.LoaiDichVu;
 import entity.NhanVien;

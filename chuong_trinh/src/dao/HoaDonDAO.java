@@ -1,152 +1,117 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import entity.ChiTietHoaDon;
 import entity.HoaDon;
 
-// Truy cập bảng HoaDon
+// Truy cập bảng HoaDon và bảng ChiTietHoaDon
 public class HoaDonDAO {
 
-    private ChiTietHoaDonDAO chiTietDAO = new ChiTietHoaDonDAO();
+    static final String SELECT = "SELECT h.maHoaDon, h.ngayLap, h.ngayThanhToan, h.tienGiamGia, h.phanTramThue, h.tongTienTruocThue,"
+            + " h.tongTien, h.hinhThucThanhToan, h.trangThaiThanhToan, h.ghiChu, " + BenhNhanDAO.COT_NOI + ", " + NhanVienDAO.COT_NOI
+            + " FROM dbo.HoaDon h JOIN dbo.BenhNhan bn ON bn.maBN = h.maBN LEFT JOIN dbo.NhanVien nv ON nv.maNV = h.maNhanVienLap";
+    static final String SELECT_CHI_TIET = "SELECT c.maChiTiet, c.maHoaDon, c.soLuong, c.donGia, c.giamGia, c.soFDIRang, c.ghiChu, "
+            + DichVuDAO.COT_NOI + " FROM dbo.ChiTietHoaDon c JOIN dbo.DichVu dv ON dv.maDichVu = c.maDichVu";
 
-    static final String CAC_COT = "maHoaDon, maBN, maNhanVienLap, ngayLap, tienGiamGia, phanTramThue, tongTienTruocThue, tongTien,"
-            + " hinhThucThanhToan, trangThaiThanhToan, ghiChu, ngayThanhToan";
-    static final String SQL_THEM = "INSERT INTO dbo.HoaDon (maHoaDon, maBN, maNhanVienLap, ngayLap, tienGiamGia, phanTramThue, tongTienTruocThue,"
-            + " tongTien, hinhThucThanhToan, trangThaiThanhToan, ghiChu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    static final String SQL_GAN_LUOT_KHAM = "UPDATE dbo.LuotKham SET maHoaDon = ? WHERE maLuotKham = ? AND maHoaDon IS NULL";
-    static final String SQL_THEO_MA = "SELECT " + CAC_COT + " FROM dbo.HoaDon WHERE maHoaDon = ?";
-    static final String SQL_TAT_CA = "SELECT " + CAC_COT + " FROM dbo.HoaDon ORDER BY ngayLap DESC, maHoaDon DESC";
-    static final String SQL_THANH_TOAN = "UPDATE dbo.HoaDon SET trangThaiThanhToan = N'Đã thanh toán', hinhThucThanhToan = ?, ngayThanhToan = ?,"
-            + " maNhanVienLap = COALESCE(maNhanVienLap, ?) WHERE maHoaDon = ? AND trangThaiThanhToan = N'Chưa thanh toán'";
-    static final String SQL_HUY = "UPDATE dbo.HoaDon SET trangThaiThanhToan = N'Đã hủy', ghiChu = ? WHERE maHoaDon = ? AND trangThaiThanhToan = N'Chưa thanh toán'";
-    static final String SQL_GO_LUOT_KHAM = "UPDATE dbo.LuotKham SET maHoaDon = NULL WHERE maHoaDon = ?";
+    // ----- Tìm -----
 
-    // Lưu hóa đơn, các dòng chi tiết
-    public void themKemChiTiet(HoaDon hd, List<ChiTietHoaDon> dsChiTiet, String maLuotKham) {
-        try (Connection c = DatabaseConnection.getConnection()) {
-            c.setAutoCommit(false);
-            try {
-                try (PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
-                    ps.setString(1, hd.getMaHoaDon());
-                    ps.setString(2, hd.getMaBenhNhan());
-                    ps.setString(3, hd.getMaNhanVien());
-                    ps.setObject(4, hd.getNgayLap());
-                    ps.setBigDecimal(5, hd.getTienGiamGia());
-                    ps.setBigDecimal(6, hd.getPhanTramThue());
-                    ps.setBigDecimal(7, hd.getTongTienTruocThue());
-                    ps.setBigDecimal(8, hd.getTongTien());
-                    ps.setString(9, hd.getHinhThucThanhToan());
-                    ps.setString(10, hd.getTrangThai());
-                    ps.setString(11, hd.getGhiChu());
-                    ps.executeUpdate();
-                }
-                for (ChiTietHoaDon ct : dsChiTiet) {
-                    chiTietDAO.them(c, ct);
-                }
-                try (PreparedStatement ps = c.prepareStatement(SQL_GAN_LUOT_KHAM)) {
-                    ps.setString(1, hd.getMaHoaDon());
-                    ps.setString(2, maLuotKham);
-                    if (ps.executeUpdate() != 1) {
-                        throw new NghiepVuException("Lượt khám " + maLuotKham + " đã có hóa đơn");
-                    }
-                }
-                c.commit();
-            } catch (SQLException | RuntimeException e) {
-                c.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không lập được hóa đơn: " + e.getMessage(), e);
-        }
-    }
-
-    // Tìm hóa đơn theo mã
+    // Tìm hóa đơn theo mã (chưa kèm các dòng chi tiết), không có thì null
     public HoaDon timTheoMa(String maHoaDon) {
-        List<HoaDon> ds = layDanhSach(SQL_THEO_MA, maHoaDon);
-        return ds.isEmpty() ? null : ds.get(0);
+        return TienIchDAO.layMot(SELECT + " WHERE h.maHoaDon = ?", this::doc, maHoaDon);
     }
 
     // Tất cả hóa đơn, mới nhất trước
     public List<HoaDon> layTatCa() {
-        return layDanhSach(SQL_TAT_CA, null);
+        return TienIchDAO.layDanhSach(SELECT + " ORDER BY h.ngayLap DESC, h.maHoaDon DESC", this::doc);
     }
 
-    // Ghi nhận thanh toán
+    // Các dòng chi tiết của một hóa đơn
+    public List<ChiTietHoaDon> layChiTiet(String maHoaDon) {
+        return TienIchDAO.layDanhSach(SELECT_CHI_TIET + " WHERE c.maHoaDon = ? ORDER BY c.maChiTiet", this::docChiTiet, maHoaDon);
+    }
+
+    // ----- Thêm -----
+
+    // Lưu hóa đơn, các dòng chi tiết và gắn hóa đơn vào lượt khám trong một giao dịch
+    public void themKemChiTiet(HoaDon hd, List<ChiTietHoaDon> dsChiTiet, String maLuotKham) {
+        TienIchDAO.giaoDich(c -> {
+            TienIchDAO.thucThi(c, "INSERT INTO dbo.HoaDon (maHoaDon, maBN, maNhanVienLap, ngayLap, tienGiamGia, phanTramThue,"
+                    + " tongTienTruocThue, tongTien, hinhThucThanhToan, trangThaiThanhToan, ghiChu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    hd.getMaHoaDon(), hd.getMaBenhNhan().getMaBN(), hd.getMaNhanVien() == null ? null : hd.getMaNhanVien().getMaNV(),
+                    hd.getNgayLap(), hd.getTienGiamGia(), hd.getPhanTramThue(), hd.getTongTienTruocThue(), hd.getTongTien(),
+                    hd.getHinhThucThanhToan(), hd.getTrangThai(), hd.getGhiChu());
+            for (ChiTietHoaDon ct : dsChiTiet) {
+                // Số răng 0 nghĩa là dịch vụ không gắn răng, lưu NULL
+                TienIchDAO.thucThi(c, "INSERT INTO dbo.ChiTietHoaDon (maChiTiet, maHoaDon, maDichVu, soLuong, donGia, giamGia, soFDIRang, ghiChu)"
+                        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", ct.getMaChiTiet(), ct.getMaHoaDon().getMaHoaDon(), ct.getMaDichVu().getMaDichVu(),
+                        ct.getSoLuong(), ct.getDonGia(), ct.getGiamGia() == null ? BigDecimal.ZERO : ct.getGiamGia(),
+                        ct.getSoFDIRang() > 0 ? ct.getSoFDIRang() : null, ct.getGhiChu());
+            }
+            int soDong = TienIchDAO.thucThi(c, "UPDATE dbo.LuotKham SET maHoaDon = ? WHERE maLuotKham = ? AND maHoaDon IS NULL",
+                    hd.getMaHoaDon(), maLuotKham);
+            if (soDong != 1) {
+                throw new NghiepVuException("Lượt khám " + maLuotKham + " đã có hóa đơn");
+            }
+        });
+    }
+
+    // ----- Sửa -----
+
+    // Ghi nhận thanh toán cho hóa đơn Chưa thanh toán; trả về true nếu ghi được
     public boolean thanhToan(String maHoaDon, String hinhThuc, LocalDateTime luc, String maNhanVien) {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THANH_TOAN)) {
-            ps.setString(1, hinhThuc);
-            ps.setTimestamp(2, Timestamp.valueOf(luc));
-            ps.setString(3, maNhanVien);
-            ps.setString(4, maHoaDon);
-            return ps.executeUpdate() == 1;
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không ghi nhận được thanh toán: " + e.getMessage(), e);
-        }
+        return TienIchDAO.thucThi("UPDATE dbo.HoaDon SET trangThaiThanhToan = N'Đã thanh toán', hinhThucThanhToan = ?, ngayThanhToan = ?,"
+                + " maNhanVienLap = COALESCE(maNhanVienLap, ?) WHERE maHoaDon = ? AND trangThaiThanhToan = N'Chưa thanh toán'",
+                hinhThuc, luc, maNhanVien, maHoaDon) == 1;
     }
 
-    // Hủy hóa đơn Chưa thanh toán
+    // Hủy hóa đơn Chưa thanh toán và gỡ khỏi lượt khám (lượt khám quay về danh sách chờ thanh toán)
     public boolean huy(String maHoaDon, String ghiChu) {
-        try (Connection c = DatabaseConnection.getConnection()) {
-            c.setAutoCommit(false);
-            try {
-                boolean duoc;
-                try (PreparedStatement ps = c.prepareStatement(SQL_HUY)) {
-                    ps.setString(1, ghiChu);
-                    ps.setString(2, maHoaDon);
-                    duoc = ps.executeUpdate() == 1;
-                }
-                if (duoc) {
-                    try (PreparedStatement ps = c.prepareStatement(SQL_GO_LUOT_KHAM)) {
-                        ps.setString(1, maHoaDon);
-                        ps.executeUpdate();
-                    }
-                }
-                c.commit();
-                return duoc;
-            } catch (SQLException | RuntimeException e) {
-                c.rollback();
-                throw e;
+        boolean[] duoc = new boolean[1];
+        TienIchDAO.giaoDich(c -> {
+            duoc[0] = TienIchDAO.thucThi(c, "UPDATE dbo.HoaDon SET trangThaiThanhToan = N'Đã hủy', ghiChu = ? WHERE maHoaDon = ?"
+                    + " AND trangThaiThanhToan = N'Chưa thanh toán'", ghiChu, maHoaDon) == 1;
+            if (duoc[0]) {
+                TienIchDAO.thucThi(c, "UPDATE dbo.LuotKham SET maHoaDon = NULL WHERE maHoaDon = ?", maHoaDon);
             }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không hủy được hóa đơn: " + e.getMessage(), e);
-        }
+        });
+        return duoc[0];
     }
 
-    // Chạy câu SELECT và đọc tất cả dòng
-    private List<HoaDon> layDanhSach(String sql, String thamSo) {
-        List<HoaDon> ds = new ArrayList<>();
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            if (thamSo != null) {
-                ps.setString(1, thamSo);
-            }
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    HoaDon hd = new HoaDon();
-                    hd.setMaHoaDon(rs.getString("maHoaDon"));
-                    hd.setMaBenhNhan(rs.getString("maBN"));
-                    hd.setMaNhanVien(rs.getString("maNhanVienLap"));
-                    hd.setNgayLap(rs.getObject("ngayLap", LocalDateTime.class));
-                    hd.setNgayThanhToan(rs.getObject("ngayThanhToan", LocalDateTime.class));
-                    hd.setTienGiamGia(rs.getBigDecimal("tienGiamGia"));
-                    hd.setPhanTramThue(rs.getBigDecimal("phanTramThue"));
-                    hd.setTongTienTruocThue(rs.getBigDecimal("tongTienTruocThue"));
-                    hd.setTongTien(rs.getBigDecimal("tongTien"));
-                    hd.setHinhThucThanhToan(rs.getString("hinhThucThanhToan"));
-                    hd.setTrangThai(rs.getString("trangThaiThanhToan"));
-                    hd.setGhiChu(rs.getString("ghiChu"));
-                    ds.add(hd);
-                }
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được hóa đơn: " + e.getMessage(), e);
-        }
-        return ds;
+    // ----- Đọc dòng kết quả -----
+
+    private HoaDon doc(ResultSet rs) throws SQLException {
+        HoaDon hd = new HoaDon();
+        hd.setMaHoaDon(rs.getString("maHoaDon"));
+        hd.setMaBenhNhan(BenhNhanDAO.docNoi(rs));
+        hd.setMaNhanVien(NhanVienDAO.docNoi(rs));
+        hd.setNgayLap(rs.getObject("ngayLap", LocalDateTime.class));
+        hd.setNgayThanhToan(rs.getObject("ngayThanhToan", LocalDateTime.class));
+        hd.setTienGiamGia(rs.getBigDecimal("tienGiamGia"));
+        hd.setPhanTramThue(rs.getBigDecimal("phanTramThue"));
+        hd.setTongTienTruocThue(rs.getBigDecimal("tongTienTruocThue"));
+        hd.setTongTien(rs.getBigDecimal("tongTien"));
+        hd.setHinhThucThanhToan(rs.getString("hinhThucThanhToan"));
+        hd.setTrangThai(rs.getString("trangThaiThanhToan"));
+        hd.setGhiChu(rs.getString("ghiChu"));
+        return hd;
+    }
+
+    private ChiTietHoaDon docChiTiet(ResultSet rs) throws SQLException {
+        ChiTietHoaDon ct = new ChiTietHoaDon();
+        ct.setMaChiTiet(rs.getString("maChiTiet"));
+        HoaDon hd = new HoaDon(); // chỉ có mã hóa đơn
+        hd.setMaHoaDon(rs.getString("maHoaDon"));
+        ct.setMaHoaDon(hd);
+        ct.setMaDichVu(DichVuDAO.docNoi(rs));
+        ct.setSoLuong(rs.getInt("soLuong"));
+        ct.setDonGia(rs.getBigDecimal("donGia"));
+        ct.setGiamGia(rs.getBigDecimal("giamGia"));
+        ct.setSoFDIRang(rs.getInt("soFDIRang")); // NULL đọc thành 0
+        ct.setGhiChu(rs.getString("ghiChu"));
+        return ct;
     }
 }

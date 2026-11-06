@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import dao.DichVuDAO;
-import dao.KiemTraNhap;
-import dao.MaGenerator;
+import dao.TienIchDAO;
 import dao.NghiepVuException;
-import dao.PhienLamViec;
 import entity.DichVu;
 import entity.NhanVien;
 import entity.VaiTro;
@@ -18,7 +16,6 @@ public class DichVuController {
     public static final List<String> DON_VI_TINH = List.of("Lần", "Răng", "Hàm");
 
     private DichVuDAO dao;
-    private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
     // Dùng DAO thật
@@ -71,18 +68,18 @@ public class DichVuController {
 
     // Thêm dịch vụ mới
     public DichVu them(DichVu dv) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
         chuanHoa(dv);
         kiemTra(dv, null);
-        dv.setMaDichVu(MaGenerator.taoMa("DV"));
+        dv.setMaDichVu(TienIchDAO.taoMa("DV"));
         dao.them(dv);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Thêm dịch vụ", "DichVu", dv.getMaDichVu(), dv.getTenDichVu() + ", giá " + dv.getGia());
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Thêm dịch vụ", "DichVu", dv.getMaDichVu(), dv.getTenDichVu() + ", giá " + dv.getGia());
         return dv;
     }
 
     // Sửa dịch vụ
     public void capNhat(DichVu dv) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", VaiTro.QUAN_LY);
         DichVu cu = dao.timTheoMa(dv.getMaDichVu());
         if (cu == null) {
             throw new NghiepVuException("Không tìm thấy dịch vụ " + dv.getMaDichVu());
@@ -91,10 +88,10 @@ public class DichVuController {
         kiemTra(dv, dv.getMaDichVu());
         dao.capNhat(dv);
         if (cu.getGia() != dv.getGia()) {
-            nhatKy.ghiNhatKy(nguoi.getMaNV(), "Đổi giá dịch vụ", "DichVu", dv.getMaDichVu(), "Giá từ [" + cu.getGia() + "] sang [" + dv.getGia() + "]");
+            TienIchController.ghiNhatKy(nguoi.getMaNV(), "Đổi giá dịch vụ", "DichVu", dv.getMaDichVu(), "Giá từ [" + cu.getGia() + "] sang [" + dv.getGia() + "]");
         }
         if (cu.isTrangThaiHoatDong() != dv.isTrangThaiHoatDong()) {
-            nhatKy.ghiNhatKy(nguoi.getMaNV(), "Đổi trạng thái dịch vụ", "DichVu", dv.getMaDichVu(),
+            TienIchController.ghiNhatKy(nguoi.getMaNV(), "Đổi trạng thái dịch vụ", "DichVu", dv.getMaDichVu(),
                     dv.isTrangThaiHoatDong() ? "Mở lại hoạt động" : "Ngừng hoạt động");
         }
     }
@@ -102,9 +99,9 @@ public class DichVuController {
     // Cắt khoảng trắng thừa
     private void chuanHoa(DichVu dv) {
         dv.setTenDichVu(dv.getTenDichVu() == null ? null : dv.getTenDichVu().trim().replaceAll("\\s+", " "));
-        dv.setLoaiDichVu(KiemTraNhap.rongThanhNull(dv.getLoaiDichVu()));
-        dv.setMoTa(KiemTraNhap.rongThanhNull(dv.getMoTa()));
-        dv.setDonViTinh(KiemTraNhap.rongThanhNull(dv.getDonViTinh()));
+        dv.setLoaiDichVu(TienIchController.rongThanhNull(dv.getLoaiDichVu()));
+        dv.setMoTa(TienIchController.rongThanhNull(dv.getMoTa()));
+        dv.setDonViTinh(TienIchController.rongThanhNull(dv.getDonViTinh()));
     }
 
     // Kiểm tra thông tin dịch vụ
@@ -112,7 +109,7 @@ public class DichVuController {
         if (dv.getTenDichVu() == null || dv.getTenDichVu().isEmpty()) {
             throw new NghiepVuException("Tên dịch vụ không được để trống");
         }
-        KiemTraNhap.doDai(dv.getTenDichVu(), 150, "Tên dịch vụ");
+        TienIchController.doDai(dv.getTenDichVu(), 150, "Tên dịch vụ");
         DichVu trung = dao.timTheoTen(dv.getTenDichVu());
         if (trung != null && !trung.getMaDichVu().equals(maDangSua)) {
             throw new NghiepVuException("Đã có dịch vụ tên \"" + trung.getTenDichVu() + "\" (" + trung.getMaDichVu() + ")");
@@ -126,8 +123,8 @@ public class DichVuController {
         if (dv.getLoaiDichVu() == null) {
             throw new NghiepVuException("Phải chọn loại dịch vụ");
         }
-        KiemTraNhap.doDai(dv.getLoaiDichVu(), 50, "Loại dịch vụ");
-        KiemTraNhap.doDai(dv.getMoTa(), 500, "Mô tả");
+        TienIchController.doDai(dv.getLoaiDichVu(), 50, "Loại dịch vụ");
+        TienIchController.doDai(dv.getMoTa(), 500, "Mô tả");
         if (dv.getDonViTinh() != null && !DON_VI_TINH.contains(dv.getDonViTinh())) {
             throw new NghiepVuException("Đơn vị tính chỉ có thể là Lần, Răng hoặc Hàm");
         }

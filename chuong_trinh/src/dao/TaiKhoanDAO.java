@@ -1,174 +1,111 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import entity.NhanVien;
 import entity.TaiKhoan;
 
 // Truy cập bảng TaiKhoan
 public class TaiKhoanDAO {
 
-    static final String CAC_COT = "t.maTaiKhoan, t.maNV, n.hoTen, n.vaiTro AS vaiTroNV, n.trangThai AS trangThaiNV, t.tenDangNhap, t.matKhau,"
-            + " t.vaiTro, t.trangThaiKhoa, t.ngayTao, t.lanDangNhapCuoi, t.soLanDangNhapSai, t.thoiGianKhoaDen, t.ngayDoiMatKhauCuoi,"
-            + " t.yeuCauDoiMatKhau";
-    static final String TU_BANG = " FROM dbo.TaiKhoan t JOIN dbo.NhanVien n ON n.maNV = t.maNV";
-    static final String SQL_TAT_CA = "SELECT " + CAC_COT + TU_BANG + " ORDER BY t.maTaiKhoan";
-    static final String SQL_THEO_MA = "SELECT " + CAC_COT + TU_BANG + " WHERE t.maTaiKhoan = ?";
-    static final String SQL_THEO_TEN = "SELECT " + CAC_COT + TU_BANG + " WHERE t.tenDangNhap = ?";
-    static final String SQL_THEO_NHAN_VIEN = "SELECT " + CAC_COT + TU_BANG + " WHERE t.maNV = ?";
-    static final String SQL_THEM = "INSERT INTO dbo.TaiKhoan (maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa, yeuCauDoiMatKhau)"
-            + " VALUES (?, ?, ?, ?, ?, 0, ?)";
-    static final String SQL_DOI_MAT_KHAU = "UPDATE dbo.TaiKhoan SET matKhau = ?, ngayDoiMatKhauCuoi = CAST(SYSDATETIME() AS DATE),"
-            + " yeuCauDoiMatKhau = ? WHERE maTaiKhoan = ?";
-    static final String SQL_NANG_CAP_BAM = "UPDATE dbo.TaiKhoan SET matKhau = ? WHERE maTaiKhoan = ?";
-    static final String SQL_DANG_NHAP_SAI = "UPDATE dbo.TaiKhoan SET soLanDangNhapSai = ?, trangThaiKhoa = ? WHERE maTaiKhoan = ?";
-    static final String SQL_DANG_NHAP_DUNG = "UPDATE dbo.TaiKhoan SET soLanDangNhapSai = 0, thoiGianKhoaDen = NULL,"
-            + " lanDangNhapCuoi = SYSDATETIME() WHERE maTaiKhoan = ?";
-    static final String SQL_DAT_KHOA = "UPDATE dbo.TaiKhoan SET trangThaiKhoa = ?, soLanDangNhapSai = 0 WHERE maTaiKhoan = ?";
-    static final String SQL_DOI_VAI_TRO_THEO_NV = "UPDATE dbo.TaiKhoan SET vaiTro = ? WHERE maNV = ?";
-    static final String SQL_KHOA_THEO_NV = "UPDATE dbo.TaiKhoan SET trangThaiKhoa = 1 WHERE maNV = ?";
-    static final String SQL_DEM_QUAN_LY = "SELECT COUNT(*) FROM dbo.TaiKhoan t JOIN dbo.NhanVien n ON n.maNV = t.maNV"
-            + " WHERE t.vaiTro = N'Quản lý' AND t.trangThaiKhoa = 0 AND n.trangThai = N'Đang làm việc'";
+    static final String SELECT = "SELECT t.maTaiKhoan, t.tenDangNhap, t.matKhau, t.vaiTro, t.trangThaiKhoa, t.ngayTao, t.lanDangNhapCuoi,"
+            + " t.soLanDangNhapSai, t.thoiGianKhoaDen, t.ngayDoiMatKhauCuoi, t.yeuCauDoiMatKhau, " + NhanVienDAO.COT_NOI
+            + " FROM dbo.TaiKhoan t JOIN dbo.NhanVien nv ON nv.maNV = t.maNV";
+
+    // ----- Tìm -----
 
     // Tất cả tài khoản, theo mã
     public List<TaiKhoan> layTatCa() {
-        return layDanhSach(SQL_TAT_CA, null);
+        return TienIchDAO.layDanhSach(SELECT + " ORDER BY t.maTaiKhoan", this::doc);
     }
 
-    // Tìm tài khoản theo mã
+    // Tìm tài khoản theo mã, không có thì null
     public TaiKhoan timTheoMa(String maTaiKhoan) {
-        return mot(layDanhSach(SQL_THEO_MA, maTaiKhoan));
+        return TienIchDAO.layMot(SELECT + " WHERE t.maTaiKhoan = ?", this::doc, maTaiKhoan);
     }
 
     // Tìm tài khoản theo tên đăng nhập
     public TaiKhoan timTheoTenDangNhap(String ten) {
-        return mot(layDanhSach(SQL_THEO_TEN, ten));
+        return TienIchDAO.layMot(SELECT + " WHERE t.tenDangNhap = ?", this::doc, ten);
     }
 
     // Tài khoản của một nhân viên
     public TaiKhoan timTheoNhanVien(String maNV) {
-        return mot(layDanhSach(SQL_THEO_NHAN_VIEN, maNV));
-    }
-
-    // Thêm tài khoản mới
-    public void them(TaiKhoan tk) {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_THEM)) {
-            ps.setString(1, tk.getMaTaiKhoan());
-            ps.setString(2, tk.getMaNV().getMaNV());
-            ps.setString(3, tk.getTenDangNhap());
-            ps.setString(4, tk.getMatKhauHash());
-            ps.setString(5, tk.getVaiTro());
-            ps.setBoolean(6, tk.isYeuCauDoiMatKhau());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không thêm được tài khoản: " + e.getMessage(), e);
-        }
-    }
-
-    // Đặt mật khẩu mới
-    public void doiMatKhau(String maTaiKhoan, String matKhauDaBam, boolean yeuCauDoi) {
-        chay(SQL_DOI_MAT_KHAU, matKhauDaBam, yeuCauDoi, maTaiKhoan);
-    }
-
-    // Thay mật khẩu chữ thường cũ
-    public void nangCapBam(String maTaiKhoan, String matKhauDaBam) {
-        chay(SQL_NANG_CAP_BAM, matKhauDaBam, maTaiKhoan);
-    }
-
-    // Ghi nhận đăng nhập sai
-    public void ghiNhanDangNhapSai(String maTaiKhoan, int soLanSai, boolean khoa) {
-        chay(SQL_DANG_NHAP_SAI, soLanSai, khoa, maTaiKhoan);
-    }
-
-    // Ghi nhận đăng nhập đúng
-    public void ghiNhanDangNhapDung(String maTaiKhoan) {
-        chay(SQL_DANG_NHAP_DUNG, maTaiKhoan);
-    }
-
-    // Khóa hoặc mở khóa tài khoản
-    public void datKhoa(String maTaiKhoan, boolean khoa) {
-        chay(SQL_DAT_KHOA, khoa, maTaiKhoan);
-    }
-
-    // Đổi vai trò tài khoản
-    public void doiVaiTroTheoNhanVien(String maNV, String vaiTro) {
-        chay(SQL_DOI_VAI_TRO_THEO_NV, vaiTro, maNV);
-    }
-
-    // Khóa tài khoản của nhân viên
-    public void khoaTheoNhanVien(String maNV) {
-        chay(SQL_KHOA_THEO_NV, maNV);
+        return TienIchDAO.layMot(SELECT + " WHERE t.maNV = ?", this::doc, maNV);
     }
 
     // Số tài khoản Quản lý đang hoạt động
     public int demQuanLyHoatDong() {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(SQL_DEM_QUAN_LY);
-                ResultSet rs = ps.executeQuery()) {
-            return rs.next() ? rs.getInt(1) : 0;
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đếm được tài khoản quản lý: " + e.getMessage(), e);
-        }
+        Integer so = TienIchDAO.layMot("SELECT COUNT(*) FROM dbo.TaiKhoan t JOIN dbo.NhanVien n ON n.maNV = t.maNV"
+                + " WHERE t.vaiTro = N'Quản lý' AND t.trangThaiKhoa = 0 AND n.trangThai = N'Đang làm việc'", rs -> rs.getInt(1));
+        return so == null ? 0 : so;
     }
 
-    // Chạy một câu UPDATE
-    private void chay(String sql, Object... thamSo) {
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            for (int i = 0; i < thamSo.length; i++) {
-                ps.setObject(i + 1, thamSo[i]);
-            }
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không cập nhật được tài khoản: " + e.getMessage(), e);
-        }
+    // ----- Thêm, sửa -----
+
+    // Thêm tài khoản mới
+    public void them(TaiKhoan tk) {
+        TienIchDAO.thucThi("INSERT INTO dbo.TaiKhoan (maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa, yeuCauDoiMatKhau)"
+                + " VALUES (?, ?, ?, ?, ?, 0, ?)", tk.getMaTaiKhoan(), tk.getMaNV().getMaNV(), tk.getTenDangNhap(), tk.getMatKhauHash(),
+                tk.getVaiTro(), tk.isYeuCauDoiMatKhau());
     }
 
-    private static TaiKhoan mot(List<TaiKhoan> ds) {
-        return ds.isEmpty() ? null : ds.get(0);
+    // Đặt mật khẩu mới (đã băm)
+    public void doiMatKhau(String maTaiKhoan, String matKhauDaBam, boolean yeuCauDoi) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET matKhau = ?, ngayDoiMatKhauCuoi = CAST(SYSDATETIME() AS DATE), yeuCauDoiMatKhau = ?"
+                + " WHERE maTaiKhoan = ?", matKhauDaBam, yeuCauDoi, maTaiKhoan);
     }
 
-    // Chạy câu SELECT và đọc tất cả dòng
-    private List<TaiKhoan> layDanhSach(String sql, String thamSo) {
-        List<TaiKhoan> ds = new ArrayList<>();
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            if (thamSo != null) {
-                ps.setString(1, thamSo);
-            }
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    NhanVien nv = new NhanVien();
-                    nv.setMaNV(rs.getString("maNV"));
-                    nv.setHoTen(rs.getString("hoTen"));
-                    nv.setVaiTro(rs.getString("vaiTroNV"));
-                    nv.setTrangThai(rs.getString("trangThaiNV"));
-                    TaiKhoan tk = new TaiKhoan();
-                    tk.setMaTaiKhoan(rs.getString("maTaiKhoan"));
-                    tk.setMaNV(nv);
-                    tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                    tk.setMatKhauHash(rs.getString("matKhau"));
-                    tk.setVaiTro(rs.getString("vaiTro"));
-                    tk.setTrangThaiKhoa(rs.getBoolean("trangThaiKhoa"));
-                    tk.setNgayTao(thoiGian(rs.getTimestamp("ngayTao")));
-                    tk.setLanDangNhapCuoi(thoiGian(rs.getTimestamp("lanDangNhapCuoi")));
-                    tk.setSoLanDangNhapSai(rs.getInt("soLanDangNhapSai"));
-                    tk.setThoiGianKhoaDen(thoiGian(rs.getTimestamp("thoiGianKhoaDen")));
-                    java.sql.Date doiMk = rs.getDate("ngayDoiMatKhauCuoi");
-                    tk.setNgayDoiMatKhauCuoi(doiMk == null ? null : doiMk.toLocalDate().atStartOfDay());
-                    tk.setYeuCauDoiMatKhau(rs.getBoolean("yeuCauDoiMatKhau"));
-                    ds.add(tk);
-                }
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được tài khoản: " + e.getMessage(), e);
-        }
-        return ds;
+    // Thay mật khẩu chữ thường cũ bằng bản băm
+    public void nangCapBam(String maTaiKhoan, String matKhauDaBam) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET matKhau = ? WHERE maTaiKhoan = ?", matKhauDaBam, maTaiKhoan);
     }
 
-    private static java.time.LocalDateTime thoiGian(Timestamp t) {
-        return t == null ? null : t.toLocalDateTime();
+    // Ghi nhận đăng nhập sai (có thể khóa luôn tài khoản)
+    public void ghiNhanDangNhapSai(String maTaiKhoan, int soLanSai, boolean khoa) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET soLanDangNhapSai = ?, trangThaiKhoa = ? WHERE maTaiKhoan = ?", soLanSai, khoa, maTaiKhoan);
+    }
+
+    // Ghi nhận đăng nhập đúng
+    public void ghiNhanDangNhapDung(String maTaiKhoan) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET soLanDangNhapSai = 0, thoiGianKhoaDen = NULL, lanDangNhapCuoi = SYSDATETIME()"
+                + " WHERE maTaiKhoan = ?", maTaiKhoan);
+    }
+
+    // Khóa hoặc mở khóa tài khoản
+    public void datKhoa(String maTaiKhoan, boolean khoa) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET trangThaiKhoa = ?, soLanDangNhapSai = 0 WHERE maTaiKhoan = ?", khoa, maTaiKhoan);
+    }
+
+    // Đổi vai trò tài khoản theo nhân viên
+    public void doiVaiTroTheoNhanVien(String maNV, String vaiTro) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET vaiTro = ? WHERE maNV = ?", vaiTro, maNV);
+    }
+
+    // Khóa tài khoản của nhân viên
+    public void khoaTheoNhanVien(String maNV) {
+        TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET trangThaiKhoa = 1 WHERE maNV = ?", maNV);
+    }
+
+    // ----- Đọc dòng kết quả -----
+
+    private TaiKhoan doc(ResultSet rs) throws SQLException {
+        TaiKhoan tk = new TaiKhoan();
+        tk.setMaTaiKhoan(rs.getString("maTaiKhoan"));
+        tk.setMaNV(NhanVienDAO.docNoi(rs));
+        tk.setTenDangNhap(rs.getString("tenDangNhap"));
+        tk.setMatKhauHash(rs.getString("matKhau"));
+        tk.setVaiTro(rs.getString("vaiTro"));
+        tk.setTrangThaiKhoa(rs.getBoolean("trangThaiKhoa"));
+        tk.setNgayTao(rs.getObject("ngayTao", LocalDateTime.class));
+        tk.setLanDangNhapCuoi(rs.getObject("lanDangNhapCuoi", LocalDateTime.class));
+        tk.setSoLanDangNhapSai(rs.getInt("soLanDangNhapSai"));
+        tk.setThoiGianKhoaDen(rs.getObject("thoiGianKhoaDen", LocalDateTime.class));
+        LocalDate doiMk = rs.getObject("ngayDoiMatKhauCuoi", LocalDate.class);
+        tk.setNgayDoiMatKhauCuoi(doiMk == null ? null : doiMk.atStartOfDay());
+        tk.setYeuCauDoiMatKhau(rs.getBoolean("yeuCauDoiMatKhau"));
+        return tk;
     }
 }

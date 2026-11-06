@@ -1,16 +1,13 @@
 package controller;
 
-import dao.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Supplier;
+import dao.NghiepVuException;
+import dao.RangDieuTriDAO;
+import dao.TienIchDAO;
 import entity.DichVu;
 import entity.HangSo;
 import entity.HoSoBenhAn;
@@ -18,20 +15,17 @@ import entity.LuotKham;
 import entity.NhanVien;
 import entity.RangDieuTri;
 
-// Nghiệp vụ sơ đồ răng
+// Nghiệp vụ sơ đồ răng: tình trạng mới nhất của từng răng và ghi nhận răng trong lượt khám
 public class RangDieuTriController {
 
-    private static final int DO_DAI_VAT_LIEU = 100; // Độ dài cột vatLieu
-    private static final int DO_DAI_GHI_CHU = 255; // Độ dài cột ghiChu
-
-    // Các trạng thái được chọn
+    // Các trạng thái được chọn cho răng đã nhổ ở lượt khám trước
     private static final List<String> TRANG_THAI_RANG_DA_NHO = List.of(HangSo.RANG_DA_NHO, HangSo.RANG_IMPLANT, HangSo.RANG_CAU_RANG);
 
-    // Các trạng thái
+    // Các trạng thái có nghĩa là đã làm một dịch vụ (nên cần chọn dịch vụ để tính tiền)
     private static final List<String> TRANG_THAI_CAN_DICH_VU = List.of(HangSo.RANG_DA_TRAM, HangSo.RANG_BOC_SU, HangSo.RANG_DA_NHO,
             HangSo.RANG_IMPLANT, HangSo.RANG_CAU_RANG);
 
-    // Trạng thái
+    // Trạng thái -> màu hiển thị trên sơ đồ răng
     private static final Map<String, String> MAU = new LinkedHashMap<>();
 
     static {
@@ -44,108 +38,64 @@ public class RangDieuTriController {
         MAU.put(HangSo.RANG_CAU_RANG, "Cam");
     }
 
-    private RangDieuTriDAO rangDAO;
-    private LuotKhamController luotKhamService;
-    private HoSoBenhAnController hoSoService;
-    private DichVuController dichVuService;
-    private Supplier<NhanVien> nguoiDung; // Trả về người đang đăng nhập
+    private RangDieuTriDAO rangDAO = new RangDieuTriDAO();
+    private LuotKhamController luotKhamService = new LuotKhamController();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private DichVuController dichVuService = new DichVuController();
 
-    // Dùng trong chương trình
-    public RangDieuTriController() {
-        this(new RangDieuTriDAO(), new LuotKhamController(), new HoSoBenhAnController(), new DichVuController(), PhienLamViec::getNhanVienHienTai);
-    }
+    // ----- Tìm -----
 
-    // Dùng khi kiểm thử
-    public RangDieuTriController(RangDieuTriDAO rangDAO, LuotKhamController luotKhamService, HoSoBenhAnController hoSoService,
-            DichVuController dichVuService, Supplier<NhanVien> nguoiDung) {
-        this.rangDAO = rangDAO;
-        this.luotKhamService = luotKhamService;
-        this.hoSoService = hoSoService;
-        this.dichVuService = dichVuService;
-        this.nguoiDung = nguoiDung;
-    }
-
-    // Danh sách trạng thái răng hợp lệ
+    // Danh sách trạng thái răng hợp lệ (cho ô chọn)
     public List<String> layDanhSachTrangThai() {
         return new ArrayList<>(MAU.keySet());
     }
 
-    // Tình trạng hiện tại của từng răng
+    // Tình trạng hiện tại của từng răng trong cả hồ sơ: mỗi răng lấy bản ghi mới nhất (răng chưa ghi nhận thì không có)
     public List<RangDieuTri> layTinhTrangMoiNhat(String maHoSo) {
-        List<RangDieuTri> tatCa = rangDAO.layTheoHoSo(maHoSo); // Mới nhất trước
         Map<Integer, RangDieuTri> moiNhat = new LinkedHashMap<>();
-        for (RangDieuTri r : tatCa) {
-            if (!moiNhat.containsKey(r.getSoFDI())) {
-                moiNhat.put(r.getSoFDI(), r);
-            }
+        for (RangDieuTri r : rangDAO.layTheoHoSo(maHoSo)) { // đã sắp mới nhất trước
+            moiNhat.putIfAbsent(r.getSoFDI(), r);
         }
-        List<RangDieuTri> kq = new ArrayList<>();
-        for (RangDieuTri r : moiNhat.values()) {
-            kq.add(chonBanGhiDaiDien(tatCa, r));
-        }
-        return kq;
+        return new ArrayList<>(moiNhat.values());
     }
 
-    // Các bản ghi răng đã ghi
+    // Các bản ghi răng đã ghi trong một lượt khám
     public List<RangDieuTri> layTheoLuotKham(String maLuotKham) {
         return rangDAO.layTheoLuotKham(maLuotKham);
     }
 
-    // Toàn bộ lịch sử ghi nhận
+    // Toàn bộ lịch sử ghi nhận răng của hồ sơ qua mọi lượt khám, mới nhất trước
     public List<RangDieuTri> layTatCaTheoHoSo(String maHoSo) {
         return rangDAO.layTheoHoSo(maHoSo);
     }
 
-    // Gỡ một bản ghi răng đã
-    public void goBanGhiRang(String maLuotKham, String maBanGhi) {
-        LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
-        if (!HangSo.DANG_KHAM.equals(lk.getTrangThai())) {
-            throw new NghiepVuException("Chỉ gỡ bản ghi răng của lượt khám đang khám");
-        }
-        NhanVien nv = nguoiDung.get();
-        if (nv == null || lk.getMaNhanVienPhuTrach() == null || !lk.getMaNhanVienPhuTrach().equals(nv.getMaNV())) {
-            throw new NghiepVuException("Chỉ nha sĩ phụ trách mới được gỡ bản ghi răng của lượt khám này");
-        }
-        if (!rangDAO.xoa(maLuotKham, maBanGhi)) {
-            throw new NghiepVuException("Bản ghi răng này không thuộc lượt khám đang sửa");
-        }
-    }
+    // ----- Thêm, sửa -----
 
-    // Ghi nhận tình trạng một răng
+    // Ghi nhận tình trạng một răng trong lượt khám đang khám. Cùng răng + cùng dịch vụ thì sửa bản ghi cũ,
+    // khác dịch vụ thì thêm bản ghi mới. Để trống dịch vụ mà răng đã có bản ghi kèm dịch vụ thì sửa bản đó và giữ dịch vụ.
     public RangDieuTri ghiNhanRang(String maLuotKham, RangDieuTri rang) {
-        LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
-        if (!HangSo.DANG_KHAM.equals(lk.getTrangThai())) {
-            throw new NghiepVuException("Chỉ ghi nhận răng cho lượt khám đang khám");
-        }
-        NhanVien nv = nguoiDung.get();
-        if (nv == null || lk.getMaNhanVienPhuTrach() == null || !lk.getMaNhanVienPhuTrach().equals(nv.getMaNV())) {
-            throw new NghiepVuException("Chỉ nha sĩ phụ trách mới được ghi nhận răng của lượt khám này");
-        }
+        LuotKham lk = layLuotKhamDeSua(maLuotKham);
         if (!RangDieuTri.kiemTraSoFDI(rang.getSoFDI())) {
             throw new NghiepVuException("Số răng không hợp lệ (răng vĩnh viễn 11-18, 21-28, 31-38, 41-48; răng sữa 51-55, 61-65, 71-75, 81-85)");
         }
         if (!MAU.containsKey(rang.getTrangThai())) {
             throw new NghiepVuException("Trạng thái răng không hợp lệ");
         }
-        doDai(rang.getVatLieu(), DO_DAI_VAT_LIEU, "Vật liệu");
-        doDai(rang.getGhiChu(), DO_DAI_GHI_CHU, "Ghi chú");
-        rang.setVatLieu(rongThanhNull(rang.getVatLieu()));
-        rang.setGhiChu(rongThanhNull(rang.getGhiChu()));
-        rang.setMaDichVu(rongThanhNull(rang.getMaDichVu()));
+        rang.setVatLieu(TienIchController.rongThanhNull(rang.getVatLieu()));
+        rang.setGhiChu(TienIchController.rongThanhNull(rang.getGhiChu()));
+        TienIchController.doDai(rang.getVatLieu(), 100, "Vật liệu");
+        TienIchController.doDai(rang.getGhiChu(), 255, "Ghi chú");
 
-        HoSoBenhAn hoSo = hoSoService.timTheoMa(lk.getMaHoSo());
-        if (rang.getVatLieu() != null && hoSo.kiemTraCanhBaoDiUng(rang.getVatLieu())) {
-            throw new NghiepVuException("Vật liệu \"" + rang.getVatLieu() + "\" nằm trong cảnh báo dị ứng của bệnh nhân");
-        }
         DichVu dv = null;
         if (rang.getMaDichVu() != null) {
-            dv = dichVuService.timTheoMa(rang.getMaDichVu());
+            dv = dichVuService.timTheoMa(rang.getMaDichVu().getMaDichVu());
             if (dv == null || !dv.isTrangThaiHoatDong()) {
                 throw new NghiepVuException("Dịch vụ không tồn tại hoặc đã ngừng cung cấp");
             }
         }
+        String maHoSo = lk.getMaHoSo().getMaHoSo();
 
-        // Răng sữa không cấy ghép Implant
+        // Răng sữa không cấy ghép Implant hay làm cầu răng
         if (RangDieuTri.laRangSua(rang.getSoFDI())) {
             boolean trangThaiCam = HangSo.RANG_IMPLANT.equals(rang.getTrangThai()) || HangSo.RANG_CAU_RANG.equals(rang.getTrangThai());
             boolean dichVuCam = dv != null && dv.isLienQuanImplantCauRang();
@@ -154,9 +104,10 @@ public class RangDieuTriController {
             }
         }
 
-        // Răng đã nhổ ở lượt khám trước
-        RangDieuTri hienTai = timTinhTrangHienTai(hoSo.getMaHoSo(), rang.getSoFDI());
-        if (hienTai != null && HangSo.RANG_DA_NHO.equals(hienTai.getTrangThai()) && !maLuotKham.equals(hienTai.getMaLuotKham())) {
+        // Răng đã nhổ ở lượt khám trước: chỉ được chọn Đã nhổ, Implant, Cầu răng và dịch vụ Implant / Cầu răng
+        RangDieuTri hienTai = timTinhTrangHienTai(maHoSo, rang.getSoFDI());
+        if (hienTai != null && HangSo.RANG_DA_NHO.equals(hienTai.getTrangThai())
+                && !maLuotKham.equals(hienTai.getMaLuotKham().getMaLuotKham())) {
             boolean trangThaiDuoc = TRANG_THAI_RANG_DA_NHO.contains(rang.getTrangThai());
             boolean dichVuDuoc = dv == null || dv.isLienQuanImplantCauRang();
             if (!trangThaiDuoc || !dichVuDuoc) {
@@ -164,38 +115,48 @@ public class RangDieuTriController {
             }
         }
 
+        rang.setMaDichVu(dv);
         rang.setDaNho(HangSo.RANG_DA_NHO.equals(rang.getTrangThai()));
         rang.setMauHienThi(MAU.get(rang.getTrangThai()));
-        rang.setMaLuotKham(maLuotKham);
+        rang.setMaLuotKham(lk);
 
         RangDieuTri cu = timBanGhiCanSua(rangDAO.layTheoLuotKham(maLuotKham), rang);
         if (cu != null) {
             rang.setMaBanGhi(cu.getMaBanGhi());
-            rang.setMaDichVu(cu.getMaDichVu()); // Trùng dịch vụ thì như cũ
-            rangDAO.capNhat(rang); // CapNhat đặt lại ngayGhiNhan
+            rang.setMaDichVu(cu.getMaDichVu()); // trùng dịch vụ thì như cũ; để trống thì giữ dịch vụ của bản ghi được sửa
+            rangDAO.capNhat(rang);
             return rang;
         }
-        rang.setMaBanGhi(MaGenerator.taoMa("BG"));
+        rang.setMaBanGhi(TienIchDAO.taoMa("BG"));
         rang.setNgayGhiNhan(LocalDateTime.now());
         rangDAO.them(rang);
         return rang;
     }
 
-    // Cảnh báo khi răng chuyển sang
-    public String canhBaoThieuDichVu(String maLuotKham, RangDieuTri rang) {
-        if (rongThanhNull(rang.getMaDichVu()) != null) {
-            return null;
+    // ----- Xóa -----
+
+    // Gỡ một bản ghi răng ghi nhầm khỏi lượt khám đang khám
+    public void goBanGhiRang(String maLuotKham, String maBanGhi) {
+        layLuotKhamDeSua(maLuotKham);
+        if (!rangDAO.xoa(maLuotKham, maBanGhi)) {
+            throw new NghiepVuException("Bản ghi răng này không thuộc lượt khám đang sửa");
         }
-        if (!TRANG_THAI_CAN_DICH_VU.contains(rang.getTrangThai())) {
+    }
+
+    // ----- Cảnh báo -----
+
+    // Răng chuyển sang trạng thái do đã làm dịch vụ (đã trám, bọc sứ, nhổ...) mà chưa chọn dịch vụ thì khoản đó không vào hóa đơn
+    public String canhBaoThieuDichVu(String maLuotKham, RangDieuTri rang) {
+        if (rang.getMaDichVu() != null || !TRANG_THAI_CAN_DICH_VU.contains(rang.getTrangThai())) {
             return null;
         }
         LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
-        RangDieuTri hienTai = timTinhTrangHienTai(lk.getMaHoSo(), rang.getSoFDI());
+        RangDieuTri hienTai = timTinhTrangHienTai(lk.getMaHoSo().getMaHoSo(), rang.getSoFDI());
         String ttHienTai = hienTai == null ? HangSo.RANG_BINH_THUONG : hienTai.getTrangThai();
         if (rang.getTrangThai().equals(ttHienTai)) {
             return null;
         }
-        // Nếu bản ghi sẽ được sửa là bản đã có dịch vụ
+        // Bản ghi sắp sửa đã có dịch vụ thì dịch vụ đó được giữ lại và vẫn tính tiền
         RangDieuTri cu = timBanGhiCanSua(rangDAO.layTheoLuotKham(maLuotKham), rang);
         if (cu != null && cu.getMaDichVu() != null) {
             return null;
@@ -203,25 +164,41 @@ public class RangDieuTriController {
         return "Chưa chọn dịch vụ đã làm cho răng " + rang.getSoFDI() + " nên dịch vụ này sẽ không được tính vào hóa đơn";
     }
 
-    // Tìm bản ghi trong lượt khám sẽ bị sửa
+    // ----- Hàm phụ -----
+
+    // Lượt khám phải đang khám và người thao tác là nha sĩ phụ trách
+    private LuotKham layLuotKhamDeSua(String maLuotKham) {
+        LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
+        if (!HangSo.DANG_KHAM.equals(lk.getTrangThai())) {
+            throw new NghiepVuException("Chỉ ghi nhận răng cho lượt khám đang khám");
+        }
+        NhanVien nv = PhienLamViec.getNhanVienHienTai();
+        if (nv == null || !lk.getMaNhanVienPhuTrach().getMaNV().equals(nv.getMaNV())) {
+            throw new NghiepVuException("Chỉ nha sĩ phụ trách mới được ghi nhận răng của lượt khám này");
+        }
+        return lk;
+    }
+
+    // Bản ghi trong lượt khám sẽ bị sửa khi ghi nhận răng này; null nghĩa là thêm bản ghi mới
     private RangDieuTri timBanGhiCanSua(List<RangDieuTri> dsLuotKham, RangDieuTri rang) {
-        String maDichVu = rongThanhNull(rang.getMaDichVu());
-        RangDieuTri moiNhatCoDichVu = null; // Bản ghi mới nhất cùng răng
+        String maDichVu = rang.getMaDichVu() == null ? null : rang.getMaDichVu().getMaDichVu();
+        RangDieuTri moiNhatCoDichVu = null; // bản ghi mới nhất cùng răng có dịch vụ (dùng khi dịch vụ để trống)
         for (RangDieuTri cu : dsLuotKham) {
-            if (cu.getSoFDI() != rang.getSoFDI() || !Objects.equals(cu.getMatRang(), rang.getMatRang())) {
+            if (cu.getSoFDI() != rang.getSoFDI()) {
                 continue;
             }
-            if (Objects.equals(cu.getMaDichVu(), maDichVu)) {
+            String maCu = cu.getMaDichVu() == null ? null : cu.getMaDichVu().getMaDichVu();
+            if ((maCu == null && maDichVu == null) || (maCu != null && maCu.equals(maDichVu))) {
                 return cu;
             }
-            if (moiNhatCoDichVu == null && cu.getMaDichVu() != null) {
+            if (moiNhatCoDichVu == null && maCu != null) {
                 moiNhatCoDichVu = cu;
             }
         }
         return maDichVu == null ? moiNhatCoDichVu : null;
     }
 
-    // Bản ghi đại diện
+    // Tình trạng hiện tại của một răng trong hồ sơ; chưa từng ghi nhận thì null
     private RangDieuTri timTinhTrangHienTai(String maHoSo, int soFDI) {
         for (RangDieuTri r : layTinhTrangMoiNhat(maHoSo)) {
             if (r.getSoFDI() == soFDI) {
@@ -229,69 +206,5 @@ public class RangDieuTriController {
             }
         }
         return null;
-    }
-
-    // Từ bản ghi mới nhất của một răng
-    private RangDieuTri chonBanGhiDaiDien(List<RangDieuTri> tatCa, RangDieuTri moiNhat) {
-        RangDieuTri chon = moiNhat;
-        Set<String> matDaXet = new HashSet<>();
-        for (RangDieuTri r : tatCa) {
-            if (r.getSoFDI() != moiNhat.getSoFDI() || !Objects.equals(r.getMaLuotKham(), moiNhat.getMaLuotKham())
-                    || !cungNgay(r, moiNhat)) {
-                continue;
-            }
-            String mat = r.getMatRang() == null ? "" : r.getMatRang();
-            if (!matDaXet.add(mat)) {
-                continue; // Mặt này đã có bản ghi mới hơn
-            }
-            if (mucDoNang(r.getTrangThai()) > mucDoNang(chon.getTrangThai())) {
-                chon = r;
-            }
-            if (mat.isEmpty()) {
-                break; // Bản ghi cho cả răng
-            }
-        }
-        return chon;
-    }
-
-    // Hai bản ghi có cùng ngày ghi nhận không
-    private boolean cungNgay(RangDieuTri a, RangDieuTri b) {
-        if (a.getNgayGhiNhan() == null || b.getNgayGhiNhan() == null) {
-            return true;
-        }
-        return a.getNgayGhiNhan().toLocalDate().equals(b.getNgayGhiNhan().toLocalDate());
-    }
-
-    // Mức độ nặng của trạng thái răng
-    private int mucDoNang(String trangThai) {
-        if (HangSo.RANG_DA_NHO.equals(trangThai)) {
-            return 5;
-        }
-        if (HangSo.RANG_SAU.equals(trangThai)) {
-            return 4;
-        }
-        if (HangSo.RANG_BOC_SU.equals(trangThai)) {
-            return 3;
-        }
-        if (HangSo.RANG_DA_TRAM.equals(trangThai)) {
-            return 2;
-        }
-        if (HangSo.RANG_IMPLANT.equals(trangThai) || HangSo.RANG_CAU_RANG.equals(trangThai)) {
-            return 1;
-        }
-        return 0;
-    }
-
-    // Chuỗi không được dài hơn độ dài cột
-    private static void doDai(String giaTri, int toiDa, String tenTruong) {
-        if (giaTri != null && giaTri.length() > toiDa) {
-            throw new NghiepVuException(tenTruong + " dài tối đa " + toiDa + " ký tự (hiện đang " + giaTri.length() + " ký tự)");
-        }
-    }
-
-
-    // Chuỗi rỗng hoặc toàn khoảng trắng
-    private static String rongThanhNull(String s) {
-        return s == null || s.trim().isEmpty() ? null : s.trim();
     }
 }

@@ -27,13 +27,18 @@ public class HopThoaiChonDichVu {
     private static DichVu daChon; // Dịch vụ người dùng chọn
     private static List<DichVu> dangHien; // Danh sách dịch vụ
 
-    // Mở hộp thoại
+    // Mở hộp thoại chọn dịch vụ không gắn răng (dịch vụ tính theo răng phải ghi ở Sơ đồ răng)
     public static DichVu chon() {
         if (GraphicsEnvironment.isHeadless()) {
             return traLoiTuDong;
         }
         DichVuController dichVuService = new DichVuController();
-        List<DichVu> tatCa = dichVuService.layTatCa();
+        List<DichVu> tatCa = new ArrayList<>();
+        for (DichVu dv : dichVuService.layDangHoatDong()) {
+            if (!"Răng".equals(dv.getDonViTinh())) {
+                tatCa.add(dv);
+            }
+        }
         Set<String> cacLoai = new LinkedHashSet<>();
         cacLoai.add(TAT_CA);
         for (DichVu dv : tatCa) {
@@ -48,7 +53,12 @@ public class HopThoaiChonDichVu {
         napBang(tbl);
         cmbLoai.addActionListener(e -> {
             String loai = (String) cmbLoai.getSelectedItem();
-            dangHien = TAT_CA.equals(loai) ? new ArrayList<>(tatCa) : dichVuService.timTheoLoai(loai);
+            dangHien = new ArrayList<>();
+            for (DichVu dv : tatCa) {
+                if (TAT_CA.equals(loai) || dv.getLoaiDichVu().equals(loai)) {
+                    dangHien.add(dv);
+                }
+            }
             napBang(tbl);
         });
 

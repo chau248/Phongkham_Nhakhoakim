@@ -1,134 +1,118 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import entity.HoaDon;
+import entity.LichHen;
+import entity.LieuTrinh;
 import entity.LuotKham;
+import entity.LuotKhamDichVu;
 
-// Truy cập bảng LuotKham
+// Truy cập bảng LuotKham và bảng LuotKhamDichVu (dịch vụ không gắn răng của lượt khám)
 public class LuotKhamDAO {
 
-    private static final String CAC_COT = "maLuotKham, maHoSo, maNhanVienPhuTrach, maLieuTrinh, maHoaDon, maLichHen, gioBatDau, gioKetThuc,"
-            + " lyDoKham, chanDoan, huongDieuTri, donThuoc, ngayTaiKham, trangThai, ghiChu";
+    static final String SELECT = "SELECT k.maLuotKham, k.maLieuTrinh, k.maHoaDon, k.maLichHen, k.gioBatDau, k.gioKetThuc, k.lyDoKham,"
+            + " k.chanDoan, k.huongDieuTri, k.donThuoc, k.ngayTaiKham, k.trangThai, k.ghiChu, "
+            + HoSoBenhAnDAO.COT_NOI + ", " + BenhNhanDAO.COT_NOI + ", " + NhanVienDAO.COT_NOI
+            + " FROM dbo.LuotKham k JOIN dbo.HoSoBenhAn h ON h.maHoSo = k.maHoSo JOIN dbo.BenhNhan bn ON bn.maBN = h.maBN"
+            + " JOIN dbo.NhanVien nv ON nv.maNV = k.maNhanVienPhuTrach";
+    static final String SELECT_DICH_VU = "SELECT d.maDong, d.maLuotKham, d.soLuong, d.ghiChu, " + DichVuDAO.COT_NOI
+            + " FROM dbo.LuotKhamDichVu d JOIN dbo.DichVu dv ON dv.maDichVu = d.maDichVu";
+
+    // ----- Tìm -----
+
+    // Tìm lượt khám theo mã, không có thì null
+    public LuotKham timTheoMa(String maLuotKham) {
+        return TienIchDAO.layMot(SELECT + " WHERE k.maLuotKham = ?", this::doc, maLuotKham);
+    }
+
+    // Các lượt khám của một hồ sơ, mới nhất trước
+    public List<LuotKham> layTheoHoSo(String maHoSo) {
+        return TienIchDAO.layDanhSach(SELECT + " WHERE k.maHoSo = ? ORDER BY k.gioBatDau DESC", this::doc, maHoSo);
+    }
+
+    // Lượt đang khám của một nha sĩ, không có thì null
+    public LuotKham timDangKham(String maNhanVien) {
+        return TienIchDAO.layMot(SELECT + " WHERE k.maNhanVienPhuTrach = ? AND k.trangThai = N'Đang khám' ORDER BY k.gioBatDau DESC",
+                this::doc, maNhanVien);
+    }
+
+    // Lượt đang khám của một hồ sơ, không có thì null
+    public LuotKham timDangKhamTheoHoSo(String maHoSo) {
+        return TienIchDAO.layMot(SELECT + " WHERE k.maHoSo = ? AND k.trangThai = N'Đang khám'", this::doc, maHoSo);
+    }
+
+    // Lượt đã hoàn thành nhưng chưa có hóa đơn
+    public List<LuotKham> layChoThanhToan() {
+        return TienIchDAO.layDanhSach(SELECT + " WHERE k.trangThai = N'Hoàn thành' AND k.maHoaDon IS NULL ORDER BY k.gioKetThuc", this::doc);
+    }
+
+    // ----- Thêm, sửa -----
 
     // Thêm lượt khám mới
     public void them(LuotKham lk) {
-        String sql = "INSERT INTO dbo.LuotKham (" + CAC_COT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, lk.getMaLuotKham());
-            ps.setString(2, lk.getMaHoSo());
-            ps.setString(3, lk.getMaNhanVienPhuTrach());
-            ps.setString(4, lk.getMaLieuTrinh());
-            ps.setString(5, lk.getMaHoaDon());
-            ps.setString(6, lk.getMaLichHen());
-            ps.setObject(7, lk.getGioBatDau());
-            ps.setObject(8, lk.getGioKetThuc());
-            ps.setString(9, lk.getLyDoKham());
-            ps.setString(10, lk.getChanDoan());
-            ps.setString(11, lk.getHuongDieuTri());
-            ps.setString(12, lk.getDonThuoc());
-            ps.setObject(13, lk.getNgayTaiKham());
-            ps.setString(14, lk.getTrangThai());
-            ps.setString(15, lk.getGhiChu());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không thêm được lượt khám: " + e.getMessage(), e);
-        }
+        TienIchDAO.thucThi("INSERT INTO dbo.LuotKham (maLuotKham, maHoSo, maNhanVienPhuTrach, maLieuTrinh, maHoaDon, maLichHen, gioBatDau,"
+                + " gioKetThuc, lyDoKham, chanDoan, huongDieuTri, donThuoc, ngayTaiKham, trangThai, ghiChu)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                lk.getMaLuotKham(), lk.getMaHoSo().getMaHoSo(), lk.getMaNhanVienPhuTrach().getMaNV(), ma(lk.getMaLieuTrinh()),
+                ma(lk.getMaHoaDon()), ma(lk.getMaLichHen()), lk.getGioBatDau(), lk.getGioKetThuc(), lk.getLyDoKham(),
+                lk.getChanDoan(), lk.getHuongDieuTri(), lk.getDonThuoc(), lk.getNgayTaiKham(), lk.getTrangThai(), lk.getGhiChu());
     }
 
-    // Cập nhật nội dung khám, trạng thái
+    // Cập nhật nội dung khám, trạng thái, giờ kết thúc
     public void capNhat(LuotKham lk) {
-        String sql = "UPDATE dbo.LuotKham SET gioKetThuc = ?, lyDoKham = ?, chanDoan = ?, huongDieuTri = ?, donThuoc = ?,"
-                + " ngayTaiKham = ?, trangThai = ?, ghiChu = ?, maLieuTrinh = ? WHERE maLuotKham = ?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setObject(1, lk.getGioKetThuc());
-            ps.setString(2, lk.getLyDoKham());
-            ps.setString(3, lk.getChanDoan());
-            ps.setString(4, lk.getHuongDieuTri());
-            ps.setString(5, lk.getDonThuoc());
-            ps.setObject(6, lk.getNgayTaiKham());
-            ps.setString(7, lk.getTrangThai());
-            ps.setString(8, lk.getGhiChu());
-            ps.setString(9, lk.getMaLieuTrinh());
-            ps.setString(10, lk.getMaLuotKham());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không cập nhật được lượt khám: " + e.getMessage(), e);
-        }
+        TienIchDAO.thucThi("UPDATE dbo.LuotKham SET gioKetThuc = ?, lyDoKham = ?, chanDoan = ?, huongDieuTri = ?, donThuoc = ?,"
+                + " ngayTaiKham = ?, trangThai = ?, ghiChu = ?, maLieuTrinh = ? WHERE maLuotKham = ?",
+                lk.getGioKetThuc(), lk.getLyDoKham(), lk.getChanDoan(), lk.getHuongDieuTri(), lk.getDonThuoc(), lk.getNgayTaiKham(),
+                lk.getTrangThai(), lk.getGhiChu(), ma(lk.getMaLieuTrinh()), lk.getMaLuotKham());
     }
 
-    // Gắn mã hóa đơn vào lượt
+    // Gắn hóa đơn vào lượt khám chưa có hóa đơn; trả về true nếu gắn được
     public boolean ganHoaDon(String maLuotKham, String maHoaDon) {
-        String sql = "UPDATE dbo.LuotKham SET maHoaDon = ? WHERE maLuotKham = ? AND maHoaDon IS NULL";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, maHoaDon);
-            ps.setString(2, maLuotKham);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không gắn được hóa đơn vào lượt khám: " + e.getMessage(), e);
-        }
+        return TienIchDAO.thucThi("UPDATE dbo.LuotKham SET maHoaDon = ? WHERE maLuotKham = ? AND maHoaDon IS NULL", maHoaDon, maLuotKham) > 0;
     }
 
-    // Tìm lượt khám theo mã
-    public LuotKham timTheoMa(String maLuotKham) {
-        List<LuotKham> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maLuotKham = ?", maLuotKham);
-        return ds.isEmpty() ? null : ds.get(0);
+    // ----- Dịch vụ không gắn răng -----
+
+    // Các dịch vụ không gắn răng của lượt khám
+    public List<LuotKhamDichVu> layDichVu(String maLuotKham) {
+        return TienIchDAO.layDanhSach(SELECT_DICH_VU + " WHERE d.maLuotKham = ? ORDER BY d.maDong", rs -> {
+            LuotKhamDichVu d = new LuotKhamDichVu();
+            d.setMaDong(rs.getInt("maDong"));
+            LuotKham lk = new LuotKham();
+            lk.setMaLuotKham(rs.getString("maLuotKham"));
+            d.setMaLuotKham(lk);
+            d.setMaDichVu(DichVuDAO.docNoi(rs));
+            d.setSoLuong(rs.getInt("soLuong"));
+            d.setGhiChu(rs.getString("ghiChu"));
+            return d;
+        }, maLuotKham);
     }
 
-    // Các lượt khám của một hồ sơ
-    public List<LuotKham> layTheoHoSo(String maHoSo) {
-        return layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maHoSo = ? ORDER BY gioBatDau DESC", maHoSo);
+    // Thêm một dịch vụ vào lượt khám
+    public void themDichVu(LuotKhamDichVu d) {
+        TienIchDAO.thucThi("INSERT INTO dbo.LuotKhamDichVu (maLuotKham, maDichVu, soLuong, ghiChu) VALUES (?, ?, ?, ?)",
+                d.getMaLuotKham().getMaLuotKham(), d.getMaDichVu().getMaDichVu(), d.getSoLuong(), d.getGhiChu());
     }
 
-    // Lượt khám đang khám gần nhất
-    public LuotKham timDangKham(String maNhanVien) {
-        List<LuotKham> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maNhanVienPhuTrach = ? AND trangThai = N'Đang khám' ORDER BY gioBatDau DESC", maNhanVien);
-        return ds.isEmpty() ? null : ds.get(0);
+    // Xóa một dòng dịch vụ; trả về true nếu có xóa
+    public boolean xoaDichVu(String maLuotKham, int maDong) {
+        return TienIchDAO.thucThi("DELETE FROM dbo.LuotKhamDichVu WHERE maDong = ? AND maLuotKham = ?", maDong, maLuotKham) > 0;
     }
 
-    // Lượt khám đang khám của một hồ sơ
-    public LuotKham timDangKhamTheoHoSo(String maHoSo) {
-        List<LuotKham> ds = layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE maHoSo = ? AND trangThai = N'Đang khám'", maHoSo);
-        return ds.isEmpty() ? null : ds.get(0);
-    }
+    // ----- Đọc dòng kết quả -----
 
-    // Lượt khám đã hoàn thành
-    public List<LuotKham> layChoThanhToan() {
-        return layDanhSach("SELECT " + CAC_COT + " FROM dbo.LuotKham WHERE trangThai = N'Hoàn thành' AND maHoaDon IS NULL ORDER BY gioKetThuc", null);
-    }
-
-    // Chạy câu SELECT và đọc tất cả dòng
-    private List<LuotKham> layDanhSach(String sql, String thamSo) {
-        List<LuotKham> ds = new ArrayList<>();
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            if (thamSo != null) {
-                ps.setString(1, thamSo);
-            }
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ds.add(doc(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new LoiCSDL("Không đọc được lượt khám: " + e.getMessage(), e);
-        }
-        return ds;
-    }
-
-    // Đổi một dòng kết quả thành
     private LuotKham doc(ResultSet rs) throws SQLException {
         LuotKham lk = new LuotKham();
         lk.setMaLuotKham(rs.getString("maLuotKham"));
-        lk.setMaHoSo(rs.getString("maHoSo"));
-        lk.setMaNhanVienPhuTrach(rs.getString("maNhanVienPhuTrach"));
-        lk.setMaLieuTrinh(rs.getString("maLieuTrinh"));
-        lk.setMaHoaDon(rs.getString("maHoaDon"));
-        lk.setMaLichHen(rs.getString("maLichHen"));
+        lk.setMaHoSo(HoSoBenhAnDAO.docNoi(rs));
+        lk.setMaNhanVienPhuTrach(NhanVienDAO.docNoi(rs));
+        lk.setMaLieuTrinh(lieuTrinh(rs.getString("maLieuTrinh")));
+        lk.setMaHoaDon(hoaDon(rs.getString("maHoaDon")));
+        lk.setMaLichHen(lichHen(rs.getString("maLichHen")));
         lk.setGioBatDau(rs.getObject("gioBatDau", LocalDateTime.class));
         lk.setGioKetThuc(rs.getObject("gioKetThuc", LocalDateTime.class));
         lk.setLyDoKham(rs.getString("lyDoKham"));
@@ -139,5 +123,46 @@ public class LuotKhamDAO {
         lk.setTrangThai(rs.getString("trangThai"));
         lk.setGhiChu(rs.getString("ghiChu"));
         return lk;
+    }
+
+    // Mã của liệu trình, hóa đơn, lịch hẹn (null nếu chưa có); chỉ dùng khi ghi xuống CSDL
+    private static String ma(LieuTrinh lt) {
+        return lt == null ? null : lt.getMaLieuTrinh();
+    }
+
+    private static String ma(HoaDon hd) {
+        return hd == null ? null : hd.getMaHoaDon();
+    }
+
+    private static String ma(LichHen lh) {
+        return lh == null ? null : lh.getMaLichHen();
+    }
+
+    // Đối tượng chỉ có mã (liệu trình, hóa đơn, lịch hẹn): muốn đầy đủ thì tìm lại bằng DAO tương ứng
+    private static LieuTrinh lieuTrinh(String ma) {
+        if (ma == null) {
+            return null;
+        }
+        LieuTrinh lt = new LieuTrinh();
+        lt.setMaLieuTrinh(ma);
+        return lt;
+    }
+
+    private static HoaDon hoaDon(String ma) {
+        if (ma == null) {
+            return null;
+        }
+        HoaDon hd = new HoaDon();
+        hd.setMaHoaDon(ma);
+        return hd;
+    }
+
+    private static LichHen lichHen(String ma) {
+        if (ma == null) {
+            return null;
+        }
+        LichHen lh = new LichHen();
+        lh.setMaLichHen(ma);
+        return lh;
     }
 }

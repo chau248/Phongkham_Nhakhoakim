@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import nhakhoakim.MainApp;
 import controller.HoaDonController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import entity.ChiTietHoaDon;
 import entity.HoaDon;
 import entity.NhanVien;
@@ -22,7 +22,6 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
     private static final String TAT_CA = "Tất cả";
 
     private HoaDonController hoaDonController = new HoaDonController();
-    private BangTen ten = new BangTen();
 
     private JComboBox<String> cmbLoc = new JComboBox<>(new String[] {HoaDonController.CHUA_THANH_TOAN, HoaDonController.DA_THANH_TOAN, "Đã hủy", TAT_CA});
     private JTable tblHoaDon = TienIch.taoBang(new String[] {"Mã hóa đơn", "Bệnh nhân", "Ngày lập", "Tổng tiền", "Hình thức", "Trạng thái"},
@@ -90,7 +89,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
                         chon = dsHoaDon.size();
                     }
                     dsHoaDon.add(hd);
-                    dong.add(new String[] {hd.getMaHoaDon(), ten.benhNhan(hd.getMaBenhNhan()), TienIch.ngayGio(hd.getNgayLap()),
+                    dong.add(new String[] {hd.getMaHoaDon(), hd.getMaBenhNhan().getHoTen(), TienIch.ngayGio(hd.getNgayLap()),
                         HoaDonController.dinhDangTien(hd.getTongTien()), hd.getHinhThucThanhToan(), hd.getTrangThai()});
                 }
             }
@@ -126,7 +125,7 @@ public class ManHinhThanhToan extends JPanel implements MainApp.LamMoiDuoc {
             HoaDon hd = hoaDonController.timTheoMa(dsHoaDon.get(vt).getMaHoaDon());
             List<String[]> dong = new ArrayList<>();
             for (ChiTietHoaDon ct : hd.getDsChiTiet()) {
-                dong.add(new String[] {ten.dichVu(ct.getMaDichVu()), ct.getSoFDIRang() > 0 ? String.valueOf(ct.getSoFDIRang()) : "", String.valueOf(ct.getSoLuong()),
+                dong.add(new String[] {ct.getMaDichVu().getTenDichVu(), ct.getSoFDIRang() > 0 ? String.valueOf(ct.getSoFDIRang()) : "", String.valueOf(ct.getSoLuong()),
                     HoaDonController.dinhDangTien(ct.getDonGia()),
                     HoaDonController.dinhDangTien(ct.getDonGia().multiply(java.math.BigDecimal.valueOf(ct.getSoLuong())).subtract(ct.getGiamGia()))});
             }

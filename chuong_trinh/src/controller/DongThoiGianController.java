@@ -28,7 +28,6 @@ public class DongThoiGianController {
     private LuotKhamController luotKhamService = new LuotKhamController();
     private RangDieuTriController rangService = new RangDieuTriController();
     private DichVuController dichVuService = new DichVuController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     // Dựng dòng thời gian của một bệnh nhân
     public DongThoiGian xayDung(String maBN) {
@@ -42,14 +41,6 @@ public class DongThoiGianController {
         Map<String, DichVu> bangDichVu = layBangDichVu(); // Nạp danh mục dịch vụ một lần
         List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(maBN);
         List<LuotKham> dsLuotKham = hoSoService.layLichSuKham(hs.getMaHoSo());
-        List<String> dsMaNhaSi = new ArrayList<>(); // Hỏi tên nha sĩ một lần
-        for (LieuTrinh lt : dsLieuTrinh) {
-            dsMaNhaSi.add(lt.getMaNhaSiPhuTrach());
-        }
-        for (LuotKham lk : dsLuotKham) {
-            dsMaNhaSi.add(lk.getMaNhanVienPhuTrach());
-        }
-        Map<String, String> tenNhaSi = nhaSiService.layTen(dsMaNhaSi);
 
         if (bn.getNgayDangKy() != null) {
             ds.add(new SuKienDieuTri(bn.getNgayDangKy().atStartOfDay(), SuKienDieuTri.LOAI_DANG_KY, "Đăng ký bệnh nhân",
@@ -59,7 +50,7 @@ public class DongThoiGianController {
             if (lt.getNgayBatDau() != null) {
                 ds.add(new SuKienDieuTri(lt.getNgayBatDau().atStartOfDay(), SuKienDieuTri.LOAI_LIEU_TRINH, "Bắt đầu liệu trình " + lt.getLoaiDichVu(),
                         "Dự kiến " + lt.getSoBuoiDuKien() + " buổi. Giai đoạn: " + chu(lt.getGiaiDoanHienTai()) + ". Trạng thái: " + lt.getTrangThai()
-                        + dongNhaSi(" Nha sĩ phụ trách: ", tenNhaSi, lt.getMaNhaSiPhuTrach())));
+                        + (lt.getMaNhaSiPhuTrach() == null ? "" : ". Nha sĩ phụ trách: " + lt.getMaNhaSiPhuTrach().getHoTen())));
             }
             if (lt.getNgayKetThucThucTe() != null) {
                 ds.add(new SuKienDieuTri(lt.getNgayKetThucThucTe().atStartOfDay(), SuKienDieuTri.LOAI_LIEU_TRINH, "Kết thúc liệu trình " + lt.getLoaiDichVu(),
@@ -72,7 +63,7 @@ public class DongThoiGianController {
         int soLuotKham = 0;
         for (LuotKham lk : dsLuotKham) {
             ds.add(new SuKienDieuTri(lk.getGioBatDau(), SuKienDieuTri.LOAI_KHAM,
-                    "Lượt khám " + lk.getMaLuotKham() + " (" + lk.getTrangThai() + ")", moTaLuotKham(lk, bangDichVu, tenNhaSi)));
+                    "Lượt khám " + lk.getMaLuotKham() + " (" + lk.getTrangThai() + ")", moTaLuotKham(lk, bangDichVu)));
             if (lk.getNgayTaiKham() != null) {
                 // Hẹn tái khám chỉ có ngày
                 boolean daQua = lk.getNgayTaiKham().isBefore(homNay);
@@ -112,9 +103,9 @@ public class DongThoiGianController {
     }
 
     // Nội dung chi tiết của một lượt khám
-    private String moTaLuotKham(LuotKham lk, Map<String, DichVu> bangDichVu, Map<String, String> tenNhaSi) {
+    private String moTaLuotKham(LuotKham lk, Map<String, DichVu> bangDichVu) {
         StringBuilder sb = new StringBuilder();
-        them(sb, "Nha sĩ", NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()));
+        them(sb, "Nha sĩ", lk.getMaNhanVienPhuTrach().getHoTen());
         them(sb, "Lý do", lk.getLyDoKham());
         them(sb, "Chẩn đoán", lk.getChanDoan());
         them(sb, "Hướng điều trị", lk.getHuongDieuTri());
@@ -159,10 +150,6 @@ public class DongThoiGianController {
         }
     }
 
-    // Đoạn chữ ghi tên nha sĩ để nối vào mô tả
-    private String dongNhaSi(String nhan, Map<String, String> tenNhaSi, String maNhaSi) {
-        return maNhaSi == null ? "" : "." + nhan + NhaSiPhuTrachController.tenHoacMa(tenNhaSi, maNhaSi);
-    }
 
     // Chuỗi null thì đổi thành rỗng
     private String chu(String s) {

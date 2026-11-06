@@ -18,7 +18,6 @@ public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc 
     private static final int SO_NGAY_TOI = 90; // Xem các lịch chờ
 
     private LichHenController lichHenController = new LichHenController();
-    private BangTen ten = new BangTen();
 
     private JTable tblLich = TienIch.taoBang(new String[] {"Ngày", "Giờ", "Bệnh nhân", "Dịch vụ", "Nha sĩ", "Phòng", "Mã lịch"},
             new int[] {90, 60, 200, 190, 170, 90, 90}, "Không có lịch nào đang chờ xác nhận.");
@@ -52,8 +51,8 @@ public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc 
             for (LichHen lh : lichHenController.layTheoKhoang(LocalDate.now(), LocalDate.now().plusDays(SO_NGAY_TOI))) {
                 if (LichHenController.CHO_XAC_NHAN.equals(lh.getTrangThai())) {
                     dsLich.add(lh);
-                    dong.add(new String[] {TienIch.ngay(lh.getNgayHen()), TienIch.gio(lh.getGioHen()), ten.benhNhan(lh.getMaBN()), ten.dichVu(lh.getMaDichVu()),
-                        ten.nhaSi(lh.getMaNhanVien()), TienIch.chu(lh.getPhong()), lh.getMaLichHen()});
+                    dong.add(new String[] {TienIch.ngay(lh.getNgayHen()), TienIch.gio(lh.getGioHen()), lh.getMaBN().getHoTen(), lh.getMaDichVu().getTenDichVu(),
+                        lh.getMaNhanVien().getHoTen(), TienIch.chu(lh.getPhong()), lh.getMaLichHen()});
                 }
             }
             TienIch.napBang(tblLich, dong);
@@ -73,7 +72,7 @@ public class ManHinhXacNhanLichHen extends JPanel implements MainApp.LamMoiDuoc 
         LichHen lh = dsLich.get(vt);
         try {
             lichHenController.xacNhan(lh.getMaLichHen());
-            TienIch.thongTin("Đã xác nhận lịch " + lh.getMaLichHen() + " của " + ten.benhNhan(lh.getMaBN()) + ".");
+            TienIch.thongTin("Đã xác nhận lịch " + lh.getMaLichHen() + " của " + lh.getMaBN().getHoTen() + ".");
             tai();
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);

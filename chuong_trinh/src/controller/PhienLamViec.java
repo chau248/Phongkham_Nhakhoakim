@@ -1,13 +1,13 @@
-package dao;
+package controller;
 
 import entity.NhanVien;
 
-// Người đang đăng nhập
+// Người đang đăng nhập vào chương trình
 public class PhienLamViec {
 
-    private static NhanVien nhanVienHienTai; // Người đang đăng nhập
+    private static NhanVien nhanVienHienTai;
 
-    // Lấy người đang đăng nhập
+    // Lấy người đang đăng nhập (chưa đăng nhập thì null)
     public static NhanVien getNhanVienHienTai() {
         return nhanVienHienTai;
     }

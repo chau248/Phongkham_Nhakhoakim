@@ -89,7 +89,6 @@ public class ManHinhDongThoiGian extends JPanel {
     // Vẽ cảnh báo dị ứng và bốn ô tóm tắt
     private void veTomTat(BenhNhan bn, HoSoBenhAn hs) {
         khuTomTat.removeAll();
-        String diUng = hs.coCanhBaoDiUng() ? TienIch.chu(hs.getCanhBaoDiUng()).trim() : "";
         JLabel ten = TienIch.chuThuong(bn.getMaBN() + " - " + bn.getHoTen(), true);
         String gan = dongThoiGian.getLanKhamGanNhat() == null ? "Chưa khám lần nào"
                 : TienIch.ngay(dongThoiGian.getLanKhamGanNhat()) + " (" + cachDay(dongThoiGian.getLanKhamGanNhat()) + ")";
@@ -99,11 +98,7 @@ public class ManHinhDongThoiGian extends JPanel {
         hang.add(oTomTat("Lần khám gần nhất", gan));
         hang.add(oTomTat("Răng đã nhổ / đã phục hình", dongThoiGian.getSoRangDaNho() + " / " + dongThoiGian.getSoRangImplantCauRang()));
         hang.add(oTomTat("Liệu trình đang thực hiện", String.valueOf(dongThoiGian.getSoLieuTrinhDangLam())));
-        if (diUng.isEmpty()) {
-            TienIch.xep(khuTomTat, 10, ten, hang);
-        } else {
-            TienIch.xep(khuTomTat, 10, TienIch.thongBao("CẢNH BÁO DỊ ỨNG: " + diUng, TienIch.MAU_DO_NEN, TienIch.MAU_DO_CHU, true), ten, hang);
-        }
+        TienIch.xep(khuTomTat, 10, ten, hang);
         khuTomTat.revalidate();
     }
 

@@ -65,14 +65,14 @@ public class GoiYDieuTriController {
     // Danh sách gợi ý cho một lượt khám
     public List<GoiYDieuTri> goiY(String maLuotKham) {
         LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
-        HoSoBenhAn hs = hoSoService.timTheoMa(lk.getMaHoSo());
-        List<LieuTrinh> dangLam = hoSoService.layLieuTrinhDangThucHien(hs.getMaBN());
+        HoSoBenhAn hs = hoSoService.timTheoMa(lk.getMaHoSo().getMaHoSo());
+        List<LieuTrinh> dangLam = hoSoService.layLieuTrinhDangThucHien(hs.getMaBN().getMaBN());
         List<RangDieuTri> lichSuRang = rangService.layTatCaTheoHoSo(hs.getMaHoSo());
         Set<String> daCoTrongLuotKham = new HashSet<>();
         for (LuotKhamDichVu x : luotKhamService.layDichVuDaThucHien(maLuotKham)) {
-            daCoTrongLuotKham.add(x.getMaDichVu());
+            daCoTrongLuotKham.add(x.getMaDichVu().getMaDichVu());
         }
-        boolean duoi18Tuoi = laDuoi18Tuoi(hs.getMaBN());
+        boolean duoi18Tuoi = laDuoi18Tuoi(hs.getMaBN().getMaBN());
 
         List<GoiYDieuTri> kq = new ArrayList<>();
         for (RangDieuTri r : rangService.layTinhTrangMoiNhat(hs.getMaHoSo())) {
@@ -105,7 +105,7 @@ public class GoiYDieuTriController {
         UocTinhChiPhi u = new UocTinhChiPhi();
         Map<String, DichVu> bang = napBangDichVu();
         for (LuotKhamDichVu x : luotKhamService.layDichVuDaThucHien(maLuotKham)) {
-            DichVu dv = timDichVu(bang, x.getMaDichVu());
+            DichVu dv = timDichVu(bang, x.getMaDichVu().getMaDichVu());
             if (dv != null) {
                 u.getCacDong().add(new UocTinhChiPhi.Dong(dv.getTenDichVu(), x.getSoLuong(), dv.getGia()));
             }
@@ -145,7 +145,7 @@ public class GoiYDieuTriController {
         }
         Set<String> daCo = new HashSet<>();
         for (LuotKhamDichVu x : luotKhamService.layDichVuDaThucHien(maLuotKham)) {
-            daCo.add(x.getMaDichVu());
+            daCo.add(x.getMaDichVu().getMaDichVu());
         }
         Map<String, Integer> soLuong = new LinkedHashMap<>(); // Mã dịch vụ -> số lượng sẽ thêm
         for (GoiYDieuTri g : ds) {
@@ -214,7 +214,7 @@ public class GoiYDieuTriController {
         Set<String> luot = new HashSet<>();
         for (RangDieuTri x : lichSu) {
             if (x.getSoFDI() == soFDI && HangSo.RANG_SAU.equals(x.getTrangThai())) {
-                luot.add(x.getMaLuotKham());
+                luot.add(x.getMaLuotKham().getMaLuotKham());
             }
         }
         return luot.size();
@@ -239,7 +239,7 @@ public class GoiYDieuTriController {
                 continue;
             }
             for (LuotKhamDichVu x : luotKhamService.layDichVuDaThucHien(lk.getMaLuotKham())) {
-                DichVu dv = timDichVu(bang, x.getMaDichVu());
+                DichVu dv = timDichVu(bang, x.getMaDichVu().getMaDichVu());
                 if (dv != null && HangSo.LOAI_VE_SINH.equals(dv.getLoaiDichVu())) {
                     return true;
                 }

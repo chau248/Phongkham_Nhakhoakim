@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import dao.CaTrucDAO;
 import dao.LichHenDAO;
-import dao.MaGenerator;
+import dao.TienIchDAO;
 import dao.NghiepVuException;
-import dao.PhienLamViec;
 import entity.CaTruc;
 import entity.LichHen;
 import entity.NhanVien;
@@ -29,7 +28,6 @@ public class CaTrucController {
     private CaTrucDAO caTrucDAO;
     private LichHenDAO lichHenDAO;
     private NhanVienController nhanVienController;
-    private NhatKyController nhatKy = new NhatKyController();
     private Supplier<NhanVien> nguoiDung;
 
     // Dùng DAO thật
@@ -88,7 +86,7 @@ public class CaTrucController {
 
     // Phân công một ca trực
     public CaTruc phanCong(String maNV, LocalDate ngay, String caLam, String phong) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "phân công ca trực", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "phân công ca trực", VaiTro.QUAN_LY);
         NhanVien nv = nhanVienController.timTheoMa(maNV);
         if (nv == null) {
             throw new NghiepVuException("Chưa chọn nhân viên");
@@ -125,20 +123,20 @@ public class CaTrucController {
             }
         }
         CaTruc ca = new CaTruc();
-        ca.setMaCaTruc(MaGenerator.taoMa("CA"));
+        ca.setMaCaTruc(TienIchDAO.taoMa("CA"));
         ca.setMaNV(nv);
         ca.setNgay(ngay);
         ca.setCaLam(caLam);
         ca.setPhong(phong);
         ca.setTrangThai(CO_MAT);
         caTrucDAO.them(ca);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Phân công ca trực", "CaTruc", ca.getMaCaTruc(), nv.getHoTen() + ", " + ngay + ", " + caLam + ", " + phong);
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Phân công ca trực", "CaTruc", ca.getMaCaTruc(), nv.getHoTen() + ", " + ngay + ", " + caLam + ", " + phong);
         return ca;
     }
 
     // Đổi trạng thái ca
     public void doiTrangThai(String maCaTruc, String trangThai) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "đổi trạng thái ca trực", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "đổi trạng thái ca trực", VaiTro.QUAN_LY);
         CaTruc ca = layCa(maCaTruc);
         if (!List.of(CO_MAT, VANG, DIEU_CHUYEN).contains(trangThai)) {
             throw new NghiepVuException("Trạng thái ca chỉ có thể là Có mặt, Vắng hoặc Điều chuyển");
@@ -147,19 +145,19 @@ public class CaTrucController {
             kiemTraKhongCoLichHen(ca, "đổi trạng thái");
         }
         caTrucDAO.doiTrangThai(maCaTruc, trangThai);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Đổi trạng thái ca trực", "CaTruc", maCaTruc, "Từ [" + ca.getTrangThai() + "] sang [" + trangThai + "]");
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Đổi trạng thái ca trực", "CaTruc", maCaTruc, "Từ [" + ca.getTrangThai() + "] sang [" + trangThai + "]");
     }
 
     // Xóa ca đã xếp nhầm
     public void xoa(String maCaTruc) {
-        NhanVien nguoi = Quyen.yeuCau(nguoiDung, "xóa ca trực", VaiTro.QUAN_LY);
+        NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "xóa ca trực", VaiTro.QUAN_LY);
         CaTruc ca = layCa(maCaTruc);
         if (ca.getNgay().isBefore(LocalDate.now())) {
             throw new NghiepVuException("Không xóa ca trực đã qua (cần giữ lịch sử làm việc)");
         }
         kiemTraKhongCoLichHen(ca, "xóa");
         caTrucDAO.xoa(maCaTruc);
-        nhatKy.ghiNhatKy(nguoi.getMaNV(), "Xóa ca trực", "CaTruc", maCaTruc,
+        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Xóa ca trực", "CaTruc", maCaTruc,
                 ca.getMaNV().getHoTen() + ", " + ca.getNgay() + ", " + ca.getCaLam() + ", " + ca.getPhong());
     }
 

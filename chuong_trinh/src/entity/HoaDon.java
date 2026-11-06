@@ -2,143 +2,127 @@ package entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+// Hóa đơn thanh toán của một lượt khám
 public class HoaDon {
-    private String trangThai,maHoaDon,hinhThucThanhToan,maBenhNhan,ghiChu;
-    private String maNhanVien;
-    private LocalDateTime ngayLap, ngayThanhToan;
-    private ChiTietHoaDon chiTiet;
-    private BigDecimal tongTien,tienGiamGia, tongTienTruocThue, phanTramThue;
-    private java.util.List<ChiTietHoaDon> dsChiTiet = new java.util.ArrayList<>(); // Các dòng chi tiết của hóa đơn
+
+    private String maHoaDon; // Mã hóa đơn, dạng HD000001
+    private BenhNhan maBenhNhan; // Bệnh nhân
+    private NhanVien maNhanVien; // Nhân viên lập hóa đơn
+    private LocalDateTime ngayLap; // Ngày lập
+    private LocalDateTime ngayThanhToan; // Ngày thanh toán
+    private BigDecimal tienGiamGia; // Tiền giảm giá của cả hóa đơn
+    private BigDecimal phanTramThue; // Phần trăm thuế VAT
+    private BigDecimal tongTienTruocThue; // Tổng tiền trước thuế
+    private BigDecimal tongTien; // Tổng tiền phải trả
+    private String hinhThucThanhToan; // Tiền mặt, Chuyển khoản, Thẻ hoặc Ví điện tử
+    private String trangThai; // Chưa thanh toán, Đã thanh toán hoặc Đã hủy
+    private String ghiChu; // Ghi chú
+    private List<ChiTietHoaDon> dsChiTiet = new ArrayList<>(); // Các dòng chi tiết
 
     public String getMaHoaDon() {
         return maHoaDon;
     }
+
     public void setMaHoaDon(String maHoaDon) {
         this.maHoaDon = maHoaDon;
     }
-    public String getHinhThucThanhToan() {
-        return hinhThucThanhToan;
-    }
-    public void setHinhThucThanhToan(String hinhThucThanhToan) {
-        this.hinhThucThanhToan = hinhThucThanhToan;
-    }
-    public String getMaBenhNhan() {
+
+    public BenhNhan getMaBenhNhan() {
         return maBenhNhan;
     }
-    public void setMaBenhNhan(String maBenhNhan) {
+
+    public void setMaBenhNhan(BenhNhan maBenhNhan) {
         this.maBenhNhan = maBenhNhan;
     }
-    public String getGhiChu() {
-        return ghiChu;
-    }
-    public void setGhiChu(String ghiChu) {
-        this.ghiChu = ghiChu;
-    }
-    public String getMaNhanVien() {
+
+    public NhanVien getMaNhanVien() {
         return maNhanVien;
     }
-    public void setMaNhanVien(String maNhanVien) {
+
+    public void setMaNhanVien(NhanVien maNhanVien) {
         this.maNhanVien = maNhanVien;
     }
+
     public LocalDateTime getNgayLap() {
         return ngayLap;
     }
+
     public void setNgayLap(LocalDateTime ngayLap) {
         this.ngayLap = ngayLap;
     }
-    public ChiTietHoaDon getChiTiet() {
-        return chiTiet;
-    }
-    public void setChiTiet(ChiTietHoaDon chiTiet) {
-        this.chiTiet = chiTiet;
-    }
-    public BigDecimal getTongTien() {
-        return tongTien;
-    }
-    public void setTongTien(BigDecimal tongTien) {
-        this.tongTien = tongTien;
-    }
-    public String getTrangThai() {
-        return trangThai;
-    }
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
-    public HoaDon(String maHoaDon, String hinhThucThanhToan, String maBenhNhan, String ghiChu, String maNhanVien,
-            LocalDateTime ngayLap, ChiTietHoaDon chiTiet, BigDecimal tongTien, String trangThai, BigDecimal tienGiamGia, BigDecimal tongTienTruocThue, BigDecimal phanTramThue) {
-        setMaNhanVien(maNhanVien);
-        setMaHoaDon(maHoaDon);
-        setChiTiet(chiTiet);
-        setGhiChu(ghiChu);
-        setHinhThucThanhToan(hinhThucThanhToan);
-        setMaBenhNhan(maBenhNhan);
-        setNgayLap(ngayLap);
-        setTongTien(tongTien);
-        setMaNhanVien(maNhanVien);
-        setTrangThai(trangThai);
-        setTienGiamGia(tienGiamGia);
-        setTongTienTruocThue(tongTienTruocThue);
-        setPhanTramThue(phanTramThue);
-    }
-    public HoaDon(String ma, String bn, LocalDateTime ngayLap){
-        setMaHoaDon(ma);
-        setMaBenhNhan(bn);
-        setNgayLap(ngayLap);
-    }
-    public HoaDon() {
-        setMaHoaDon("none");
-        setChiTiet(new ChiTietHoaDon());
-        setGhiChu("");
-        setHinhThucThanhToan("");
-        setMaBenhNhan("none");
-        setNgayLap(LocalDateTime.now());
-        setTongTien(new BigDecimal(0));
-        setMaNhanVien("none");
-    }
-    @Override
-    public String toString() {
-        return "HoaDon [maHoaDon=" + maHoaDon + ", hinhThucThanhToan=" + hinhThucThanhToan + ", maBenhNhan="
-                + maBenhNhan + ", ghiChu=" + ghiChu + ", maNhanVien=" + maNhanVien + ", ngayLap=" + ngayLap
-                + ", chiTiet=" + chiTiet + ", tongTien=" + tongTien + "]";
-    }
-    
-    public BigDecimal tinhTongTien(){
 
-        return getTongTien();
-    }public void themChiTiet(ChiTietHoaDon ct){
-        setChiTiet(ct);
-    }
-    public void xuatHoaDon(){}
-    public BigDecimal getTienGiamGia() {
-        return tienGiamGia;
-    }
-    public void setTienGiamGia(BigDecimal tienGiamGia) {
-        this.tienGiamGia = tienGiamGia;
-    }
-    public BigDecimal getTongTienTruocThue() {
-        return tongTienTruocThue;
-    }
-    public void setTongTienTruocThue(BigDecimal tongTienTruocThue) {
-        this.tongTienTruocThue = tongTienTruocThue;
-    }
-    public BigDecimal getPhanTramThue() {
-        return phanTramThue;
-    }
-    public void setPhanTramThue(BigDecimal phanTramThue) {
-        this.phanTramThue = phanTramThue;
-    }
     public LocalDateTime getNgayThanhToan() {
         return ngayThanhToan;
     }
+
     public void setNgayThanhToan(LocalDateTime ngayThanhToan) {
         this.ngayThanhToan = ngayThanhToan;
     }
 
-    public java.util.List<ChiTietHoaDon> getDsChiTiet() {
+    public BigDecimal getTienGiamGia() {
+        return tienGiamGia;
+    }
+
+    public void setTienGiamGia(BigDecimal tienGiamGia) {
+        this.tienGiamGia = tienGiamGia;
+    }
+
+    public BigDecimal getPhanTramThue() {
+        return phanTramThue;
+    }
+
+    public void setPhanTramThue(BigDecimal phanTramThue) {
+        this.phanTramThue = phanTramThue;
+    }
+
+    public BigDecimal getTongTienTruocThue() {
+        return tongTienTruocThue;
+    }
+
+    public void setTongTienTruocThue(BigDecimal tongTienTruocThue) {
+        this.tongTienTruocThue = tongTienTruocThue;
+    }
+
+    public BigDecimal getTongTien() {
+        return tongTien;
+    }
+
+    public void setTongTien(BigDecimal tongTien) {
+        this.tongTien = tongTien;
+    }
+
+    public String getHinhThucThanhToan() {
+        return hinhThucThanhToan;
+    }
+
+    public void setHinhThucThanhToan(String hinhThucThanhToan) {
+        this.hinhThucThanhToan = hinhThucThanhToan;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public List<ChiTietHoaDon> getDsChiTiet() {
         return dsChiTiet;
     }
 
-    public void setDsChiTiet(java.util.List<ChiTietHoaDon> dsChiTiet) {
+    public void setDsChiTiet(List<ChiTietHoaDon> dsChiTiet) {
         this.dsChiTiet = dsChiTiet;
     }
 

@@ -18,7 +18,6 @@ import entity.LichHen;
 public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
 
     private LichHenController lichHenController = new LichHenController();
-    private BangTen ten = new BangTen();
 
     private JTextField txtTu = TienIch.oNhap(10); // Lọc từ ngày
     private JTextField txtDen = TienIch.oNhap(10); // Lọc đến ngày
@@ -79,8 +78,8 @@ public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
             for (LichHen lh : lichHenController.layTheoKhoang(tu, den)) {
                 if (LichHenController.CHO_XAC_NHAN.equals(lh.getTrangThai()) || LichHenController.DA_XAC_NHAN.equals(lh.getTrangThai())) {
                     dsLich.add(lh);
-                    dong.add(new String[] {TienIch.ngay(lh.getNgayHen()), TienIch.gio(lh.getGioHen()), ten.benhNhan(lh.getMaBN()), ten.dichVu(lh.getMaDichVu()),
-                        ten.nhaSi(lh.getMaNhanVien()), lh.getTrangThai(), lh.getMaLichHen()});
+                    dong.add(new String[] {TienIch.ngay(lh.getNgayHen()), TienIch.gio(lh.getGioHen()), lh.getMaBN().getHoTen(), lh.getMaDichVu().getTenDichVu(),
+                        lh.getMaNhanVien().getHoTen(), lh.getTrangThai(), lh.getMaLichHen()});
                 }
             }
             TienIch.napBang(tblLich, dong);
@@ -124,7 +123,7 @@ public class ManHinhDoiHuyLichHen extends JPanel implements MainApp.LamMoiDuoc {
         if (lh == null) {
             return;
         }
-        String lyDo = TienIch.nhapChu("Hủy lịch hẹn", "Lý do hủy lịch " + lh.getMaLichHen() + " của " + ten.benhNhan(lh.getMaBN()) + ":");
+        String lyDo = TienIch.nhapChu("Hủy lịch hẹn", "Lý do hủy lịch " + lh.getMaLichHen() + " của " + lh.getMaBN().getHoTen() + ":");
         if (lyDo == null) {
             return;
         }

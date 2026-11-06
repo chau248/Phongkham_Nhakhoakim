@@ -3,7 +3,6 @@ package ui;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -13,8 +12,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 import controller.HoSoBenhAnController;
-import controller.NhaSiPhuTrachController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import entity.BenhNhan;
 import entity.HangSo;
 import entity.HoSoBenhAn;
@@ -27,13 +25,10 @@ import entity.NhanVien;
 public class ManHinhHoSoBenhAn extends JPanel {
 
     private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan(); // Chọn bệnh nhân cần xem
-    private JPanel khuBanner = new JPanel(new java.awt.BorderLayout()); // Chỗ đặt banner dị ứng
     private JLabel lblThongTin = new JLabel(); // Thông tin hành chính
     private JTextArea txaTienSu = TienIch.oNhieuDong(3, 40); // Tiền sử bệnh
-    private JTextField txtDiUng = TienIch.oNhap(40); // Dị ứng, cách nhau dấu phẩy
     private JComboBox<String> cmbNhomMau = new JComboBox<>(new String[] {"", "A", "B", "AB", "O"}); // Nhóm máu
     private JTextArea txaBenhNen = TienIch.oNhieuDong(2, 40); // Bệnh nền
     private JTextField txtThuoc = TienIch.oNhap(40); // Thuốc đang dùng
@@ -66,13 +61,12 @@ public class ManHinhHoSoBenhAn extends JPanel {
         });
 
         cmbNhomMau.setFont(TienIch.FONT);
-        txtDiUng.setToolTipText("Ví dụ: Penicillin, Lidocaine");
         lblQuyen.setFont(TienIch.FONT);
         lblQuyen.setForeground(TienIch.MAU_XAM);
         lblThongTin.setFont(TienIch.FONT_DAM);
 
-        JPanel form = TienIch.taoForm(new String[] {"Tiền sử bệnh", "Dị ứng", "Nhóm máu", "Bệnh nền", "Thuốc đang dùng"},
-                new Component[] {TienIch.cuonOChu(txaTienSu), txtDiUng, cmbNhomMau, TienIch.cuonOChu(txaBenhNen), txtThuoc});
+        JPanel form = TienIch.taoForm(new String[] {"Tiền sử bệnh", "Nhóm máu", "Bệnh nền", "Thuốc đang dùng"},
+                new Component[] {TienIch.cuonOChu(txaTienSu), cmbNhomMau, TienIch.cuonOChu(txaBenhNen), txtThuoc});
         btnLuu.addActionListener(e -> luuThongTin());
         btnDongHoSo.addActionListener(e -> doiTrangThaiHoSo());
 
@@ -84,10 +78,9 @@ public class ManHinhHoSoBenhAn extends JPanel {
 
         JPanel theYTe = TienIch.the(lblThongTin, form, TienIch.dong(btnLuu, btnDongHoSo, lblQuyen));
 
-        khuBanner.setOpaque(false);
         TienIch.cotXuongDong(tblLichSu, 3);
         khuNoiDung.setOpaque(false);
-        TienIch.xep(khuNoiDung, 14, khuBanner, theYTe, TienIch.chuThuong("Liệu trình", true), TienIch.cuonBang(tblLieuTrinh, 110),
+        TienIch.xep(khuNoiDung, 14, theYTe, TienIch.chuThuong("Liệu trình", true), TienIch.cuonBang(tblLieuTrinh, 110),
                 TienIch.chuThuong("Lịch sử khám (mới nhất trước)", true), TienIch.cuonBang(tblLichSu, 150));
         khuNoiDung.setVisible(false);
 
@@ -117,45 +110,30 @@ public class ManHinhHoSoBenhAn extends JPanel {
 
     // Đổ dữ liệu hồ sơ vào các ô
     private void hienHoSo(BenhNhan bn) {
-        String diUng = hoSo.coCanhBaoDiUng() ? TienIch.chu(hoSo.getCanhBaoDiUng()).trim() : "";
-        khuBanner.removeAll();
-        if (!diUng.isEmpty()) {
-            khuBanner.add(TienIch.thongBao("CẢNH BÁO DỊ ỨNG: " + diUng, TienIch.MAU_DO_NEN, TienIch.MAU_DO_CHU, true), java.awt.BorderLayout.CENTER);
-        }
 
         lblThongTin.setText(bn.getMaBN() + " - " + bn.getHoTen() + "   |   Mã hồ sơ: " + hoSo.getMaHoSo()
                 + "   |   Ngày tạo: " + TienIch.ngay(hoSo.getNgayTao()) + "   |   " + hoSo.getTrangThaiHoSo());
         txaTienSu.setText(TienIch.chu(hoSo.getTienSuBenh()));
-        txtDiUng.setText(TienIch.chu(hoSo.getCanhBaoDiUng()));
         cmbNhomMau.setSelectedItem(TienIch.chu(hoSo.getNhomMau()));
         txaBenhNen.setText(TienIch.chu(hoSo.getBenhNen()));
         txtThuoc.setText(TienIch.chu(hoSo.getThuocDangSuDung()));
         hoSoBanDau = saoChep(hoSo);
         apDungQuyenSua();
 
-        // Lấy liệu trình và lịch sử khám trước
-        List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(bn.getMaBN());
+                List<LieuTrinh> dsLieuTrinh = hoSoService.layLieuTrinh(bn.getMaBN());
         List<LuotKham> dsLichSu = hoSoService.layLichSuKham(hoSo.getMaHoSo());
-        List<String> dsMaNhaSi = new ArrayList<>();
-        for (LieuTrinh lt : dsLieuTrinh) {
-            dsMaNhaSi.add(lt.getMaNhaSiPhuTrach());
-        }
-        for (LuotKham lk : dsLichSu) {
-            dsMaNhaSi.add(lk.getMaNhanVienPhuTrach());
-        }
-        Map<String, String> tenNhaSi = nhaSiService.layTen(dsMaNhaSi);
 
         List<String[]> dongLieuTrinh = new ArrayList<>();
         for (LieuTrinh lt : dsLieuTrinh) {
             dongLieuTrinh.add(new String[] {lt.getLoaiDichVu(), String.valueOf(lt.getSoBuoiDuKien()),
-                TienIch.chu(lt.getGiaiDoanHienTai()), NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lt.getMaNhaSiPhuTrach()),
+                TienIch.chu(lt.getGiaiDoanHienTai()), lt.getMaNhaSiPhuTrach() == null ? "" : lt.getMaNhaSiPhuTrach().getHoTen(),
                 lt.getTrangThai(), TienIch.ngay(lt.getNgayDuKienKetThuc())});
         }
         TienIch.napBang(tblLieuTrinh, dongLieuTrinh);
 
         List<String[]> dongLichSu = new ArrayList<>();
         for (LuotKham lk : dsLichSu) {
-            dongLichSu.add(new String[] {TienIch.ngayGio(lk.getGioBatDau()), NhaSiPhuTrachController.tenHoacMa(tenNhaSi, lk.getMaNhanVienPhuTrach()),
+            dongLichSu.add(new String[] {TienIch.ngayGio(lk.getGioBatDau()), lk.getMaNhanVienPhuTrach().getHoTen(),
                 TienIch.chu(lk.getLyDoKham()), TienIch.chu(lk.getChanDoan()), lk.getTrangThai()});
         }
         TienIch.napBang(tblLichSu, dongLichSu);
@@ -192,7 +170,6 @@ public class ManHinhHoSoBenhAn extends JPanel {
         b.setMaHoSo(goc.getMaHoSo());
         b.setMaBN(goc.getMaBN());
         b.setTienSuBenh(goc.getTienSuBenh());
-        b.setCanhBaoDiUng(goc.getCanhBaoDiUng());
         b.setNhomMau(goc.getNhomMau());
         b.setBenhNen(goc.getBenhNen());
         b.setThuocDangSuDung(goc.getThuocDangSuDung());
@@ -232,7 +209,6 @@ public class ManHinhHoSoBenhAn extends JPanel {
             moi.setTrangThaiHoSo(hoSo.getTrangThaiHoSo());
             moi.setGhiChuDacBiet(hoSo.getGhiChuDacBiet());
             moi.setTienSuBenh(txaTienSu.getText());
-            moi.setCanhBaoDiUng(txtDiUng.getText());
             moi.setNhomMau(cmbNhomMau.getSelectedItem() == null ? "" : (String) cmbNhomMau.getSelectedItem());
             moi.setBenhNen(txaBenhNen.getText());
             moi.setThuocDangSuDung(txtThuoc.getText());

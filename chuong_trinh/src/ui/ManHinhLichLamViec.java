@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import controller.LichHenController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import entity.DongLichLamViec;
 import entity.NhanVien;
 

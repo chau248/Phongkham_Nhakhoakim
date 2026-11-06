@@ -1,5 +1,6 @@
 package controller;
 
+import dao.TienIchDAO;
 import dao.*;
 
 import java.time.LocalDate;
@@ -16,20 +17,9 @@ public class BenhNhanController {
 
     private static final int TOI_DA_KET_QUA = 50;
 
-    private BenhNhanDAO benhNhanDAO;
-    private HoSoBenhAnController hoSoService;
-    private Supplier<NhanVien> nguoiDung; 
-    private NhatKyController nhatKyService = new NhatKyController();
-
-    public BenhNhanController() {
-        this(new BenhNhanDAO(), new HoSoBenhAnController(), PhienLamViec::getNhanVienHienTai);
-    }
-
-    public BenhNhanController(BenhNhanDAO benhNhanDAO, HoSoBenhAnController hoSoService, Supplier<NhanVien> nguoiDung) {
-        this.benhNhanDAO = benhNhanDAO;
-        this.hoSoService = hoSoService;
-        this.nguoiDung = nguoiDung;
-    }
+    private BenhNhanDAO benhNhanDAO = new BenhNhanDAO();
+    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
+    private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
     // Tìm bệnh nhân theo mã
     public BenhNhan timTheoMa(String maBN) {
@@ -100,10 +90,10 @@ public class BenhNhanController {
         kiemTra(bn);
         kiemTraTrungCCCD(bn);
         kiemTraTrungNguoi(bn);
-        bn.setMaBN(MaGenerator.taoMa("BN"));
+        bn.setMaBN(TienIchDAO.taoMa("BN"));
         bn.setNgayDangKy(LocalDate.now());
         bn.setTrangThai(HangSo.DANG_DIEU_TRI);
-        HoSoBenhAn hs = hoSoService.taoDoiTuongHoSoRong(bn.getMaBN());
+        HoSoBenhAn hs = hoSoService.taoDoiTuongHoSoRong(bn);
         benhNhanDAO.themKemHoSo(bn, hs);
         return bn;
     }
@@ -142,7 +132,7 @@ public class BenhNhanController {
             }
         }
         benhNhanDAO.capNhatTrangThai(maBN, trangThaiMoi);
-        nhatKyService.ghiNhatKy(nguoiDung.get().getMaNV(), "Đổi trạng thái bệnh nhân", "BenhNhan", maBN,
+        TienIchController.ghiNhatKy(nguoiDung.get().getMaNV(), "Đổi trạng thái bệnh nhân", "BenhNhan", maBN,
                 "Từ [" + bn.getTrangThai() + "] sang [" + trangThaiMoi + "]");
     }
 

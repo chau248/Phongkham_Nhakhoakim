@@ -22,18 +22,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
-import controller.BenhNhanController;
 import controller.DichVuController;
-import controller.HoSoBenhAnController;
 import controller.LuotKhamController;
-import controller.NhaSiPhuTrachController;
-import dao.PhienLamViec;
+import controller.PhienLamViec;
 import controller.RangDieuTriController;
-import entity.BenhNhan;
 import entity.DichVu;
 import entity.HangSo;
-import entity.HoSoBenhAn;
 import entity.LuotKham;
+import entity.BenhNhan;
 import entity.RangDieuTri;
 
 // Màn hình sơ đồ răng điều trị
@@ -94,14 +90,10 @@ public class ManHinhSoDoRang extends JPanel {
     private RangDieuTriController rangService = new RangDieuTriController();
     private LuotKhamController luotKhamService = new LuotKhamController();
     private DichVuController dichVuService = new DichVuController();
-    private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
-    private BenhNhanController benhNhanService = new BenhNhanController();
-    private NhaSiPhuTrachController nhaSiService = new NhaSiPhuTrachController();
 
     private LuotKham luotKham; // Lượt khám đang khám
     private Map<Integer, NutRang> nutRang = new HashMap<>(); // Nút của từng răng
     private Map<Integer, RangDieuTri> tinhTrang = new HashMap<>(); // Tình trạng hiện tại của từng
-    private Map<String, String> tenDichVu = new HashMap<>(); // Mã dịch vụ -> tên dịch vụ
     private int rangDangChon = 0; // Số FDI đang chọn
 
     private JPanel khungVinhVien = new JPanel(); // Sơ đồ răng vĩnh viễn
@@ -111,7 +103,6 @@ public class ManHinhSoDoRang extends JPanel {
 
     private JLabel lblRang = TienIch.chuThuong("<html>Chưa chọn răng</html>", true);
     private JComboBox<String> cmbTrangThai = new JComboBox<>();
-    private JComboBox<String> cmbMatRang = new JComboBox<>(new String[] {"", "Gần", "Xa", "Nhai", "Ngoài", "Trong"});
     private JTextField txtVatLieu = TienIch.oNhap(26);
     private JComboBox<DichVu> cmbDichVu; // Dịch vụ đã làm
     private JTextField txtGhiChu = TienIch.oNhap(26);
@@ -140,10 +131,7 @@ public class ManHinhSoDoRang extends JPanel {
 
     // Dựng công tắc răng vĩnh viễn / răng sữa
     private void dung(List<Component> cacKhoi) {
-        HoSoBenhAn hoSoKham = hoSoService.timTheoMa(luotKham.getMaHoSo());
-        BenhNhan benhNhanKham = benhNhanService.timTheoMa(hoSoKham.getMaBN());
-        cacKhoi.add(DongThongTinLuotKham.tao(benhNhanKham == null ? hoSoKham.getMaBN() : benhNhanKham.getHoTen(),
-                nhaSiService.layTen(luotKham.getMaNhanVienPhuTrach()), luotKham));
+        cacKhoi.add(DongThongTinLuotKham.tao(luotKham));
         // Răng vĩnh viễn, hàm trên
         khungVinhVien.setOpaque(false);
         TienIch.xep(khungVinhVien, 8, taoHang(new int[] {18, 17, 16, 15, 14, 13, 12, 11}, new int[] {21, 22, 23, 24, 25, 26, 27, 28}),
@@ -173,12 +161,14 @@ public class ManHinhSoDoRang extends JPanel {
             cmbTrangThai.addItem(tt);
         }
         cmbTrangThai.setFont(TienIch.FONT);
-        cmbMatRang.setFont(TienIch.FONT);
-        List<DichVu> tatCaDichVu = dichVuService.layTatCa();
-        for (DichVu dv : tatCaDichVu) {
-            tenDichVu.put(dv.getMaDichVu(), dv.getTenDichVu());
+        // Chỉ dịch vụ tính theo răng; dịch vụ tính theo lần hoặc hàm thêm ở màn hình Khám
+        List<DichVu> dichVuTheoRang = new ArrayList<>();
+        for (DichVu dv : dichVuService.layDangHoatDong()) {
+            if ("Răng".equals(dv.getDonViTinh())) {
+                dichVuTheoRang.add(dv);
+            }
         }
-        cmbDichVu = TienIch.taoChonDichVu(tatCaDichVu, "(không có dịch vụ)");
+        cmbDichVu = TienIch.taoChonDichVu(dichVuTheoRang, "(không có dịch vụ)");
 
         cmbBanGhi.setFont(TienIch.FONT);
         cmbBanGhi.setPreferredSize(new Dimension(300, 28));
@@ -191,8 +181,7 @@ public class ManHinhSoDoRang extends JPanel {
                 if (b == null) {
                     l.setText("(chọn bản ghi ghi nhầm)");
                 } else {
-                    String dv = b.getMaDichVu() == null ? "không dịch vụ" : tenDichVu.getOrDefault(b.getMaDichVu(), b.getMaDichVu());
-                    l.setText(b.getTrangThai() + " | " + dv + (b.getMatRang() == null ? "" : " | mặt " + b.getMatRang()));
+                    l.setText(b.getTrangThai() + " | " + (b.getMaDichVu() == null ? "không dịch vụ" : b.getMaDichVu().getTenDichVu()));
                 }
                 return l;
             }
@@ -200,8 +189,8 @@ public class ManHinhSoDoRang extends JPanel {
         cmbBanGhi.setSelectedIndex(-1);
         btnGo.addActionListener(e -> goBanGhi());
 
-        JPanel form = TienIch.taoForm(new String[] {"Trạng thái", "Mặt răng", "Vật liệu", "Dịch vụ đã làm", "Ghi chú"},
-                new Component[] {cmbTrangThai, cmbMatRang, txtVatLieu, cmbDichVu, txtGhiChu});
+        JPanel form = TienIch.taoForm(new String[] {"Trạng thái", "Vật liệu", "Dịch vụ đã làm", "Ghi chú"},
+                new Component[] {cmbTrangThai, txtVatLieu, cmbDichVu, txtGhiChu});
         JButton btnGhi = TienIch.nutChinh("Ghi nhận răng");
         btnGhi.addActionListener(e -> ghiNhan());
         JPanel the = TienIch.the(lblRang, form, TienIch.dong(btnGhi), TienIch.nhan("Đã ghi trên răng này trong lượt khám (gỡ nếu ghi nhầm)"),
@@ -215,9 +204,8 @@ public class ManHinhSoDoRang extends JPanel {
 
     // Bệnh nhân của lượt khám
     private boolean laTreDuoiSauTuoi() {
-        HoSoBenhAn hs = hoSoService.timTheoMa(luotKham.getMaHoSo());
-        BenhNhan bn = benhNhanService.timTheoMa(hs.getMaBN());
-        if (bn == null || bn.getNgaySinh() == null) {
+        BenhNhan bn = luotKham.getMaHoSo().getMaBN();
+        if (bn.getNgaySinh() == null) {
             return false;
         }
         int tuoi = bn.tinhTuoi();
@@ -259,7 +247,7 @@ public class ManHinhSoDoRang extends JPanel {
     // Đọc tình trạng hiện tại của các răng
     private void napTinhTrang() {
         tinhTrang.clear();
-        for (RangDieuTri r : rangService.layTinhTrangMoiNhat(luotKham.getMaHoSo())) {
+        for (RangDieuTri r : rangService.layTinhTrangMoiNhat(luotKham.getMaHoSo().getMaHoSo())) {
             tinhTrang.put(r.getSoFDI(), r);
         }
         for (Map.Entry<Integer, NutRang> e : nutRang.entrySet()) {
@@ -274,7 +262,7 @@ public class ManHinhSoDoRang extends JPanel {
         List<String> ten = new ArrayList<>();
         for (RangDieuTri r : rangService.layTheoLuotKham(luotKham.getMaLuotKham())) {
             if (r.getSoFDI() == so && r.getMaDichVu() != null) {
-                String t = tenDichVu.getOrDefault(r.getMaDichVu(), r.getMaDichVu());
+                String t = r.getMaDichVu().getTenDichVu();
                 if (!ten.contains(t)) {
                     ten.add(t);
                 }
@@ -294,7 +282,6 @@ public class ManHinhSoDoRang extends JPanel {
         }
         lblRang.setText("<html>" + nhan + "</html>");
         cmbTrangThai.setSelectedItem(r == null ? HangSo.RANG_BINH_THUONG : r.getTrangThai());
-        cmbMatRang.setSelectedItem(r == null || r.getMatRang() == null ? "" : r.getMatRang());
         txtVatLieu.setText(r == null ? "" : TienIch.chu(r.getVatLieu()));
         txtGhiChu.setText(r == null ? "" : TienIch.chu(r.getGhiChu()));
         cmbDichVu.setSelectedIndex(-1);
@@ -336,17 +323,15 @@ public class ManHinhSoDoRang extends JPanel {
         }
         try {
             RangDieuTri r = new RangDieuTri();
-            String matRang = (String) cmbMatRang.getSelectedItem();
             DichVu dichVu = (DichVu) cmbDichVu.getSelectedItem();
             r.setSoFDI(rangDangChon);
             r.setTrangThai((String) cmbTrangThai.getSelectedItem());
-            r.setMatRang(matRang == null || matRang.isEmpty() ? null : matRang);
             r.setVatLieu(txtVatLieu.getText().trim().isEmpty() ? null : txtVatLieu.getText().trim());
-            r.setMaDichVu(dichVu == null ? null : dichVu.getMaDichVu());
+            r.setMaDichVu(dichVu);
             r.setGhiChu(txtGhiChu.getText().trim().isEmpty() ? null : txtGhiChu.getText().trim());
 
             // Gom các cảnh báo
-            String canhBao = r.getMaDichVu() == null ? null : luotKhamService.canhBaoThuThuat(luotKham.getMaLuotKham(), r.getMaDichVu());
+            String canhBao = r.getMaDichVu() == null ? null : luotKhamService.canhBaoThuThuat(luotKham.getMaLuotKham(), r.getMaDichVu().getMaDichVu());
             String thieuDichVu = rangService.canhBaoThieuDichVu(luotKham.getMaLuotKham(), r);
             if (canhBao != null && thieuDichVu != null) {
                 canhBao = canhBao + "\n\n" + thieuDichVu;
