@@ -8,8 +8,9 @@ public class HangSo {
     public static final String VAI_TRO_Y_TA = "Y tá";
     public static final String VAI_TRO_LE_TAN = "Lễ tân";
     public static final String VAI_TRO_QUAN_LY = "Quản lý";
+    public static final String VAI_TRO_TOAN_QUYEN = "Toàn quyền"; // Dùng được mọi chức năng
 
-    // Trạng thái của bệnh nhân, hồ sơ
+    // Trạng thái của bệnh nhân
     public static final String DANG_DIEU_TRI = "Đang điều trị";
     public static final String NGUNG_THEO_DOI = "Ngừng theo dõi";
     public static final String HO_SO_DANG_MO = "Đang mở";

@@ -32,32 +32,32 @@ import javax.swing.JScrollPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import controller.CauHinhController;
 import controller.TaiKhoanController;
 import controller.PhienLamViec;
 import entity.NhanVien;
-import ui.DanhSachChucNang.ChucNang;
-import ui.DanhSachChucNang;
 import ui.HopThoai;
 import ui.TaiKham;
 import ui.ChoThanhToan;
 import ui.DanhMucDichVu;
 import ui.DatLichHen;
-import ui.DoiHuyLichHen;
+import ui.BaoCaoDoanhThu;
+import ui.DanhMucHeThong;
+import ui.InDonThuoc;
+import ui.QuanLyLieuTrinh;
+import ui.LichHenTuan;
+import ui.ThoiKhoaBieu;
+import ui.ThongTinPhongKham;
 import ui.XemDongThoiGian;
-import ui.XemGoiYDieuTri;
 import ui.XemHoSoBenhAn;
 import ui.ThemSuaBenhNhan;
 import ui.QuanLyNhanVien;
 import ui.KhamBenh;
-import ui.LichLamViec;
-import ui.PhanCongCaTruc;
 import ui.SoDoRang;
 import ui.QuanLyTaiKhoan;
 import ui.TaiKhoanCuaToi;
 import ui.ThanhToan;
 import ui.TraCuuBenhNhan;
-import ui.XacNhanLichHen;
-import ui.XemLichHen;
 import ui.TienIch;
 
 @SuppressWarnings("serial") 
@@ -93,7 +93,13 @@ public class MainApp {
 
         @Override
         public boolean getScrollableTracksViewportWidth() {
-            return true;
+            // Cửa sổ hẹp hơn nội dung
+            return !(getParent() instanceof javax.swing.JViewport) || getParent().getWidth() >= getMinimumContentWidth();
+        }
+
+        // Độ rộng tối thiểu
+        private int getMinimumContentWidth() {
+            return getPreferredSize().width;
         }
 
         @Override
@@ -102,6 +108,8 @@ public class MainApp {
         }
     }
 
+    private static final String TAI_KHOAN_CUA_TOI = "Tài khoản của tôi";
+    private static final String TAI_KHOAN_CUA_TOI_NHOM = "Tài khoản";
     private static final float CO_CHU_MENU = 18f; // Cỡ chữ tên menu
     private static final float CO_CHU_MUC_MENU = 17f; // Cỡ chữ các mục trong menu
 
@@ -123,7 +131,7 @@ public class MainApp {
             } catch (Exception e) {
                 // Dùng giao diện mặc định
             }
-            // Lỗi chưa bắt được thì hiện hộp báo lỗi
+            // Lỗi chưa bắt được
             Thread.setDefaultUncaughtExceptionHandler((luong, loi) -> {
                 loi.printStackTrace();
                 SwingUtilities.invokeLater(() -> baoLoiChuaBat(loi));
@@ -253,36 +261,39 @@ public class MainApp {
         return tieuDe;
     }
 
-    // Thanh menu
+    // Thanh menu: các chức năng của vai trò lấy từ CSDL
     private void taoMenu() {
         thanhMenu.removeAll();
         thanhMenu.setBackground(Color.WHITE);
         thanhMenu.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, TienIch.MAU_VIEN), BorderFactory.createEmptyBorder(2, 18, 2, 18)));
-        for (Map.Entry<String, List<ChucNang>> nhom : DanhSachChucNang.layTheoNhom().entrySet()) {
+        NhanVien nv = PhienLamViec.getNhanVienHienTai();
+        if (nv == null) {
+            return;
+        }
+        Map<String, List<String>> theoNhom = new CauHinhController().layChucNangCuaVaiTro(nv.getVaiTro());
+        List<String> nhomTaiKhoan = theoNhom.computeIfAbsent(TAI_KHOAN_CUA_TOI_NHOM, k -> new java.util.ArrayList<>());
+        if (!nhomTaiKhoan.contains(TAI_KHOAN_CUA_TOI)) {
+            nhomTaiKhoan.add(0, TAI_KHOAN_CUA_TOI); // Ai cũng đổi được mật khẩu của mình
+        }
+        for (Map.Entry<String, List<String>> nhom : theoNhom.entrySet()) {
             JMenu menu = new JMenu(nhom.getKey());
             menu.setFont(TienIch.FONT.deriveFont(Font.BOLD, CO_CHU_MENU));
             menu.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
-            for (ChucNang cn : nhom.getValue()) {
-                if (!duocDung(cn)) {
-                    continue; // Menu chỉ hiện đúng vai trò
+            for (String ten : nhom.getValue()) {
+                if (!manHinh.containsKey(ten)) {
+                    continue; // Chức năng chưa có màn hình thì không hiện
                 }
-                JMenuItem muc = new JMenuItem(cn.getTen());
+                JMenuItem muc = new JMenuItem(ten);
                 muc.setFont(TienIch.FONT.deriveFont(CO_CHU_MUC_MENU));
                 muc.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 24));
-                muc.addActionListener(e -> hienChucNang(cn));
+                muc.addActionListener(e -> hienChucNang(ten));
                 menu.add(muc);
             }
             if (menu.getItemCount() > 0) {
                 thanhMenu.add(menu);
             }
         }
-    }
-
-    // Người đang đăng nhập
-    private boolean duocDung(ChucNang cn) {
-        NhanVien nv = PhienLamViec.getNhanVienHienTai();
-        return nv == null || java.util.Arrays.asList(cn.getVaiTro().split(",\\s*")).contains(nv.getVaiTro());
     }
 
     // Trang chủ
@@ -297,49 +308,53 @@ public class MainApp {
 
     // Đăng ký màn hình cho từng chức năng
     private void dangKyManHinh() {
-        // Hậu: menu Bệnh nhân và menu Lượt khám
+        // Bệnh nhân
         manHinh.put("Tìm kiếm bệnh nhân", TraCuuBenhNhan::new);
-        manHinh.put("Thêm / cập nhật hồ sơ bệnh nhân", () -> new ThemSuaBenhNhan(null));
-        manHinh.put("Xem hồ sơ bệnh án", XemHoSoBenhAn::new); // Ba chức năng dùng chung
-        manHinh.put("Cập nhật tiền sử & dị ứng", XemHoSoBenhAn::new);
-        manHinh.put("Xem liệu trình đang thực hiện", XemHoSoBenhAn::new);
-        manHinh.put("Khám & ghi nhận điều trị", KhamBenh::new); // Hai chức năng dùng chung
-        manHinh.put("Kê đơn thuốc", KhamBenh::new);
-        manHinh.put("Sơ đồ răng điều trị", SoDoRang::new);
-        manHinh.put("Chỉ định tái khám", TaiKham::new);
+        manHinh.put("Thêm / cập nhật bệnh nhân", () -> new ThemSuaBenhNhan(null));
+        manHinh.put("Xem hồ sơ bệnh án", XemHoSoBenhAn::new);
         manHinh.put("Dòng thời gian điều trị", XemDongThoiGian::new);
-        manHinh.put("Gợi ý điều trị & ước tính chi phí", XemGoiYDieuTri::new);
 
-        // Trường: menu Lịch hẹn và menu Hóa đơn
-        manHinh.put("Xem lịch hẹn", XemLichHen::new);
+        // Lượt khám
+        manHinh.put("Khám & ghi nhận điều trị", KhamBenh::new);
+        manHinh.put("Sơ đồ răng điều trị", SoDoRang::new);
+        manHinh.put("In đơn thuốc", InDonThuoc::new);
+        manHinh.put("Liệu trình điều trị", QuanLyLieuTrinh::new);
+        manHinh.put("Chỉ định tái khám", TaiKham::new);
+
+        // Lịch hẹn
+        manHinh.put("Lịch hẹn theo tuần", LichHenTuan::new);
         manHinh.put("Đặt lịch hẹn", DatLichHen::new);
-        manHinh.put("Dời / hủy lịch hẹn", DoiHuyLichHen::new);
-        manHinh.put("Xác nhận lịch hẹn", XacNhanLichHen::new);
-        manHinh.put("Xem lịch làm việc", LichLamViec::new);
+
+        // Hóa đơn
         manHinh.put("Danh sách chờ thanh toán", ChoThanhToan::new);
         manHinh.put("Lập hóa đơn", ChoThanhToan::new); // Chọn lượt khám chờ thanh toán
         manHinh.put("Thanh toán & in hóa đơn", ThanhToan::new);
+        manHinh.put("Báo cáo doanh thu", BaoCaoDoanhThu::new);
 
-        // Tâm: menu Dịch vụ, Nhân viên, Tài khoản
+        // Dịch vụ, nhân viên, tài khoản
         manHinh.put("Xem danh mục dịch vụ & giá", DanhMucDichVu::new);
         manHinh.put("Thêm / sửa dịch vụ", DanhMucDichVu::new); // Quản lý thấy thêm nút Thêm
         manHinh.put("Cập nhật hồ sơ nhân viên", QuanLyNhanVien::new);
-        manHinh.put("Phân công ca trực", PhanCongCaTruc::new);
-        manHinh.put("Đăng nhập / Đăng xuất", TaiKhoanCuaToi::new);
+        manHinh.put("Thời khóa biểu ca trực", ThoiKhoaBieu::new);
+        manHinh.put(TAI_KHOAN_CUA_TOI, TaiKhoanCuaToi::new);
         manHinh.put("Tạo tài khoản & gán vai trò", QuanLyTaiKhoan::new);
+
+        // Hệ thống
+        manHinh.put("Danh mục (chuyên khoa, loại dịch vụ, phòng)", DanhMucHeThong::new);
+        manHinh.put("Thông tin phòng khám & thuế", ThongTinPhongKham::new);
     }
 
     // Dựng màn hình của chức năng
-    private JComponent taoManHinh(ChucNang cn) {
-        Supplier<JComponent> tao = manHinh.get(cn.getTen());
+    private JComponent taoManHinh(String tenChucNang) {
+        Supplier<JComponent> tao = manHinh.get(tenChucNang);
         return tao == null ? null : tao.get();
     }
 
     // Hiện chức năng được chọn
-    void hienChucNang(ChucNang cn) {
+    void hienChucNang(String tenChucNang) {
         JComponent noiDung = null;
         try {
-            noiDung = taoManHinh(cn);
+            noiDung = taoManHinh(tenChucNang);
         } catch (RuntimeException e) {
             TienIch.baoLoi(e); // Dựng màn hình lỗi thì báo
         }

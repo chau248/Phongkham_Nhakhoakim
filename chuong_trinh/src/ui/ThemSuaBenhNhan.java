@@ -1,5 +1,7 @@
 package ui;
 
+import ui.ThanhPhan.ChonNgay;
+
 import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,7 +21,7 @@ public class ThemSuaBenhNhan extends JPanel {
     private BenhNhan benhNhan; // Null nghĩa là đang thêm mới
     private JLabel lblMa = new JLabel("(tự sinh khi lưu)"); // Mã bệnh nhân
     private JTextField txtHoTen = TienIch.oNhap(32);
-    private JTextField txtNgaySinh = TienIch.oNhap(32); // Dd/MM/yyyy
+    private ChonNgay txtNgaySinh = new ChonNgay(); // Ngày sinh
     private JComboBox<String> cmbGioiTinh = new JComboBox<>(new String[] {"", "Nam", "Nữ", "Khác"});
     private JTextField txtSdt = TienIch.oNhap(32);
     private JTextField txtCCCD = TienIch.oNhap(32);
@@ -29,7 +31,7 @@ public class ThemSuaBenhNhan extends JPanel {
     private JTextField txtSdtNguoiLienHe = TienIch.oNhap(32);
     private JTextField txtGhiChu = TienIch.oNhap(32);
 
-    // Truyền bệnh nhân để sửa, hoặc null
+    // Truyền bệnh nhân
     public ThemSuaBenhNhan(BenhNhan benhNhan) {
         this.benhNhan = benhNhan;
 

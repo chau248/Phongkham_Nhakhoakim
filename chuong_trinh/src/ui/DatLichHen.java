@@ -1,5 +1,7 @@
 package ui;
 
+import ui.ThanhPhan.ChonNgay;
+
 import java.awt.Component;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,7 +31,7 @@ public class DatLichHen extends JPanel {
 
     private TienIch.ChonBenhNhan chonBenhNhan = new TienIch.ChonBenhNhan();
     private JComboBox<DichVu> cmbDichVu; // Dịch vụ đặt
-    private JTextField txtNgay = TienIch.oNhap(10); // Ngày hẹn
+    private ChonNgay txtNgay = new ChonNgay(); // Ngày hẹn
     private JComboBox<NhanVien> cmbNhaSi = new JComboBox<>(); // Nha sĩ có ca trực trong ngày
     private JComboBox<String> cmbGio = new JComboBox<>(); // Giờ còn trống
     private JComboBox<String> cmbHinhThuc = new JComboBox<>(LichHenController.HINH_THUC.toArray(new String[0]));
@@ -59,7 +61,7 @@ public class DatLichHen extends JPanel {
 
         lblThongTin.setFont(TienIch.FONT);
         lblThongTin.setForeground(TienIch.MAU_XAM);
-        JPanel form = TienIch.taoForm(new String[] {"Bệnh nhân", "Dịch vụ", "Ngày hẹn (dd/MM/yyyy)", "Nha sĩ", "Giờ hẹn", "Hình thức đặt"},
+        JPanel form = TienIch.taoForm(new String[] {"Bệnh nhân", "Dịch vụ", "Ngày hẹn", "Nha sĩ", "Giờ hẹn", "Hình thức đặt"},
                 new Component[] {chonBenhNhan, cmbDichVu, TienIch.dong(txtNgay, btnTimNhaSi), cmbNhaSi, cmbGio, cmbHinhThuc});
         TienIch.xepManHinh(this, TienIch.tieuDe("Đặt lịch hẹn"),
                 TienIch.doanChu("Chọn bệnh nhân, dịch vụ và ngày, bấm Tìm nha sĩ có ca trực, rồi chọn nha sĩ và giờ còn trống. Giờ hẹn tròn 30 phút trong ca Sáng 08:00-12:00 "
@@ -103,7 +105,7 @@ public class DatLichHen extends JPanel {
             cmbGio.setModel(new DefaultComboBoxModel<>(chu));
             cmbGio.setSelectedIndex(chu.length == 0 ? -1 : 0);
             lblThongTin.setText(chu.length == 0 ? nv.getHoTen() + " không còn giờ trống cho dịch vụ này (" + dv.getThoiGianDuKien() + " phút)."
-                    : nv.getHoTen() + " còn " + chu.length + " giờ trống, dịch vụ " + dv.getThoiGianDuKien() + " phút.");
+                    : " ");
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }
@@ -124,7 +126,7 @@ public class DatLichHen extends JPanel {
                     LocalTime.parse(gioChu), (String) cmbHinhThuc.getSelectedItem());
             TienIch.thongTin("Đã đặt lịch " + lh.getMaLichHen() + " cho " + bn.getHoTen() + " lúc " + TienIch.gio(lh.getGioHen()) + " ngày "
                     + TienIch.ngay(lh.getNgayHen()) + " (" + lh.getPhong() + "). Lịch đang Chờ xác nhận.");
-            MainApp.thayNoiDung(new XemLichHen());
+            MainApp.thayNoiDung(new LichHenTuan());
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }

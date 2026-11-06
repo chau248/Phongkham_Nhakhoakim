@@ -11,8 +11,6 @@ public class CaTruc {
     private String phong; // Phòng khám hoặc quầy lễ tân
     private String trangThai; // Có mặt, Vắng hoặc Điều chuyển
     
-    
-
     public CaTruc() {
     }
 
@@ -26,77 +24,52 @@ public class CaTruc {
 		this.trangThai = trangThai;
 	}
 
-
-
 	public String getMaCaTruc() {
 		return maCaTruc;
 	}
-
-
 
 	public void setMaCaTruc(String maCaTruc) {
 		this.maCaTruc = maCaTruc;
 	}
 
-
-
 	public NhanVien getMaNV() {
 		return maNV;
 	}
-
-
 
 	public void setMaNV(NhanVien maNV) {
 		this.maNV = maNV;
 	}
 
-
-
 	public LocalDate getNgay() {
 		return ngay;
 	}
-
-
 
 	public void setNgay(LocalDate ngay) {
 		this.ngay = ngay;
 	}
 
-
-
 	public String getCaLam() {
 		return caLam;
 	}
-
-
 
 	public void setCaLam(String caLam) {
 		this.caLam = caLam;
 	}
 
-
-
 	public String getPhong() {
 		return phong;
 	}
-
-
 
 	public void setPhong(String phong) {
 		this.phong = phong;
 	}
 
-
-
 	public String getTrangThai() {
 		return trangThai;
 	}
-
-
 
 	public void setTrangThai(String trangThai) {
 		this.trangThai = trangThai;
 	}
 
-	
 }

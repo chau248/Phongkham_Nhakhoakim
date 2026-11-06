@@ -1,5 +1,7 @@
 package ui;
 
+import ui.ThanhPhan.ChonNgay;
+
 import java.awt.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class TaiKham extends JPanel {
     private DichVuController dichVuService = new DichVuController();
 
     private LuotKham luotKham; // Lượt khám đang khám
-    private JTextField txtNgay = TienIch.oNhap(14); // Ngày tái khám dd/MM/yyyy
+    private ChonNgay txtNgay = new ChonNgay(); // Ngày tái khám dd/MM/yyyy
     private JComboBox<DichVu> cmbDichVu; // Dịch vụ của buổi tái khám
     private JButton btnHuy = TienIch.nutPhu("Hủy lịch tái khám đã tạo"); // Chỉ hiện khi lượt khám đã
 
@@ -47,15 +49,14 @@ public class TaiKham extends JPanel {
         cacKhoi.add(TienIch.dongThongTinLuotKham(luotKham));
         cmbDichVu =TienIch.taoChonDichVu(dichVuService.layTatCa(), "Chọn dịch vụ");
         txtNgay.setText(TienIch.ngay(LocalDate.now().plusDays(7)));
-        txtNgay.setToolTipText("Ngày/tháng/năm, ví dụ 25/12/2026");
 
-        JPanel form = TienIch.taoForm(new String[] {"Ngày tái khám (dd/MM/yyyy)", "Dịch vụ"}, new Component[] {txtNgay, cmbDichVu});
+        JPanel form = TienIch.taoForm(new String[] {"Ngày tái khám", "Dịch vụ"}, new Component[] {txtNgay, cmbDichVu});
         JButton btnTao = TienIch.nutChinh("Tạo lịch tái khám");
         btnTao.addActionListener(e -> taoLich());
         btnHuy.addActionListener(e -> huyLich());
         capNhatNutHuy();
         JPanel the = TienIch.the(TienIch.doanChu("Lượt khám " + luotKham.getMaLuotKham() + " (khám ngày "
-                + TienIch.ngay(luotKham.getGioBatDau().toLocalDate()) + "). Ngày tái khám phải sau ngày khám và sau hôm nay.", java.awt.Color.BLACK),
+                + TienIch.ngay(luotKham.getGioBatDau().toLocalDate()) + "). Chọn ngày tái khám bất kỳ sau ngày khám.", java.awt.Color.BLACK),
                 form, TienIch.dong(btnTao, btnHuy));
         JPanel gioiHan = new JPanel(new java.awt.BorderLayout()); // Thẻ chỉ rộng vừa phải
         gioiHan.setOpaque(false);
@@ -69,7 +70,7 @@ public class TaiKham extends JPanel {
         btnHuy.setVisible(luotKham.getNgayTaiKham() != null);
     }
 
-    // Hủy lịch tái khám đã tạo để đặt lại
+    // Hủy lịch tái khám đã tạo
     private void huyLich() {
         if (!TienIch.xacNhan("Hủy lịch tái khám ngày " + TienIch.ngay(luotKham.getNgayTaiKham()) + "?")) {
             return;
@@ -93,10 +94,11 @@ public class TaiKham extends JPanel {
         }
         try {
             LocalDate ngay = TienIch.docNgay(txtNgay.getText());
-            luotKhamService.datTaiKham(luotKham.getMaLuotKham(), ngay, dichVu.getMaDichVu());
+            boolean coLich = luotKhamService.datTaiKham(luotKham.getMaLuotKham(), ngay, dichVu.getMaDichVu());
             luotKham.setNgayTaiKham(ngay);
             capNhatNutHuy();
-            TienIch.thongTin("Đã tạo lịch tái khám ngày " + TienIch.ngay(ngay) + " (chờ lễ tân xác nhận).");
+            TienIch.thongTin(coLich ? "Đã tạo lịch tái khám ngày " + TienIch.ngay(ngay) + " (lịch đã xác nhận, không cần ai duyệt thêm)."
+                    : "Đã lưu ngày tái khám " + TienIch.ngay(ngay) + ". Ngày đó nha sĩ chưa có ca trực nên chưa có giờ hẹn, lễ tân sẽ đặt giờ khi bệnh nhân liên hệ.");
         } catch (RuntimeException e) {
             TienIch.baoLoi(e);
         }

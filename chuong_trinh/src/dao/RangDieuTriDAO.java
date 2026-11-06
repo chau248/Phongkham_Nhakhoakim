@@ -13,21 +13,17 @@ public class RangDieuTriDAO {
     static final String SELECT = "SELECT r.maBanGhi, r.maLuotKham, r.soFDI, r.trangThai, r.vatLieu, r.ngayGhiNhan, r.daNho, r.mauHienThi,"
             + " r.ghiChu, " + DichVuDAO.COT_NOI + " FROM dbo.RangDieuTri r LEFT JOIN dbo.DichVu dv ON dv.maDichVu = r.maDichVu";
 
-    // ----- Tìm -----
-
     // Các bản ghi răng của một lượt khám
     public List<RangDieuTri> layTheoLuotKham(String maLuotKham) {
         return TienIchDAO.layDanhSach(SELECT + " WHERE r.maLuotKham = ? ORDER BY r.soFDI, r.ngayGhiNhan DESC, r.maBanGhi DESC",
                 this::doc, maLuotKham);
     }
 
-    // Tất cả bản ghi răng của một hồ sơ qua mọi lượt khám, mới nhất trước
+    // Tất cả bản ghi răng của một hồ sơ qua mọi lượt khám
     public List<RangDieuTri> layTheoHoSo(String maHoSo) {
         return TienIchDAO.layDanhSach(SELECT + " JOIN dbo.LuotKham k ON k.maLuotKham = r.maLuotKham WHERE k.maHoSo = ?"
                 + " ORDER BY r.ngayGhiNhan DESC, r.maBanGhi DESC", this::doc, maHoSo);
     }
-
-    // ----- Thêm, sửa, xóa -----
 
     // Thêm bản ghi răng mới
     public void them(RangDieuTri r) {
@@ -37,7 +33,7 @@ public class RangDieuTriDAO {
                 r.getMaDichVu() == null ? null : r.getMaDichVu().getMaDichVu(), r.isDaNho(), r.getMauHienThi(), r.getGhiChu());
     }
 
-    // Cập nhật bản ghi răng (đặt lại thời điểm ghi nhận để bản vừa sửa là bản mới nhất của răng)
+    // Cập nhật bản ghi răng
     public void capNhat(RangDieuTri r) {
         LocalDateTime bayGio = LocalDateTime.now();
         TienIchDAO.thucThi("UPDATE dbo.RangDieuTri SET trangThai = ?, vatLieu = ?, maDichVu = ?, daNho = ?, mauHienThi = ?, ghiChu = ?,"
@@ -47,12 +43,10 @@ public class RangDieuTriDAO {
         r.setNgayGhiNhan(bayGio);
     }
 
-    // Xóa một bản ghi răng của lượt khám; trả về true nếu có xóa
+    // Xóa một bản ghi răng của lượt khám
     public boolean xoa(String maLuotKham, String maBanGhi) {
         return TienIchDAO.thucThi("DELETE FROM dbo.RangDieuTri WHERE maBanGhi = ? AND maLuotKham = ?", maBanGhi, maLuotKham) > 0;
     }
-
-    // ----- Đọc dòng kết quả -----
 
     private RangDieuTri doc(ResultSet rs) throws SQLException {
         RangDieuTri r = new RangDieuTri();

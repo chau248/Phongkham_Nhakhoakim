@@ -152,13 +152,13 @@ public class XemHoSoBenhAn extends JPanel {
         } catch (RuntimeException e) {
             nv = null; // Không biết ai đăng nhập
         }
-        if (nv != null && !HangSo.VAI_TRO_NHA_SI.equals(nv.getVaiTro()) && !HangSo.VAI_TRO_Y_TA.equals(nv.getVaiTro())) {
+        if (nv != null && !nv.laVaiTro(HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA)) {
             lyDo = nv.getVaiTro() + " chỉ xem phần y tế";
         } else if (HangSo.HO_SO_DA_DONG.equals(hoSo.getTrangThaiHoSo())) {
             lyDo = "Hồ sơ đã đóng, chỉ xem";
         }
         btnLuu.setEnabled(lyDo == null);
-        boolean quanLy = nv != null && HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro());
+        boolean quanLy = nv != null && nv.laVaiTro(HangSo.VAI_TRO_QUAN_LY);
         btnDongHoSo.setVisible(quanLy);
         btnDongHoSo.setText(HangSo.HO_SO_DA_DONG.equals(hoSo.getTrangThaiHoSo()) ? "Mở lại hồ sơ" : "Đóng hồ sơ");
         lblQuyen.setText(lyDo == null ? "" : lyDo);

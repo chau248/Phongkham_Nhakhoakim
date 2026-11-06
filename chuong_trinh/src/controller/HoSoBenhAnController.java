@@ -17,23 +17,14 @@ import entity.LieuTrinh;
 import entity.LuotKham;
 import entity.NhanVien;
 
-// Nghiệp vụ hồ sơ bệnh án: xem, sửa thông tin y tế, đóng/mở hồ sơ, liệu trình và cảnh báo y tế
+// Nghiệp vụ hồ sơ bệnh án: xem
 public class HoSoBenhAnController {
-
-    // Từ khóa để cảnh báo trước thủ thuật (viết thường)
-    private static final String[] THUOC_CHONG_DONG = {"warfarin", "aspirin", "clopidogrel", "plavix", "heparin", "rivaroxaban",
-        "xarelto", "apixaban", "acenocoumarol", "dabigatran", "ticagrelor", "enoxaparin", "chống đông", "loãng máu"};
-    private static final String[] ROI_LOAN_DONG_MAU = {"đông máu", "khó đông", "hemophilia", "máu loãng"};
-    private static final String[] TIEU_DUONG = {"tiểu đường", "đái tháo đường"};
-    private static final String[] TIM_HUYET_AP = {"huyết áp", "tim"};
 
     private HoSoBenhAnDAO hoSoDAO = new HoSoBenhAnDAO();
     private LieuTrinhDAO lieuTrinhDAO = new LieuTrinhDAO();
     private LuotKhamDAO luotKhamDAO = new LuotKhamDAO();
 
-    // ----- Tìm -----
-
-    // Hồ sơ của một bệnh nhân; chưa có thì báo lỗi
+    // Hồ sơ của một bệnh nhân
     public HoSoBenhAn timTheoBenhNhan(String maBN) {
         HoSoBenhAn hs = hoSoDAO.timTheoBenhNhan(maBN);
         if (hs == null) {
@@ -42,7 +33,7 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // Hồ sơ theo mã hồ sơ; không có thì báo lỗi
+    // Hồ sơ theo mã hồ sơ
     public HoSoBenhAn timTheoMa(String maHoSo) {
         HoSoBenhAn hs = hoSoDAO.timTheoMa(maHoSo);
         if (hs == null) {
@@ -51,12 +42,12 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // Lịch sử các lượt khám của hồ sơ, mới nhất trước
+    // Lịch sử các lượt khám của hồ sơ
     public List<LuotKham> layLichSuKham(String maHoSo) {
         return luotKhamDAO.layTheoHoSo(maHoSo);
     }
 
-    // Tất cả liệu trình của bệnh nhân (đang thực hiện xếp trước)
+    // Tất cả liệu trình của bệnh nhân
     public List<LieuTrinh> layLieuTrinh(String maBN) {
         return lieuTrinhDAO.layTheoBenhNhan(maBN);
     }
@@ -72,9 +63,7 @@ public class HoSoBenhAnController {
         return kq;
     }
 
-    // ----- Thêm -----
-
-    // Dựng hồ sơ rỗng cho bệnh nhân mới (chưa lưu; BenhNhanController lưu cùng bệnh nhân)
+    // Dựng hồ sơ rỗng cho bệnh nhân mới
     public HoSoBenhAn taoDoiTuongHoSoRong(BenhNhan bn) {
         HoSoBenhAn hs = new HoSoBenhAn();
         hs.setMaHoSo(TienIchDAO.taoMa("HS"));
@@ -84,10 +73,8 @@ public class HoSoBenhAnController {
         return hs;
     }
 
-    // ----- Sửa -----
-
-    // Cập nhật thông tin y tế (chỉ nha sĩ hoặc y tá); hồ sơ đã đóng thì không sửa được.
-    // banDau là hồ sơ lúc mở form: chỉ trường nào người dùng thực sự đổi mới được ghi; trường đã bị người khác sửa thì báo lỗi.
+    // Cập nhật thông tin y tế
+    // banDau là hồ sơ lúc mở form: chỉ trường nào người dùng thực sự đổi mới được ghi
     public void capNhatThongTinYTe(HoSoBenhAn hs, HoSoBenhAn banDau) {
         NhanVien nv = TienIchController.yeuCau(PhienLamViec::getNhanVienHienTai, "sửa thông tin y tế", HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA);
         HoSoBenhAn cu = timTheoMa(hs.getMaHoSo());
@@ -109,10 +96,6 @@ public class HoSoBenhAnController {
             thuoc = gopTruong(TienIchController.rongThanhNull(banDau.getThuocDangSuDung()), thuoc, TienIchController.rongThanhNull(cu.getThuocDangSuDung()), "Thuốc đang sử dụng");
             ghiChu = gopTruong(TienIchController.rongThanhNull(banDau.getGhiChuDacBiet()), ghiChu, TienIchController.rongThanhNull(cu.getGhiChuDacBiet()), "Ghi chú đặc biệt");
         }
-        TienIchController.doDai(tienSu, 1000, "Tiền sử bệnh");
-        TienIchController.doDai(benhNen, 500, "Bệnh nền");
-        TienIchController.doDai(thuoc, 500, "Thuốc đang sử dụng");
-        TienIchController.doDai(ghiChu, 500, "Ghi chú đặc biệt");
 
         HoSoBenhAn moi = new HoSoBenhAn();
         moi.setMaHoSo(cu.getMaHoSo());
@@ -138,7 +121,7 @@ public class HoSoBenhAnController {
         hs.setGhiChuDacBiet(ghiChu);
     }
 
-    // Đóng hoặc mở lại hồ sơ (chỉ Quản lý); không đóng khi còn lượt khám đang dở
+    // Đóng hoặc mở lại hồ sơ
     public void doiTrangThaiHoSo(String maHoSo, String trangThaiMoi) {
         NhanVien nv = TienIchController.yeuCau(PhienLamViec::getNhanVienHienTai, "đóng hoặc mở lại hồ sơ bệnh án", HangSo.VAI_TRO_QUAN_LY);
         if (!HangSo.HO_SO_DANG_MO.equals(trangThaiMoi) && !HangSo.HO_SO_DA_DONG.equals(trangThaiMoi)) {
@@ -156,13 +139,9 @@ public class HoSoBenhAnController {
             }
         }
         hoSoDAO.capNhatTrangThaiHoSo(maHoSo, trangThaiMoi);
-        TienIchController.ghiNhatKy(nv.getMaNV(), "Đổi trạng thái hồ sơ", "HoSoBenhAn", maHoSo,
-                "Từ [" + hs.getTrangThaiHoSo() + "] sang [" + trangThaiMoi + "]");
     }
 
-    // ----- Cảnh báo (không chặn) -----
-
-    // Dịch vụ cần liệu trình mà bệnh nhân chưa có liệu trình đang thực hiện; không cần cảnh báo thì null
+    // Dịch vụ cần liệu trình mà bệnh nhân chưa có liệu trình đang thực hiện
     public String canhBaoLieuTrinh(String maBN, DichVu dv) {
         if (dv == null || !dv.isYeuCauLieuTrinh() || !layLieuTrinhDangThucHien(maBN).isEmpty()) {
             return null;
@@ -170,51 +149,8 @@ public class HoSoBenhAnController {
         return "Dịch vụ \"" + dv.getTenDichVu() + "\" cần theo liệu trình nhưng bệnh nhân chưa có liệu trình đang thực hiện.";
     }
 
-    // Cảnh báo về bệnh nền, thuốc đang dùng và tuổi khi làm dịch vụ; không cần cảnh báo thì null
-    public String canhBaoYTe(String maBN, DichVu dv) {
-        if (dv == null) {
-            return null;
-        }
-        HoSoBenhAn hs = hoSoDAO.timTheoBenhNhan(maBN);
-        BenhNhan bn = hs == null ? null : hs.getMaBN();
-        String loai = dv.getLoaiDichVu() == null ? "" : dv.getLoaiDichVu();
-        boolean xamLan = loai.equals(HangSo.LOAI_NHO_RANG) || loai.equals(HangSo.LOAI_NOI_NHA) || loai.equals(HangSo.LOAI_IMPLANT);
-        List<String> ds = new ArrayList<>();
-        if (xamLan && hs != null) {
-            String thuoc = hs.getThuocDangSuDung() == null ? "" : hs.getThuocDangSuDung().toLowerCase();
-            String chongDong = timTuKhoa(thuoc, THUOC_CHONG_DONG);
-            if (chongDong != null) {
-                ds.add("Bệnh nhân đang dùng thuốc chống đông (" + chongDong + "): có thể khó cầm máu, cần hỏi bác sĩ điều trị trước khi làm \"" + dv.getTenDichVu() + "\".");
-            }
-            String benhNen = hs.getBenhNen() == null ? "" : hs.getBenhNen().toLowerCase();
-            if (timTuKhoa(benhNen, TIEU_DUONG) != null) {
-                ds.add("Bệnh nhân tiểu đường: kiểm tra đường huyết trước khi làm, vết thương lâu lành và dễ nhiễm trùng.");
-            }
-            if (timTuKhoa(benhNen, TIM_HUYET_AP) != null) {
-                ds.add("Bệnh nhân có bệnh tim mạch hoặc huyết áp: đo huyết áp trước khi làm, thận trọng với thuốc tê có adrenaline.");
-            }
-            if (timTuKhoa(benhNen, ROI_LOAN_DONG_MAU) != null) {
-                ds.add("Bệnh nhân bị rối loạn đông máu: cần hội chẩn bác sĩ chuyên khoa trước khi làm thủ thuật chảy máu.");
-            }
-        }
-        if (bn != null && bn.getNgaySinh() != null) {
-            int tuoi = bn.tinhTuoi();
-            if (loai.equals(HangSo.LOAI_IMPLANT) && tuoi < 18) {
-                ds.add("Bệnh nhân " + tuoi + " tuổi: xương hàm còn phát triển, thường chưa chỉ định cấy ghép Implant.");
-            }
-            if (loai.equals(HangSo.LOAI_THAM_MY) && tuoi < 16) {
-                ds.add("Bệnh nhân " + tuoi + " tuổi: không khuyến cáo làm dịch vụ thẩm mỹ như tẩy trắng răng.");
-            }
-        } else if (bn != null && (loai.equals(HangSo.LOAI_IMPLANT) || loai.equals(HangSo.LOAI_THAM_MY))) {
-            ds.add("Chưa có ngày sinh nên không kiểm tra được giới hạn tuổi.");
-        }
-        return ds.isEmpty() ? null : String.join("\n", ds);
-    }
-
-    // ----- Hàm phụ -----
-
-    // Gộp một trường khi hai người cùng sửa: mình không đổi thì giữ giá trị hiện có; mình đổi mà không ai khác đổi thì lấy giá trị mới;
-    // cả hai cùng đổi khác nhau thì báo lỗi
+    // Gộp một trường khi hai người cùng sửa: mình không đổi
+    // cả hai cùng đổi khác nhau
     private String gopTruong(String banDau, String moi, String hienCo, String tenTruong) {
         if (Objects.equals(moi, banDau)) {
             return hienCo;
@@ -225,7 +161,7 @@ public class HoSoBenhAnController {
         throw new NghiepVuException("Trường \"" + tenTruong + "\" đã được người khác sửa từ lúc bạn mở hồ sơ. Hãy xem lại hồ sơ rồi sửa lại.");
     }
 
-    // Ghi nhật ký nếu giá trị cũ và mới khác nhau (null và rỗng coi như nhau)
+    // Ghi nhật ký nếu giá trị cũ và mới khác nhau
     private void ghiNhatKyNeuDoi(String maNV, String maHoSo, String tenTruong, String cu, String moi) {
         String a = TienIchController.rongThanhNull(cu);
         String b = TienIchController.rongThanhNull(moi);
@@ -235,18 +171,4 @@ public class HoSoBenhAnController {
         }
     }
 
-    // Từ khóa đầu tiên trong danh sách mà chuỗi có chứa (bỏ qua chỗ đứng sau chữ phủ định như "không", "chưa")
-    private String timTuKhoa(String chuoi, String[] tuKhoa) {
-        for (String t : tuKhoa) {
-            int vt = chuoi.indexOf(t);
-            while (vt >= 0) {
-                String truoc = chuoi.substring(Math.max(0, vt - 10), vt);
-                if (!truoc.contains("không") && !truoc.contains("chưa") && !truoc.contains("ko ")) {
-                    return t;
-                }
-                vt = chuoi.indexOf(t, vt + 1);
-            }
-        }
-        return null;
-    }
 }

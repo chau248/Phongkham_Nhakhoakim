@@ -1,5 +1,7 @@
 package ui;
 
+import ui.ThanhPhan.ChonNgay;
+
 import java.awt.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,8 +11,10 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import controller.CauHinhController;
 import controller.NhanVienController;
 import entity.NhanVien;
+import entity.DanhMuc;
 import entity.HangSo;
 
 // Màn hình cập nhật hồ sơ nhân viên
@@ -20,28 +24,38 @@ public class QuanLyNhanVien extends JPanel {
     private static final String TAT_CA = "Tất cả";
 
     private NhanVienController nhanVienController = new NhanVienController();
+    private CauHinhController cauHinhController = new CauHinhController();
 
     private JPanel khuCanhBao = new JPanel(new java.awt.BorderLayout()); // Chỗ đặt cảnh báo chứng
     private JTextField txtTim = TienIch.oNhap(20); // Tìm theo mã hoặc họ tên
-    private JComboBox<String> cmbLocVaiTro = new JComboBox<>(new String[] {TAT_CA, HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY});
+    private JComboBox<String> cmbLocVaiTro = new JComboBox<>(); // Lọc theo vai trò (nạp từ danh mục vai trò)
     private JComboBox<String> cmbLocTrangThai = new JComboBox<>(new String[] {TAT_CA, NhanVienController.DANG_LAM, NhanVienController.NGHI_VIEC});
     private JTable tblNhanVien = TienIch.taoBang(new String[] {"Mã", "Họ tên", "Vai trò", "SĐT", "Chuyên khoa", "Hạn chứng chỉ", "Trạng thái"},
             new int[] {90, 190, 90, 100, 130, 110, 110}, "Không có nhân viên nào.");
     private List<NhanVien> dsHienThi = new ArrayList<>();
 
     private JTextField txtHoTen = TienIch.oNhap(26);
-    private JComboBox<String> cmbVaiTro = new JComboBox<>(new String[] {HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY});
+    private JComboBox<String> cmbVaiTro = new JComboBox<>();
     private JComboBox<String> cmbGioiTinh = new JComboBox<>(new String[] {"", "Nam", "Nữ", "Khác"});
     private JTextField txtSdt = TienIch.oNhap(12);
-    private JTextField txtChuyenKhoa = TienIch.oNhap(20);
-    private JTextField txtNgayVaoLam = TienIch.oNhap(10);
+    private JComboBox<String> cmbChuyenKhoa = new JComboBox<>(); // Chuyên khoa chọn từ danh mục
+    private ChonNgay txtNgayVaoLam = new ChonNgay();
     private JTextField txtSoCCHN = TienIch.oNhap(16);
-    private JTextField txtHanCCHN = TienIch.oNhap(10);
+    private ChonNgay txtHanCCHN = new ChonNgay();
     private JComboBox<String> cmbTrangThai = new JComboBox<>(new String[] {NhanVienController.DANG_LAM, NhanVienController.NGHI_VIEC});
     private NhanVien dangSua; // Nhân viên đang chọn để sửa
 
     public QuanLyNhanVien() {
-        for (JComboBox<String> c : List.of(cmbLocVaiTro, cmbLocTrangThai, cmbVaiTro, cmbGioiTinh, cmbTrangThai)) {
+        cmbLocVaiTro.addItem(TAT_CA);
+        for (String vt : cauHinhController.layTenVaiTro()) {
+            cmbLocVaiTro.addItem(vt);
+            cmbVaiTro.addItem(vt);
+        }
+        cmbChuyenKhoa.addItem("");
+        for (String ck : cauHinhController.layDanhMuc(DanhMuc.CHUYEN_KHOA)) {
+            cmbChuyenKhoa.addItem(ck);
+        }
+        for (JComboBox<String> c : List.of(cmbLocVaiTro, cmbLocTrangThai, cmbVaiTro, cmbGioiTinh, cmbTrangThai, cmbChuyenKhoa)) {
             c.setFont(TienIch.FONT);
         }
         khuCanhBao.setOpaque(false);
@@ -66,7 +80,7 @@ public class QuanLyNhanVien extends JPanel {
 
         JPanel form = TienIch.taoForm(new String[] {"Họ tên", "Vai trò", "Giới tính", "Số điện thoại", "Chuyên khoa", "Ngày vào làm (dd/MM/yyyy)",
             "Số chứng chỉ hành nghề (nha sĩ)", "Hạn chứng chỉ (dd/MM/yyyy)", "Trạng thái"},
-                new Component[] {txtHoTen, cmbVaiTro, cmbGioiTinh, txtSdt, txtChuyenKhoa, txtNgayVaoLam, txtSoCCHN, txtHanCCHN, cmbTrangThai});
+                new Component[] {txtHoTen, cmbVaiTro, cmbGioiTinh, txtSdt, cmbChuyenKhoa, txtNgayVaoLam, txtSoCCHN, txtHanCCHN, cmbTrangThai});
         TienIch.xepManHinh(this, TienIch.tieuDe("Hồ sơ nhân viên"), khuCanhBao,
                 TienIch.dong(TienIch.nhan("Tìm"), txtTim, TienIch.nhan("Vai trò"), cmbLocVaiTro, TienIch.nhan("Trạng thái"), cmbLocTrangThai, btnLoc),
                 TienIch.cuonBang(tblNhanVien, 230), TienIch.the(TienIch.chuThuong("Thông tin nhân viên (chọn một dòng ở trên để sửa)", true), form,
@@ -95,7 +109,7 @@ public class QuanLyNhanVien extends JPanel {
         }
     }
 
-    // Lọc danh sách theo từ khóa, vai trò
+    // Lọc danh sách theo từ khóa
     private void loc() {
         try {
             String tu = txtTim.getText().trim().toLowerCase();
@@ -134,7 +148,7 @@ public class QuanLyNhanVien extends JPanel {
         cmbVaiTro.setSelectedItem(dangSua.getVaiTro());
         cmbGioiTinh.setSelectedItem(TienIch.chu(dangSua.getGioiTinh()));
         txtSdt.setText(TienIch.chu(dangSua.getSdt()));
-        txtChuyenKhoa.setText(TienIch.chu(dangSua.getChuyenKhoa()));
+        cmbChuyenKhoa.setSelectedItem(TienIch.chu(dangSua.getChuyenKhoa()));
         txtNgayVaoLam.setText(TienIch.ngay(dangSua.getNgayVaoLam()));
         txtSoCCHN.setText(TienIch.chu(dangSua.getSoChungChiHanhNghe()));
         txtHanCCHN.setText(TienIch.ngay(dangSua.getNgayHetHanChungChi()));
@@ -144,10 +158,11 @@ public class QuanLyNhanVien extends JPanel {
     private void xoaForm() {
         dangSua = null;
         tblNhanVien.clearSelection();
-        for (JTextField t : new JTextField[] {txtHoTen, txtSdt, txtChuyenKhoa, txtNgayVaoLam, txtSoCCHN, txtHanCCHN}) {
+        for (JTextField t : new JTextField[] {txtHoTen, txtSdt, txtNgayVaoLam, txtSoCCHN, txtHanCCHN}) {
             t.setText("");
         }
         cmbVaiTro.setSelectedIndex(0);
+        cmbChuyenKhoa.setSelectedIndex(0);
         cmbGioiTinh.setSelectedIndex(0);
         cmbTrangThai.setSelectedIndex(0);
     }
@@ -159,7 +174,7 @@ public class QuanLyNhanVien extends JPanel {
         nv.setVaiTro((String) cmbVaiTro.getSelectedItem());
         nv.setGioiTinh((String) cmbGioiTinh.getSelectedItem());
         nv.setSdt(txtSdt.getText());
-        nv.setChuyenKhoa(txtChuyenKhoa.getText());
+        nv.setChuyenKhoa((String) cmbChuyenKhoa.getSelectedItem());
         nv.setNgayVaoLam(TienIch.docNgay(txtNgayVaoLam.getText()));
         nv.setSoChungChiHanhNghe(txtSoCCHN.getText());
         nv.setNgayHetHanChungChi(TienIch.docNgay(txtHanCCHN.getText()));

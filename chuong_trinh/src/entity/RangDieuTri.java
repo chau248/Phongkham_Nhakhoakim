@@ -96,20 +96,19 @@ public class RangDieuTri {
         this.ghiChu = ghiChu;
     }
 
-
-    // Số răng FDI hợp lệ: răng vĩnh viễn 11-18, 21-28, 31-38, 41-48; răng sữa 51-55, 61-65, 71-75, 81-85
+    // Số răng FDI hợp lệ: răng vĩnh viễn 11-18
     public static boolean kiemTraSoFDI(int so) {
         return laRangVinhVien(so) || laRangSua(so);
     }
 
-    // Răng vĩnh viễn: hàng 1 đến 4, răng số 1 đến 8
+    // Răng vĩnh viễn: hàng 1 đến 4
     public static boolean laRangVinhVien(int so) {
         int hang = so / 10;
         int rang = so % 10;
         return hang >= 1 && hang <= 4 && rang >= 1 && rang <= 8;
     }
 
-    // Răng sữa: hàng 5 đến 8, răng số 1 đến 5
+    // Răng sữa: hàng 5 đến 8
     public static boolean laRangSua(int so) {
         int hang = so / 10;
         int rang = so % 10;

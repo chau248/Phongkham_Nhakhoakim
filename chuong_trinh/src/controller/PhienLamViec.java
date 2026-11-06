@@ -7,7 +7,7 @@ public class PhienLamViec {
 
     private static NhanVien nhanVienHienTai;
 
-    // Lấy người đang đăng nhập (chưa đăng nhập thì null)
+    // Lấy người đang đăng nhập
     public static NhanVien getNhanVienHienTai() {
         return nhanVienHienTai;
     }

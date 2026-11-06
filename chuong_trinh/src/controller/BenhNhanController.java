@@ -21,8 +21,6 @@ public class BenhNhanController {
     private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // ----- Tìm -----
-
     // Tìm bệnh nhân theo mã
     public BenhNhan timTheoMa(String maBN) {
         return benhNhanDAO.timTheoMa(maBN);
@@ -33,12 +31,10 @@ public class BenhNhanController {
         return benhNhanDAO.timKiem(tuKhoa == null ? "" : tuKhoa.trim(), TOI_DA_KET_QUA);
     }
 
-    // Tìm theo từ khóa, có thể gồm cả người ngừng theo dõi
+    // Tìm theo từ khóa
     public List<BenhNhan> timKiem(String tuKhoa, boolean gomNgung) {
         return benhNhanDAO.timKiem(tuKhoa == null ? "" : tuKhoa.trim(), TOI_DA_KET_QUA, gomNgung);
     }
-
-    // ----- Kiểm tra dữ liệu -----
 
     // Kiểm tra thông tin nhập vào
     public void kiemTra(BenhNhan bn) {
@@ -51,10 +47,6 @@ public class BenhNhanController {
         if (bn.getHoTen().length() < 2 || bn.getHoTen().length() > 100 || !bn.getHoTen().matches("[\\p{L} .'-]+")) {
             throw new NghiepVuException("Họ tên chỉ gồm chữ cái và khoảng trắng, dài từ 2 đến 100 ký tự");
         }
-        TienIchController.doDai(bn.getDiaChi(), 255, "Địa chỉ");
-        TienIchController.doDai(bn.getEmail(), 100, "Email");
-        TienIchController.doDai(bn.getNguoiLienHeKhanCap(), 100, "Người liên hệ khẩn cấp");
-        TienIchController.doDai(bn.getGhiChu(), 255, "Ghi chú");
         if (bn.getGioiTinh() != null && !List.of("Nam", "Nữ", "Khác").contains(bn.getGioiTinh())) {
             throw new NghiepVuException("Giới tính chỉ có thể là Nam, Nữ hoặc Khác");
         }
@@ -87,11 +79,8 @@ public class BenhNhanController {
         }
     }
 
-    // ----- Thêm, sửa, đổi trạng thái -----
-
     // Thêm bệnh nhân mới
     public BenhNhan them(BenhNhan bn) {
-    // ----- Hàm phụ -----
 
         kiemTraQuyenSua();
         chuanHoa(bn);
@@ -140,8 +129,6 @@ public class BenhNhanController {
             }
         }
         benhNhanDAO.capNhatTrangThai(maBN, trangThaiMoi);
-        TienIchController.ghiNhatKy(nguoiDung.get().getMaNV(), "Đổi trạng thái bệnh nhân", "BenhNhan", maBN,
-                "Từ [" + bn.getTrangThai() + "] sang [" + trangThaiMoi + "]");
     }
 
     // Chỉ LT & QL được thêm
@@ -151,7 +138,7 @@ public class BenhNhanController {
             throw new NghiepVuException("Chưa đăng nhập");
         }
         String vaiTro = nv.getVaiTro();
-        if (HangSo.VAI_TRO_LE_TAN.equals(vaiTro) || HangSo.VAI_TRO_QUAN_LY.equals(vaiTro)) {
+        if (nv.laVaiTro(HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY)) {
             return;
         }
         if (HangSo.VAI_TRO_NHA_SI.equals(vaiTro)) {

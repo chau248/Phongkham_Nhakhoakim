@@ -2,7 +2,7 @@ package entity;
 
 import java.time.LocalDate;
 
-// Hồ sơ bệnh án của một bệnh nhân (mỗi bệnh nhân đúng một hồ sơ)
+// Hồ sơ bệnh án của một bệnh nhân
 public class HoSoBenhAn {
 
     private String maHoSo; // Mã hồ sơ, dạng HS000001

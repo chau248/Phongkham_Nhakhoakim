@@ -14,14 +14,12 @@ public class TaiKhoanDAO {
             + " t.soLanDangNhapSai, t.thoiGianKhoaDen, t.ngayDoiMatKhauCuoi, t.yeuCauDoiMatKhau, " + NhanVienDAO.COT_NOI
             + " FROM dbo.TaiKhoan t JOIN dbo.NhanVien nv ON nv.maNV = t.maNV";
 
-    // ----- Tìm -----
-
-    // Tất cả tài khoản, theo mã
+    // Tất cả tài khoản
     public List<TaiKhoan> layTatCa() {
         return TienIchDAO.layDanhSach(SELECT + " ORDER BY t.maTaiKhoan", this::doc);
     }
 
-    // Tìm tài khoản theo mã, không có thì null
+    // Tìm tài khoản theo mã
     public TaiKhoan timTheoMa(String maTaiKhoan) {
         return TienIchDAO.layMot(SELECT + " WHERE t.maTaiKhoan = ?", this::doc, maTaiKhoan);
     }
@@ -36,15 +34,6 @@ public class TaiKhoanDAO {
         return TienIchDAO.layMot(SELECT + " WHERE t.maNV = ?", this::doc, maNV);
     }
 
-    // Số tài khoản Quản lý đang hoạt động
-    public int demQuanLyHoatDong() {
-        Integer so = TienIchDAO.layMot("SELECT COUNT(*) FROM dbo.TaiKhoan t JOIN dbo.NhanVien n ON n.maNV = t.maNV"
-                + " WHERE t.vaiTro = N'Quản lý' AND t.trangThaiKhoa = 0 AND n.trangThai = N'Đang làm việc'", rs -> rs.getInt(1));
-        return so == null ? 0 : so;
-    }
-
-    // ----- Thêm, sửa -----
-
     // Thêm tài khoản mới
     public void them(TaiKhoan tk) {
         TienIchDAO.thucThi("INSERT INTO dbo.TaiKhoan (maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa, yeuCauDoiMatKhau)"
@@ -52,7 +41,7 @@ public class TaiKhoanDAO {
                 tk.getVaiTro(), tk.isYeuCauDoiMatKhau());
     }
 
-    // Đặt mật khẩu mới (đã băm)
+    // Đặt mật khẩu mới
     public void doiMatKhau(String maTaiKhoan, String matKhauDaBam, boolean yeuCauDoi) {
         TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET matKhau = ?, ngayDoiMatKhauCuoi = CAST(SYSDATETIME() AS DATE), yeuCauDoiMatKhau = ?"
                 + " WHERE maTaiKhoan = ?", matKhauDaBam, yeuCauDoi, maTaiKhoan);
@@ -63,7 +52,7 @@ public class TaiKhoanDAO {
         TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET matKhau = ? WHERE maTaiKhoan = ?", matKhauDaBam, maTaiKhoan);
     }
 
-    // Ghi nhận đăng nhập sai (có thể khóa luôn tài khoản)
+    // Ghi nhận đăng nhập sai
     public void ghiNhanDangNhapSai(String maTaiKhoan, int soLanSai, boolean khoa) {
         TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET soLanDangNhapSai = ?, trangThaiKhoa = ? WHERE maTaiKhoan = ?", soLanSai, khoa, maTaiKhoan);
     }
@@ -88,8 +77,6 @@ public class TaiKhoanDAO {
     public void khoaTheoNhanVien(String maNV) {
         TienIchDAO.thucThi("UPDATE dbo.TaiKhoan SET trangThaiKhoa = 1 WHERE maNV = ?", maNV);
     }
-
-    // ----- Đọc dòng kết quả -----
 
     private TaiKhoan doc(ResultSet rs) throws SQLException {
         TaiKhoan tk = new TaiKhoan();

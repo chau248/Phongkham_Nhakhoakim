@@ -3,11 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
-
-/* Chạy lại file này vào bất kỳ ngày nào thì dữ liệu mẫu (lịch hẹn, ca trực, lượt khám, hóa đơn) được dời về quanh ngày đó:
-   từ 7 ngày trước đến 7 ngày sau. Dữ liệu do chương trình tạo thêm không bị đụng tới. */
-
-/* ---------- Bộ đếm mã: đặt bằng số bản ghi mẫu bên dưới (chỉ tăng, không bao giờ giảm) ---------- */
+-- Bộ đếm mã
 MERGE dbo.BoDemMa AS t
 USING (VALUES ('NV', 13), ('DV', 12), ('BN', 12), ('HS', 12), ('LH', 25), ('CA', 180), ('TK', 13),
               ('LT', 5), ('LK', 12), ('BG', 11), ('HD', 10), ('CT', 13)) AS s(tienTo, giaTri)
@@ -16,8 +12,7 @@ WHEN NOT MATCHED THEN INSERT (tienTo, giaTriHienTai) VALUES (s.tienTo, s.giaTri)
 WHEN MATCHED AND t.giaTriHienTai < s.giaTri THEN UPDATE SET giaTriHienTai = s.giaTri;
 GO
 
-/* ---------- Nhân viên: 1 Quản lý, 5 Nha sĩ, 4 Y tá, 2 Lễ tân, 1 tài khoản Toàn quyền ----------
-   NV000003 có chứng chỉ sắp hết hạn trong 20 ngày, NV000012 đã nghỉ việc (để thử cảnh báo và khóa tài khoản) */
+-- Nhân viên: 1 Quản lý, 5 Nha sĩ, 4 Y tá, 2 Lễ tân, 1 tài khoản Toàn quyền
 INSERT INTO dbo.NhanVien (maNV, hoTen, vaiTro, soChungChiHanhNghe, ngayHetHanChungChi, gioiTinh, sdt, chuyenKhoa, ngayVaoLam, trangThai)
 SELECT v.* FROM (VALUES
     (N'NV000001', N'Lê Quốc Bảo',          N'Quản lý', NULL,         NULL,                        N'Nam', '0900000001', NULL,               '2022-01-10', N'Đang làm việc'),
@@ -36,13 +31,12 @@ SELECT v.* FROM (VALUES
 ) AS v(maNV, hoTen, vaiTro, soChungChiHanhNghe, ngayHetHanChungChi, gioiTinh, sdt, chuyenKhoa, ngayVaoLam, trangThai)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.NhanVien n WHERE n.maNV = v.maNV);
 
--- Chạy lại thì chứng chỉ của hai nhân viên dùng để thử cảnh báo cũng được tính lại theo ngày hôm nay
+-- Chạy lại thì chứng chỉ của hai nhân viên dùng 
 UPDATE dbo.NhanVien SET ngayHetHanChungChi = DATEADD(DAY, 20, CAST(GETDATE() AS DATE)) WHERE maNV = N'NV000003';
 UPDATE dbo.NhanVien SET ngayHetHanChungChi = DATEADD(DAY, -10, CAST(GETDATE() AS DATE)) WHERE maNV = N'NV000012';
 GO
 
-/* ---------- Tài khoản mẫu: mật khẩu của mọi tài khoản là 123456 (lưu dạng băm PBKDF2, xem MatKhau.java);
-   mỗi nhân viên một tài khoản, TK000012 bị khóa, TK000013 (admin) dùng được mọi chức năng ---------- */
+-- Tài khoản mẫu
 INSERT INTO dbo.TaiKhoan (maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa)
 SELECT v.* FROM (VALUES
     (N'TK000001', N'NV000001', 'quanly', 's1$5eed0000a2c3d4e5$a04d546f626688a5b882b8c63fae96edf77838ff43c361b6442d1c9179876bb1', N'Quản lý', 0),
@@ -54,15 +48,16 @@ SELECT v.* FROM (VALUES
     (N'TK000007', N'NV000007', 'nhasi3', 's1$5eed0000a92a3b4b$5aeae0a9bb1f69aecc97cddc943d4c280b1786585fc7d9a47c89ae7e74d13609', N'Nha sĩ',  0),
     (N'TK000008', N'NV000008', 'nhasi4', 's1$5eed0000aa3b4c5c$da72cf62b33e0be0531f1b843ce7339530429dc4a9fb9243cc88d096a4e2b464', N'Nha sĩ',  0),
     (N'TK000009', N'NV000009', 'yta3',   's1$5eed0000ab4c5d6d$e59924842b5fe528ddc330225703090954b0235fe6fae1c0050db89469c183bb', N'Y tá',    0),
-    (N'TK000010', N'NV000010', 'letan2', 's1$5eed0000ac5d6e7e$2b9c6d957da9049627e6b4bef6ec0b02fdff8a672350adcce49c6fa21241b4ec', N'Lễ tân',  0),
-    (N'TK000011', N'NV000011', 'yta4',   's1$5eed0000ad6e7f8f$31b371c28d87771175574bfab38075d41e445183a02b217ce1b9d6f15f4909f5', N'Y tá',    0),
     (N'TK000012', N'NV000012', 'nhasi5', 's1$5eed0000ae7f90a0$04b08276dfa6a9c9df3c2b54ff5b76c88b16e3252eb9f04f6908fb3ce0c182ce', N'Nha sĩ',  1),
     (N'TK000013', N'NV000013', 'admin',  's1$5eed0000a2c3d4e5$a04d546f626688a5b882b8c63fae96edf77838ff43c361b6442d1c9179876bb1', N'Toàn quyền', 0)
 ) AS v(maTaiKhoan, maNV, tenDangNhap, matKhau, vaiTro, trangThaiKhoa)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.TaiKhoan t WHERE t.maTaiKhoan = v.maTaiKhoan);
+
+-- Hai tài khoản mẫu 
+DELETE FROM dbo.TaiKhoan WHERE maTaiKhoan IN (N'TK000010', N'TK000011') AND lanDangNhapCuoi IS NULL;
 GO
 
-/* ---------- Dịch vụ ---------- */
+-- Dịch vụ
 INSERT INTO dbo.DichVu (maDichVu, tenDichVu, gia, thoiGianDuKien, loaiDichVu, donViTinh, yeuCauLieuTrinh, lienQuanImplantCauRang)
 SELECT v.* FROM (VALUES
     (N'DV000001', N'Khám tổng quát',        100000,  20, N'Khám',      N'Lần', 0, 0),
@@ -81,8 +76,7 @@ SELECT v.* FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.DichVu d WHERE d.maDichVu = v.maDichVu);
 GO
 
-/* ---------- Ca trực: 15 ngày liên tiếp (từ 7 ngày trước đến 7 ngày sau, kể cả chủ nhật), mỗi ngày cùng một mẫu 12 ca.
-   Mã ca mẫu CA000001-CA000180; chạy lại thì xóa ca mẫu cũ rồi tạo lại theo ngày mới ---------- */
+-- Ca trực
 DELETE FROM dbo.CaTruc WHERE maCaTruc BETWEEN N'CA000001' AND N'CA000180';
 GO
 INSERT INTO dbo.CaTruc (maCaTruc, maNV, ngay, caLam, phong)
@@ -106,7 +100,7 @@ CROSS JOIN (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.CaTruc c WHERE c.maNV = m.maNV AND c.ngay = DATEADD(DAY, d.lech, CAST(GETDATE() AS DATE)) AND c.caLam = m.caLam);
 GO
 
-/* ---------- Bệnh nhân (BN000008 là trẻ em có người liên hệ khẩn cấp, BN000011 đã ngừng theo dõi) ---------- */
+-- Bệnh nhân
 INSERT INTO dbo.BenhNhan (maBN, hoTen, ngaySinh, gioiTinh, sdt, diaChi, email, nguoiLienHeKhanCap, sdtNguoiLienHe, trangThai)
 SELECT v.* FROM (VALUES
     (N'BN000001', N'Nguyễn Văn An',          '1990-05-12', N'Nam', '0911000001', N'Quận 1, TP. Hồ Chí Minh',       'an.nguyen@example.com',  NULL,                  NULL,         N'Đang điều trị'),
@@ -125,7 +119,16 @@ SELECT v.* FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.BenhNhan b WHERE b.maBN = v.maBN);
 GO
 
-/* ---------- Hồ sơ bệnh án (BN000007 tiểu đường, BN000002 huyết áp cao, BN000011 dùng Warfarin để thử cảnh báo bệnh nền / thuốc chống đông) ---------- */
+-- Ngày đăng ký của bệnh nhân mẫu
+UPDATE b SET ngayDangKy = DATEADD(DAY, v.lech, CAST(GETDATE() AS DATE))
+FROM dbo.BenhNhan b
+JOIN (VALUES (N'BN000001', -400), (N'BN000002', -1700), (N'BN000003', -300), (N'BN000004', -500), (N'BN000005', -90), (N'BN000006', -60),
+             (N'BN000007', -800), (N'BN000008', -250), (N'BN000009', -120), (N'BN000010', -45), (N'BN000011', -2000), (N'BN000012', -300)) AS v(ma, lech)
+  ON v.ma = b.maBN
+WHERE b.ngayDangKy > DATEADD(DAY, v.lech, CAST(GETDATE() AS DATE));
+GO
+
+-- Hồ sơ bệnh án (BN000007 tiểu đường, BN000002 huyết áp cao, BN000011 dùng Warfarin để thử cảnh báo bệnh nền / thuốc chống đông)
 INSERT INTO dbo.HoSoBenhAn (maHoSo, maBN, tienSuBenh, nhomMau, benhNen, thuocDangSuDung)
 SELECT v.* FROM (VALUES
     (N'HS000001', N'BN000001', N'Chưa ghi nhận bệnh lý đặc biệt',        N'O',  NULL,                     NULL),
@@ -144,7 +147,7 @@ SELECT v.* FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.HoSoBenhAn h WHERE h.maHoSo = v.maHoSo);
 GO
 
-/* ---------- Lịch hẹn: lech = số ngày so với hôm nay (0 hôm nay, 1 ngày mai, -1 hôm qua); mỗi lịch nằm đúng ca trực của nha sĩ ---------- */
+-- Lịch hẹn: lech = số ngày so với hôm nay (0 hôm nay, 1 ngày mai, -1 hôm qua); mỗi lịch nằm đúng ca trực của nha sĩ
 IF OBJECT_ID(N'tempdb..#LichHenMau') IS NOT NULL DROP TABLE #LichHenMau;
 SELECT * INTO #LichHenMau FROM (VALUES
     (N'LH000001', N'BN000001', N'NV000002', N'DV000002',  0, '09:00', N'Đã xác nhận',  N'Phòng 1', N'Trực tiếp', NULL),
@@ -185,8 +188,7 @@ UPDATE l SET ngayHen = DATEADD(DAY, v.lech, CAST(GETDATE() AS DATE))
 FROM dbo.LichHen l JOIN #LichHenMau v ON v.maLichHen = l.maLichHen;
 GO
 
-/* ---------- Liệu trình: LT000001 của BN000002 đang cấy Implant; các liệu trình khác cho dịch vụ nhiều buổi.
-   batDau / duKien / ketThuc = số ngày so với hôm nay ---------- */
+-- Liệu trình: LT000001 của BN000002 đang cấy Implant; các liệu trình khác cho dịch vụ nhiều buổi
 IF OBJECT_ID(N'tempdb..#LieuTrinhMau') IS NOT NULL DROP TABLE #LieuTrinhMau;
 SELECT * INTO #LieuTrinhMau FROM (VALUES
     (N'LT000001', N'BN000002', N'Implant',   3,  N'Đã nhổ răng 36, chờ cấy trụ',          -45,  120, NULL, 20000000, N'Đang thực hiện', N'NV000002'),
@@ -211,7 +213,7 @@ UPDATE l SET ngayBatDau = DATEADD(DAY, v.batDau, CAST(GETDATE() AS DATE)),
 FROM dbo.LieuTrinh l JOIN #LieuTrinhMau v ON v.maLieuTrinh = l.maLieuTrinh;
 GO
 
-/* ---------- Hóa đơn và chi tiết (lập lúc 17:00 cùng ngày với lượt khám; tổng tiền được tính lại từ chi tiết ngay sau khi chèn) ---------- */
+-- Hóa đơn và chi tiết (lập lúc 17:00 cùng ngày với lượt khám; tổng tiền được tính lại từ chi tiết ngay sau khi chèn)
 IF OBJECT_ID(N'tempdb..#HoaDonMau') IS NOT NULL DROP TABLE #HoaDonMau;
 SELECT * INTO #HoaDonMau FROM (VALUES
     (N'HD000001', N'BN000001', N'NV000006', -7, 0,      N'Tiền mặt',     N'Đã thanh toán',  NULL),
@@ -261,25 +263,15 @@ GO
 -- CSDL cũ: cầu răng của HD000006 gắn răng 46, nay đổi thành hai răng trụ 45 và 47
 UPDATE dbo.ChiTietHoaDon SET soFDIRang = 45 WHERE maChiTiet = N'CT000007' AND soFDIRang = 46;
 
--- Tổng trước thuế = tổng chi tiết - giảm giá; tổng tiền = tổng trước thuế cộng thuế (theo phanTramThue của hóa đơn)
-UPDATE h SET tongTienTruocThue = x.tong - h.tienGiamGia,
-             tongTien = ROUND((x.tong - h.tienGiamGia) * (100 + h.phanTramThue) / 100, 0)
-FROM dbo.HoaDon h
-CROSS APPLY (SELECT SUM(c.soLuong * c.donGia - c.giamGia) AS tong FROM dbo.ChiTietHoaDon c WHERE c.maHoaDon = h.maHoaDon) x
-WHERE h.maHoaDon BETWEEN N'HD000001' AND N'HD000010' AND x.tong IS NOT NULL
-  AND h.tongTien <> ROUND((x.tong - h.tienGiamGia) * (100 + h.phanTramThue) / 100, 0);
-GO
 
-/* ---------- Lượt khám cũ của BN000002: đã nhổ răng 36 (để thử quy tắc răng đã nhổ) ---------- */
+-- Lượt khám cũ của BN000002: đã nhổ răng 36 (để thử quy tắc răng đã nhổ)
 INSERT INTO dbo.LuotKham (maLuotKham, maHoSo, maNhanVienPhuTrach, maLieuTrinh, gioBatDau, gioKetThuc, lyDoKham, chanDoan, huongDieuTri, trangThai)
 SELECT N'LK000001', N'HS000002', N'NV000002', N'LT000001', '2022-06-10 09:00', '2022-06-10 09:45',
        N'Đau răng hàm dưới', N'Sâu răng 36 không thể trám', N'Nhổ răng 36, sau đó cấy Implant', N'Hoàn thành'
 WHERE NOT EXISTS (SELECT 1 FROM dbo.LuotKham WHERE maLuotKham = N'LK000001');
 GO
 
-/* ---------- Các lượt khám khác: lech = số ngày so với hôm nay, phut = thời gian khám (NULL = đang khám),
-   taiKham = số ngày đến lần tái khám (NULL = không hẹn). Mỗi lượt nằm đúng ca trực của nha sĩ.
-   LK000012 đang khám hôm nay theo lịch hẹn LH000003 ---------- */
+-- Các lượt khám khác: lech = số ngày so với hôm nay, phut = thời gian khám (NULL = đang khám), taiKham = số ngày đến lần tái khám (NULL = không hẹn)
 IF OBJECT_ID(N'tempdb..#LuotKhamMau') IS NOT NULL DROP TABLE #LuotKhamMau;
 SELECT * INTO #LuotKhamMau FROM (VALUES
     (N'LK000002', N'HS000001', N'NV000002', NULL,        N'HD000001', -7, '09:00', 30,   N'Khám định kỳ',            N'Cao răng nhiều, sâu răng 26',          N'Lấy cao răng, hẹn trám răng 26', NULL, 5, N'Hoàn thành'),
@@ -315,7 +307,7 @@ CROSS APPLY (SELECT DATEADD(MINUTE, DATEDIFF(MINUTE, CAST('00:00' AS TIME), CAST
                             CAST(DATEADD(DAY, v.lech, CAST(GETDATE() AS DATE)) AS DATETIME2)) AS gioBatDau) x;
 GO
 
-/* ---------- Dịch vụ không gắn răng trong lượt khám (dịch vụ tính theo răng chỉ ghi ở Sơ đồ răng) ---------- */
+-- Dịch vụ không gắn răng trong lượt khám (dịch vụ tính theo răng chỉ ghi ở Sơ đồ răng)
 INSERT INTO dbo.LuotKhamDichVu (maLuotKham, maDichVu, soLuong)
 SELECT v.* FROM (VALUES
     (N'LK000002', N'DV000002', 1),
@@ -328,7 +320,7 @@ SELECT v.* FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.LuotKhamDichVu x WHERE x.maLuotKham = v.maLuotKham AND x.maDichVu = v.maDichVu);
 GO
 
-/* ---------- Sơ đồ răng: BG000001 là răng 36 đã nhổ của BN000002; các bản ghi khác ở các lượt khám còn lại ---------- */
+-- Sơ đồ răng: BG000001 là răng 36 đã nhổ của BN000002; các bản ghi khác ở các lượt khám còn lại
 INSERT INTO dbo.RangDieuTri (maBanGhi, maLuotKham, soFDI, trangThai, vatLieu, ngayGhiNhan, maDichVu, daNho, mauHienThi)
 SELECT v.* FROM (VALUES
     (N'BG000001', N'LK000001', 36, N'Đã nhổ',      NULL,          CAST('2022-06-10 09:30' AS DATETIME2), N'DV000004', 1, N'Xám'),
@@ -345,7 +337,7 @@ SELECT v.* FROM (VALUES
 ) AS v(maBanGhi, maLuotKham, soFDI, trangThai, vatLieu, ngayGhiNhan, maDichVu, daNho, mauHienThi)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.RangDieuTri r WHERE r.maBanGhi = v.maBanGhi);
 
--- Giờ ghi nhận của các bản ghi răng mẫu = 10 phút sau khi bắt đầu lượt khám (chạy lại thì dời theo)
+-- Giờ ghi nhận của các bản ghi răng mẫu
 UPDATE r SET ngayGhiNhan = DATEADD(MINUTE, 10, k.gioBatDau)
 FROM dbo.RangDieuTri r JOIN dbo.LuotKham k ON k.maLuotKham = r.maLuotKham
 WHERE r.maBanGhi BETWEEN N'BG000002' AND N'BG000011';

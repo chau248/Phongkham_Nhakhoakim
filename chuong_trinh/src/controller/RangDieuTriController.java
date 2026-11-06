@@ -21,7 +21,7 @@ public class RangDieuTriController {
     // Các trạng thái được chọn cho răng đã nhổ ở lượt khám trước
     private static final List<String> TRANG_THAI_RANG_DA_NHO = List.of(HangSo.RANG_DA_NHO, HangSo.RANG_IMPLANT, HangSo.RANG_CAU_RANG);
 
-    // Các trạng thái có nghĩa là đã làm một dịch vụ (nên cần chọn dịch vụ để tính tiền)
+    // Các trạng thái có nghĩa là đã làm một dịch vụ
     private static final List<String> TRANG_THAI_CAN_DICH_VU = List.of(HangSo.RANG_DA_TRAM, HangSo.RANG_BOC_SU, HangSo.RANG_DA_NHO,
             HangSo.RANG_IMPLANT, HangSo.RANG_CAU_RANG);
 
@@ -43,14 +43,12 @@ public class RangDieuTriController {
     private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
     private DichVuController dichVuService = new DichVuController();
 
-    // ----- Tìm -----
-
-    // Danh sách trạng thái răng hợp lệ (cho ô chọn)
+    // Danh sách trạng thái răng hợp lệ
     public List<String> layDanhSachTrangThai() {
         return new ArrayList<>(MAU.keySet());
     }
 
-    // Tình trạng hiện tại của từng răng trong cả hồ sơ: mỗi răng lấy bản ghi mới nhất (răng chưa ghi nhận thì không có)
+    // Tình trạng hiện tại của từng răng trong cả hồ sơ: mỗi răng lấy bản ghi mới nhất
     public List<RangDieuTri> layTinhTrangMoiNhat(String maHoSo) {
         Map<Integer, RangDieuTri> moiNhat = new LinkedHashMap<>();
         for (RangDieuTri r : rangDAO.layTheoHoSo(maHoSo)) { // đã sắp mới nhất trước
@@ -64,15 +62,13 @@ public class RangDieuTriController {
         return rangDAO.layTheoLuotKham(maLuotKham);
     }
 
-    // Toàn bộ lịch sử ghi nhận răng của hồ sơ qua mọi lượt khám, mới nhất trước
+    // Toàn bộ lịch sử ghi nhận răng của hồ sơ qua mọi lượt khám
     public List<RangDieuTri> layTatCaTheoHoSo(String maHoSo) {
         return rangDAO.layTheoHoSo(maHoSo);
     }
 
-    // ----- Thêm, sửa -----
-
-    // Ghi nhận tình trạng một răng trong lượt khám đang khám. Cùng răng + cùng dịch vụ thì sửa bản ghi cũ,
-    // khác dịch vụ thì thêm bản ghi mới. Để trống dịch vụ mà răng đã có bản ghi kèm dịch vụ thì sửa bản đó và giữ dịch vụ.
+    // Ghi nhận tình trạng một răng trong lượt khám đang khám
+    // khác dịch vụ
     public RangDieuTri ghiNhanRang(String maLuotKham, RangDieuTri rang) {
         LuotKham lk = layLuotKhamDeSua(maLuotKham);
         if (!RangDieuTri.kiemTraSoFDI(rang.getSoFDI())) {
@@ -83,8 +79,6 @@ public class RangDieuTriController {
         }
         rang.setVatLieu(TienIchController.rongThanhNull(rang.getVatLieu()));
         rang.setGhiChu(TienIchController.rongThanhNull(rang.getGhiChu()));
-        TienIchController.doDai(rang.getVatLieu(), 100, "Vật liệu");
-        TienIchController.doDai(rang.getGhiChu(), 255, "Ghi chú");
 
         DichVu dv = null;
         if (rang.getMaDichVu() != null) {
@@ -104,7 +98,7 @@ public class RangDieuTriController {
             }
         }
 
-        // Răng đã nhổ ở lượt khám trước: chỉ được chọn Đã nhổ, Implant, Cầu răng và dịch vụ Implant / Cầu răng
+        // Răng đã nhổ ở lượt khám trước: chỉ được chọn Đã nhổ
         RangDieuTri hienTai = timTinhTrangHienTai(maHoSo, rang.getSoFDI());
         if (hienTai != null && HangSo.RANG_DA_NHO.equals(hienTai.getTrangThai())
                 && !maLuotKham.equals(hienTai.getMaLuotKham().getMaLuotKham())) {
@@ -133,8 +127,6 @@ public class RangDieuTriController {
         return rang;
     }
 
-    // ----- Xóa -----
-
     // Gỡ một bản ghi răng ghi nhầm khỏi lượt khám đang khám
     public void goBanGhiRang(String maLuotKham, String maBanGhi) {
         layLuotKhamDeSua(maLuotKham);
@@ -143,9 +135,7 @@ public class RangDieuTriController {
         }
     }
 
-    // ----- Cảnh báo -----
-
-    // Răng chuyển sang trạng thái do đã làm dịch vụ (đã trám, bọc sứ, nhổ...) mà chưa chọn dịch vụ thì khoản đó không vào hóa đơn
+    // Răng chuyển sang trạng thái do đã làm dịch vụ
     public String canhBaoThieuDichVu(String maLuotKham, RangDieuTri rang) {
         if (rang.getMaDichVu() != null || !TRANG_THAI_CAN_DICH_VU.contains(rang.getTrangThai())) {
             return null;
@@ -156,15 +146,13 @@ public class RangDieuTriController {
         if (rang.getTrangThai().equals(ttHienTai)) {
             return null;
         }
-        // Bản ghi sắp sửa đã có dịch vụ thì dịch vụ đó được giữ lại và vẫn tính tiền
+        // Bản ghi sắp sửa đã có dịch vụ
         RangDieuTri cu = timBanGhiCanSua(rangDAO.layTheoLuotKham(maLuotKham), rang);
         if (cu != null && cu.getMaDichVu() != null) {
             return null;
         }
         return "Chưa chọn dịch vụ đã làm cho răng " + rang.getSoFDI() + " nên dịch vụ này sẽ không được tính vào hóa đơn";
     }
-
-    // ----- Hàm phụ -----
 
     // Lượt khám phải đang khám và người thao tác là nha sĩ phụ trách
     private LuotKham layLuotKhamDeSua(String maLuotKham) {
@@ -179,7 +167,7 @@ public class RangDieuTriController {
         return lk;
     }
 
-    // Bản ghi trong lượt khám sẽ bị sửa khi ghi nhận răng này; null nghĩa là thêm bản ghi mới
+    // Bản ghi trong lượt khám sẽ bị sửa khi ghi nhận răng này
     private RangDieuTri timBanGhiCanSua(List<RangDieuTri> dsLuotKham, RangDieuTri rang) {
         String maDichVu = rang.getMaDichVu() == null ? null : rang.getMaDichVu().getMaDichVu();
         RangDieuTri moiNhatCoDichVu = null; // bản ghi mới nhất cùng răng có dịch vụ (dùng khi dịch vụ để trống)
@@ -198,7 +186,7 @@ public class RangDieuTriController {
         return maDichVu == null ? moiNhatCoDichVu : null;
     }
 
-    // Tình trạng hiện tại của một răng trong hồ sơ; chưa từng ghi nhận thì null
+    // Tình trạng hiện tại của một răng trong hồ sơ
     private RangDieuTri timTinhTrangHienTai(String maHoSo, int soFDI) {
         for (RangDieuTri r : layTinhTrangMoiNhat(maHoSo)) {
             if (r.getSoFDI() == soFDI) {

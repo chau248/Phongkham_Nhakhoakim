@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-// Hàm dùng chung cho các DAO: chạy SQL, giao dịch, sinh mã, ghi nhật ký
+// Hàm dùng chung cho các DAO: chạy SQL
 public class TienIchDAO {
 
     // Cách đọc một dòng kết quả thành đối tượng
@@ -19,8 +19,6 @@ public class TienIchDAO {
     public interface ViecGiaoDich {
         void chay(Connection c) throws SQLException;
     }
-
-    // ----- Chạy SQL -----
 
     // SELECT nhiều dòng
     public static <T> List<T> layDanhSach(String sql, DocDong<T> docDong, Object... thamSo) {
@@ -38,7 +36,7 @@ public class TienIchDAO {
         return ds;
     }
 
-    // SELECT một dòng, không có thì trả về null
+    // SELECT một dòng
     public static <T> T layMot(String sql, DocDong<T> docDong, Object... thamSo) {
         List<T> ds = layDanhSach(sql, docDong, thamSo);
         return ds.isEmpty() ? null : ds.get(0);
@@ -53,7 +51,7 @@ public class TienIchDAO {
         }
     }
 
-    // Như trên nhưng dùng kết nối có sẵn (trong giao dịch)
+    // Như trên nhưng dùng kết nối có sẵn
     public static int thucThi(Connection c, String sql, Object... thamSo) throws SQLException {
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             datThamSo(ps, thamSo);
@@ -61,7 +59,7 @@ public class TienIchDAO {
         }
     }
 
-    // Chạy nhiều lệnh trong một giao dịch: lỗi ở đâu thì hủy hết
+    // Chạy nhiều lệnh trong một giao dịch: lỗi ở đâu
     public static void giaoDich(ViecGiaoDich viec) {
         try (Connection c = DatabaseConnection.getConnection()) {
             c.setAutoCommit(false);
@@ -84,7 +82,7 @@ public class TienIchDAO {
         }
     }
 
-    // Danh sách cột kèm bí danh để nối bảng: cot(CAC_COT, "nv", "nv_") cho "nv.maNV AS nv_maNV, ..."
+    // Danh sách cột kèm bí danh
     public static String cot(String[] cacCot, String bang, String tienTo) {
         StringBuilder sb = new StringBuilder();
         for (String c : cacCot) {
@@ -93,9 +91,7 @@ public class TienIchDAO {
         return sb.toString();
     }
 
-    // ----- Sinh mã -----
-
-    // Mã mới dạng tiền tố + 6 chữ số (BN000001, HD000123...)
+    // Mã mới dạng tiền tố + 6 chữ số
     public static String taoMa(String tienTo) {
         Integer so = layMot("UPDATE dbo.BoDemMa SET giaTriHienTai = giaTriHienTai + 1 OUTPUT INSERTED.giaTriHienTai WHERE tienTo = ?",
                 rs -> rs.getInt(1), tienTo);
@@ -105,9 +101,7 @@ public class TienIchDAO {
         return tienTo + String.format("%06d", so);
     }
 
-    // ----- Nhật ký hệ thống -----
-
-    // Ghi một dòng nhật ký (chuỗi quá dài thì cắt cho vừa cột)
+    // Ghi một dòng nhật ký
     public static void ghiNhatKy(String maNV, String hanhDong, String doiTuong, String maDoiTuong, String chiTiet) {
         thucThi("INSERT INTO dbo.NhatKyHeThong (maNhanVien, hanhDong, doiTuong, maDoiTuong, chiTiet) VALUES (?, ?, ?, ?, ?)",
                 maNV, cat(hanhDong, 50), cat(doiTuong, 50), cat(maDoiTuong, 30), cat(chiTiet, 500));

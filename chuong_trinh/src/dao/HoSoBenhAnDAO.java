@@ -15,9 +15,7 @@ public class HoSoBenhAnDAO {
     // Cột rút gọn để nối vào câu SELECT của bảng khác (bí danh h, tiền tố h_); khi đó phải nối cả bảng BenhNhan (bn)
     static final String COT_NOI = "h.maHoSo AS h_maHoSo, h.trangThaiHoSo AS h_trangThaiHoSo";
 
-    // ----- Tìm -----
-
-    // Tìm hồ sơ theo mã hồ sơ, không có thì null
+    // Tìm hồ sơ theo mã hồ sơ
     public HoSoBenhAn timTheoMa(String maHoSo) {
         return TienIchDAO.layMot(SELECT + " WHERE h.maHoSo = ?", this::doc, maHoSo);
     }
@@ -27,14 +25,12 @@ public class HoSoBenhAnDAO {
         return TienIchDAO.layMot(SELECT + " WHERE h.maBN = ?", this::doc, maBN);
     }
 
-    // ----- Thêm, sửa -----
-
     // Thêm hồ sơ mới
     public void them(HoSoBenhAn hs) {
         TienIchDAO.giaoDich(c -> them(c, hs));
     }
 
-    // Thêm hồ sơ mới bằng kết nối có sẵn (để thêm cùng bệnh nhân trong một giao dịch)
+    // Thêm hồ sơ mới bằng kết nối có sẵn
     static void them(Connection c, HoSoBenhAn hs) throws SQLException {
         TienIchDAO.thucThi(c, "INSERT INTO dbo.HoSoBenhAn (maHoSo, maBN, ngayTao, tienSuBenh, nhomMau, benhNen, thuocDangSuDung,"
                 + " ghiChuDacBiet, trangThaiHoSo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -54,8 +50,6 @@ public class HoSoBenhAnDAO {
         TienIchDAO.thucThi("UPDATE dbo.HoSoBenhAn SET trangThaiHoSo = ? WHERE maHoSo = ?", trangThai, maHoSo);
     }
 
-    // ----- Đọc dòng kết quả -----
-
     private HoSoBenhAn doc(ResultSet rs) throws SQLException {
         HoSoBenhAn hs = new HoSoBenhAn();
         hs.setMaHoSo(rs.getString("maHoSo"));
@@ -70,7 +64,7 @@ public class HoSoBenhAnDAO {
         return hs;
     }
 
-    // Hồ sơ rút gọn (mã, trạng thái, bệnh nhân) khi nối từ bảng khác
+    // Hồ sơ rút gọn
     static HoSoBenhAn docNoi(ResultSet rs) throws SQLException {
         HoSoBenhAn hs = new HoSoBenhAn();
         hs.setMaHoSo(rs.getString("h_maHoSo"));

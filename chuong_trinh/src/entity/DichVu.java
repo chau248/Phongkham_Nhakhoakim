@@ -17,11 +17,6 @@ public class DichVu {
     private String moTa; // Mô tả ngắn
     private String donViTinh; // Lần, Răng hoặc Hàm
     
-    
-    
-    
-    
-
     public DichVu() {
     }
 
@@ -101,7 +96,6 @@ public class DichVu {
     public void setLienQuanImplantCauRang(boolean lienQuanImplantCauRang) {
         this.lienQuanImplantCauRang = lienQuanImplantCauRang;
     }
-
 
     public String getMoTa() {
         return moTa;

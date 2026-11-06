@@ -12,45 +12,30 @@ import dao.NghiepVuException;
 import dao.TienIchDAO;
 import entity.NhanVien;
 
-// Hàm dùng chung cho các controller: kiểm tra quyền, kiểm tra dữ liệu nhập, mật khẩu, nhật ký
+// Hàm dùng chung cho các controller: kiểm tra quyền
 public class TienIchController {
 
     private static final int SO_VONG = 20000;
     private static final Pattern DA_BAM = Pattern.compile("s1\\$[0-9a-f]{16}\\$[0-9a-f]{64}");
 
-    // ----- Kiểm tra quyền -----
-
-    // Người đang đăng nhập phải thuộc một trong các vai trò được phép; trả về người đó
+    // Người đang đăng nhập phải thuộc một trong các vai trò được phép
     public static NhanVien yeuCau(Supplier<NhanVien> nguoiDung, String viec, String... vaiTroDuocPhep) {
         NhanVien nv = nguoiDung.get();
         if (nv == null) {
             throw new NghiepVuException("Chưa đăng nhập");
         }
-        for (String vt : vaiTroDuocPhep) {
-            if (vt.equals(nv.getVaiTro())) {
-                return nv;
-            }
+        if (nv.laVaiTro(vaiTroDuocPhep)) {
+            return nv;
         }
         throw new NghiepVuException("Chỉ " + String.join(" hoặc ", vaiTroDuocPhep).toLowerCase() + " mới được " + viec);
     }
 
-    // ----- Kiểm tra dữ liệu nhập -----
-
-    // Chuỗi không được dài hơn độ dài cột
-    public static void doDai(String giaTri, int toiDa, String tenTruong) {
-        if (giaTri != null && giaTri.length() > toiDa) {
-            throw new NghiepVuException(tenTruong + " dài tối đa " + toiDa + " ký tự (hiện đang " + giaTri.length() + " ký tự)");
-        }
-    }
-
-    // Chuỗi rỗng hoặc toàn khoảng trắng thì thành null, ngược lại cắt khoảng trắng hai đầu
+    // Chuỗi rỗng hoặc toàn khoảng trắng
     public static String rongThanhNull(String s) {
         return s == null || s.trim().isEmpty() ? null : s.trim();
     }
 
-    // ----- Nhật ký -----
-
-    // Ghi một dòng nhật ký; lỗi ghi nhật ký không làm hỏng thao tác chính
+    // Ghi một dòng nhật ký
     public static void ghiNhatKy(String maNV, String hanhDong, String doiTuong, String maDoiTuong, String chiTiet) {
         try {
             TienIchDAO.ghiNhatKy(maNV, hanhDong, doiTuong, maDoiTuong, chiTiet);
@@ -58,8 +43,6 @@ public class TienIchController {
             System.err.println("Không ghi được nhật ký (" + hanhDong + " " + doiTuong + " " + maDoiTuong + "): " + e.getMessage());
         }
     }
-
-    // ----- Mật khẩu -----
 
     // Băm mật khẩu: s1$muối$băm
     public static String bamMatKhau(String matKhau) {
@@ -69,7 +52,7 @@ public class TienIchController {
         return "s1$" + muoiHex + "$" + bamVoiMuoi(matKhau, muoiHex);
     }
 
-    // Mật khẩu gõ vào có khớp với bản đã lưu không (bản lưu chữ thường cũ vẫn so được)
+    // Mật khẩu gõ vào có khớp với bản đã lưu không
     public static boolean khopMatKhau(String matKhauGo, String daLuu) {
         if (matKhauGo == null || daLuu == null) {
             return false;
@@ -86,7 +69,7 @@ public class TienIchController {
         return daLuu != null && DA_BAM.matcher(daLuu).matches();
     }
 
-    // So sánh hai chuỗi, thời gian không phụ thuộc vị trí khác nhau
+    // So sánh hai chuỗi
     private static boolean soSanh(String a, String b) {
         if (a.length() != b.length()) {
             return false;

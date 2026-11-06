@@ -1,5 +1,7 @@
 package ui;
 
+import ui.ThanhPhan.ChonGoiY;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.time.LocalDate;
@@ -8,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -15,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 import controller.DichVuController;
+import controller.LieuTrinhController;
 import controller.LuotKhamController;
 import controller.PhienLamViec;
 import controller.RangDieuTriController;
@@ -22,6 +26,7 @@ import entity.BenhNhan;
 import entity.DichVu;
 import entity.HangSo;
 import entity.LichHen;
+import entity.LieuTrinh;
 import entity.LuotKham;
 import entity.LuotKhamDichVu;
 import entity.RangDieuTri;
@@ -33,6 +38,7 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
     private LuotKhamController luotKhamService = new LuotKhamController();
     private DichVuController dichVuService = new DichVuController();
     private RangDieuTriController rangService = new RangDieuTriController();
+    private LieuTrinhController lieuTrinhController = new LieuTrinhController();
 
     private LichHen lichHen; // Lịch hẹn đang khám
     private LuotKham luotKham; // Lượt khám đang khám của nha sĩ
@@ -47,6 +53,9 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
     private JTable tblTongHop = TienIch.taoBang(new String[] {"Dịch vụ", "Răng", "Số lượng", "Thành tiền (đồng)"},
             new int[] {300, 100, 80, 140}, "Chưa ghi dịch vụ nào."); // Tổng hợp dịch vụ sẽ vào hóa đơn
     private List<LuotKhamDichVu> dichVuDaChon = new ArrayList<>(); // Dữ liệu của bảng dịch vụ
+    private JComboBox<String> cmbLieuTrinh = new JComboBox<>(); // Liệu trình mà lượt khám này thuộc về
+    private List<LieuTrinh> dsLieuTrinh = new ArrayList<>();
+    private boolean dangNapLieuTrinh = false;
 
     public KhamBenh() {
         this(null);
@@ -90,7 +99,7 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
     // Phần bắt đầu khám
     private void dungPhanBatDau(List<Component> cacKhoi) {
         txtLyDo.setText(""); // Không giữ lại lý
-        boolean laNhaSi = HangSo.VAI_TRO_NHA_SI.equals(PhienLamViec.getNhanVienHienTai().getVaiTro());
+        boolean laNhaSi = PhienLamViec.getNhanVienHienTai().laVaiTro(HangSo.VAI_TRO_NHA_SI);
 
         List<Component> trongThe = new ArrayList<>();
         if (lichHen != null) {
@@ -151,8 +160,15 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
         txtGhiChu.setText(TienIch.chu(luotKham.getGhiChu()));
         txaDonThuoc.setToolTipText("Mỗi dòng một thuốc, ví dụ: Paracetamol 500mg x 10 viên");
 
+        napLieuTrinh();
+        JButton btnTaoLieuTrinh = TienIch.nutPhu("Tạo liệu trình mới");
+        btnTaoLieuTrinh.addActionListener(e -> MainApp.doiNoiDung(new QuanLyLieuTrinh(luotKham.getMaHoSo().getMaBN())));
+        cmbLieuTrinh.addActionListener(e -> ganLieuTrinh());
+        cmbLieuTrinh.setFont(TienIch.FONT);
+        cacKhoi.add(TienIch.dong(TienIch.nhan("Thuộc liệu trình"), cmbLieuTrinh, btnTaoLieuTrinh));
+
         JPanel form = TienIch.taoForm(new String[] {"Lý do khám", "Chẩn đoán", "Hướng điều trị", "Đơn thuốc (mỗi dòng một thuốc)", "Ghi chú"},
-                new Component[] {txtLyDo, TienIch.cuonOChu(txaChanDoan), TienIch.cuonOChu(txaHuongDieuTri), TienIch.cuonOChu(txaDonThuoc), txtGhiChu});
+                new Component[] {txtLyDo, TienIch.cuonOChu(txaChanDoan), TienIch.cuonOChu(txaHuongDieuTri), khungDonThuoc(), txtGhiChu});
         cacKhoi.add(TienIch.the(form));
 
         napBangDichVu();
@@ -163,6 +179,8 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
 
         JButton btnLuu = TienIch.nutChinh("Lưu nội dung khám");
         btnLuu.addActionListener(e -> luuNoiDung(true));
+        JButton btnInDon = TienIch.nutPhu("In đơn thuốc");
+        btnInDon.addActionListener(e -> inDonThuoc());
         JButton btnSoDo = TienIch.nutPhu("Sơ đồ răng");
         btnSoDo.addActionListener(e -> MainApp.doiNoiDung(new SoDoRang()));
         JButton btnTaiKham = TienIch.nutPhu("Chỉ định tái khám");
@@ -177,7 +195,76 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
         cacKhoi.add(TienIch.chuThuong("Tổng hợp sẽ vào hóa đơn (gồm cả dịch vụ ghi ở Sơ đồ răng)", false));
         cacKhoi.add(TienIch.cuonBang(tblTongHop, 140));
         cacKhoi.add(TienIch.dong(btnThemDV, btnXoaDV));
-        cacKhoi.add(TienIch.dong(btnLuu, btnSoDo, btnTaiKham, btnHoanTat, btnHuy));
+        cacKhoi.add(TienIch.dong(btnLuu, btnInDon, btnSoDo, btnTaiKham, btnHoanTat, btnHuy));
+    }
+
+    // Khung đơn thuốc: chọn thuốc trong danh mục
+    private JPanel khungDonThuoc() {
+        ChonGoiY chonThuoc = new ChonGoiY(entity.DanhMuc.THUOC);
+        JButton btnThemDon = TienIch.nutPhu("Thêm vào đơn");
+        btnThemDon.addActionListener(e -> {
+            String thuoc = chonThuoc.getGiaTri();
+            if (thuoc == null) {
+                TienIch.thongTin("Chọn một thuốc trong ô chọn.");
+                return;
+            }
+            String cu = txaDonThuoc.getText().trim();
+            txaDonThuoc.setText(cu.isEmpty() ? thuoc : cu + "\n" + thuoc);
+        });
+        JPanel p = new JPanel(new java.awt.BorderLayout(0, 4));
+        p.setOpaque(false);
+        p.add(TienIch.dong(chonThuoc, btnThemDon), java.awt.BorderLayout.NORTH);
+        p.add(TienIch.cuonOChu(txaDonThuoc), java.awt.BorderLayout.CENTER);
+        return p;
+    }
+
+    // Nạp ô chọn liệu trình: các liệu trình đang thực hiện của bệnh nhân
+    private void napLieuTrinh() {
+        dangNapLieuTrinh = true;
+        cmbLieuTrinh.removeAllItems();
+        cmbLieuTrinh.addItem("(Không thuộc liệu trình nào)");
+        dsLieuTrinh = lieuTrinhController.layDangThucHien(luotKham.getMaHoSo().getMaBN().getMaBN());
+        int chon = 0;
+        for (int i = 0; i < dsLieuTrinh.size(); i++) {
+            LieuTrinh lt = dsLieuTrinh.get(i);
+            cmbLieuTrinh.addItem(lt.getMaLieuTrinh() + " - " + lt.getLoaiDichVu() + " (đã khám " + lieuTrinhController.demBuoiDaKham(lt.getMaLieuTrinh())
+                    + "/" + lt.getSoBuoiDuKien() + " buổi)");
+            if (luotKham.getMaLieuTrinh() != null && luotKham.getMaLieuTrinh().getMaLieuTrinh().equals(lt.getMaLieuTrinh())) {
+                chon = i + 1;
+            }
+        }
+        cmbLieuTrinh.setSelectedIndex(chon);
+        dangNapLieuTrinh = false;
+    }
+
+    // Người dùng chọn liệu trình khác
+    private void ganLieuTrinh() {
+        if (dangNapLieuTrinh) {
+            return;
+        }
+        int vt = cmbLieuTrinh.getSelectedIndex();
+        try {
+            luotKhamService.datLieuTrinh(luotKham.getMaLuotKham(), vt <= 0 ? null : dsLieuTrinh.get(vt - 1).getMaLieuTrinh());
+            luotKham = luotKhamService.timTheoMa(luotKham.getMaLuotKham());
+        } catch (RuntimeException e) {
+            TienIch.baoLoi(e);
+        }
+    }
+
+    // Lưu nội dung
+    private void inDonThuoc() {
+        if (txaDonThuoc.getText().trim().isEmpty()) {
+            TienIch.thongTin("Chưa kê đơn thuốc nên chưa có gì để in.");
+            return;
+        }
+        if (!luuNoiDung(false)) {
+            return;
+        }
+        try {
+            HopThoai.inVanBan("Đơn thuốc", luotKhamService.taoNoiDungDonThuoc(luotKham.getMaLuotKham()));
+        } catch (RuntimeException e) {
+            TienIch.baoLoi(e);
+        }
     }
 
     // Nạp lại bảng dịch vụ của lượt khám
@@ -192,7 +279,7 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
         napBangTongHop();
     }
 
-    // Bảng tổng hợp mọi dịch vụ sẽ vào hóa đơn: dịch vụ gắn răng (ghi ở Sơ đồ răng) và dịch vụ không gắn răng
+    // Bảng tổng hợp mọi dịch vụ sẽ vào hóa đơn: dịch vụ gắn răng
     private void napBangTongHop() {
         List<String[]> dong = new ArrayList<>();
         java.util.Set<String> daTinh = new java.util.HashSet<>();
@@ -214,7 +301,7 @@ public class KhamBenh extends JPanel implements MainApp.LamMoiDuoc {
         TienIch.napBang(tblTongHop, dong);
     }
 
-    // Quay lại từ màn hình Sơ đồ răng thì nạp lại bảng tổng hợp
+    // Quay lại từ màn hình Sơ đồ răng
     @Override
     public void lamMoi() {
         if (luotKham != null && tblTongHop != null) {

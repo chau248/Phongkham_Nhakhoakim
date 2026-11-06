@@ -21,8 +21,6 @@ public class TaiKhoanController {
     private NhanVienDAO nhanVienDAO = new NhanVienDAO();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // ----- Đăng nhập, đăng xuất -----
-
     // Đăng nhập: trả về nhân viên đăng nhập
     public NhanVien dangNhap(String tenDangNhap, String matKhau) {
         if (tenDangNhap == null || tenDangNhap.trim().isEmpty() || matKhau == null || matKhau.isEmpty()) {
@@ -59,7 +57,6 @@ public class TaiKhoanController {
             taiKhoanDAO.nangCapBam(tk.getMaTaiKhoan(), TienIchController.bamMatKhau(matKhau)); // Mật khẩu cũ chữ thường
         }
         taiKhoanDAO.ghiNhanDangNhapDung(tk.getMaTaiKhoan());
-        TienIchController.ghiNhatKy(maNV, "Đăng nhập", "TaiKhoan", tk.getMaTaiKhoan(), null);
         return nv;
     }
 
@@ -67,12 +64,9 @@ public class TaiKhoanController {
     public void dangXuat() {
         NhanVien nv = nguoiDung.get();
         if (nv != null) {
-            TienIchController.ghiNhatKy(nv.getMaNV(), "Đăng xuất", "TaiKhoan", null, null);
         }
         PhienLamViec.dangXuat();
     }
-
-    // ----- Tìm -----
 
     // Tất cả tài khoản
     public List<TaiKhoan> layTatCa() {
@@ -85,8 +79,6 @@ public class TaiKhoanController {
         NhanVien nv = TienIchController.yeuCau(nguoiDung, "xem tài khoản của mình", HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         return taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
     }
-
-    // ----- Tạo tài khoản, mật khẩu, khóa -----
 
     // Tạo tài khoản cho một nhân viên
     public TaiKhoan taoTaiKhoan(String maNV, String tenDangNhap, String matKhau) {
@@ -157,9 +149,6 @@ public class TaiKhoanController {
         if (tk.isTrangThaiKhoa()) {
             throw new NghiepVuException("Tài khoản này đã bị khóa");
         }
-        if (HangSo.VAI_TRO_QUAN_LY.equals(tk.getVaiTro()) && taiKhoanDAO.demQuanLyHoatDong() <= 1) {
-            throw new NghiepVuException("Đây là tài khoản Quản lý hoạt động cuối cùng, không thể khóa");
-        }
         taiKhoanDAO.datKhoa(maTaiKhoan, true);
         TienIchController.ghiNhatKy(nguoi.getMaNV(), "Khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
     }
@@ -177,8 +166,6 @@ public class TaiKhoanController {
         taiKhoanDAO.datKhoa(maTaiKhoan, false);
         TienIchController.ghiNhatKy(nguoi.getMaNV(), "Mở khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
     }
-
-    // ----- Hàm phụ -----
 
     private TaiKhoan layTaiKhoan(String maTaiKhoan) {
         TaiKhoan tk = maTaiKhoan == null ? null : taiKhoanDAO.timTheoMa(maTaiKhoan);

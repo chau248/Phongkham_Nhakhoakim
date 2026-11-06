@@ -17,9 +17,7 @@ public class BenhNhanDAO {
     // Cột để nối vào câu SELECT của bảng khác (bí danh bn, tên cột có tiền tố bn_)
     static final String COT_NOI = TienIchDAO.cot(COT, "bn", "bn_");
 
-    // ----- Tìm -----
-
-    // Tìm bệnh nhân theo mã, không có thì null
+    // Tìm bệnh nhân theo mã
     public BenhNhan timTheoMa(String maBN) {
         return TienIchDAO.layMot("SELECT " + CAC_COT + " FROM dbo.BenhNhan WHERE maBN = ?", rs -> doc(rs, ""), maBN);
     }
@@ -29,7 +27,7 @@ public class BenhNhanDAO {
         return TienIchDAO.layMot("SELECT " + CAC_COT + " FROM dbo.BenhNhan WHERE soCCCD = ?", rs -> doc(rs, ""), soCCCD);
     }
 
-    // Tìm bệnh nhân đang điều trị theo mã, họ tên hoặc số điện thoại
+    // Tìm bệnh nhân đang điều trị theo mã
     public List<BenhNhan> timKiem(String tuKhoa, int toiDa) {
         return timKiem(tuKhoa, toiDa, false);
     }
@@ -42,13 +40,11 @@ public class BenhNhanDAO {
                 + "(maBN LIKE ? OR hoTen LIKE ? OR sdt LIKE ?) ORDER BY hoTen", rs -> doc(rs, ""), toiDa, mau, mau, mau);
     }
 
-    // Mọi bệnh nhân (kể cả đã ngừng theo dõi) trùng họ tên và ngày sinh
+    // Mọi bệnh nhân
     public List<BenhNhan> timTheoHoTenNgaySinh(String hoTen, LocalDate ngaySinh) {
         return TienIchDAO.layDanhSach("SELECT " + CAC_COT + " FROM dbo.BenhNhan WHERE hoTen = ? AND ngaySinh = ?",
                 rs -> doc(rs, ""), hoTen, ngaySinh);
     }
-
-    // ----- Thêm, sửa -----
 
     // Thêm bệnh nhân và hồ sơ bệnh án rỗng trong một giao dịch
     public void themKemHoSo(BenhNhan bn, HoSoBenhAn hs) {
@@ -69,14 +65,12 @@ public class BenhNhanDAO {
                 bn.getNguoiLienHeKhanCap(), bn.getSdtNguoiLienHe(), bn.getGhiChu(), bn.getMaBN());
     }
 
-    // Đổi trạng thái (Đang điều trị / Ngừng theo dõi)
+    // Đổi trạng thái
     public void capNhatTrangThai(String maBN, String trangThai) {
         TienIchDAO.thucThi("UPDATE dbo.BenhNhan SET trangThai = ? WHERE maBN = ?", trangThai, maBN);
     }
 
-    // ----- Đọc dòng kết quả -----
-
-    // Đọc bệnh nhân với tiền tố cột ("" nếu đọc từ bảng BenhNhan, "bn_" nếu nối từ bảng khác)
+    // Đọc bệnh nhân với tiền tố cột
     static BenhNhan doc(ResultSet rs, String tienTo) throws SQLException {
         BenhNhan bn = new BenhNhan();
         bn.setMaBN(rs.getString(tienTo + "maBN"));

@@ -37,7 +37,7 @@ public class ThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         this(null);
     }
 
-    // Mở sẵn một hóa đơn hoặc để trống
+    // Mở sẵn một hóa đơn hoặc
     public ThanhToan(String maHoaDon) {
         this.maChon = maHoaDon;
         cmbLoc.setFont(TienIch.FONT);
@@ -59,7 +59,7 @@ public class ThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         JButton btnHuy = TienIch.nutDo("Hủy hóa đơn");
         btnHuy.addActionListener(e -> huy());
         NhanVien nv = PhienLamViec.getNhanVienHienTai();
-        btnHuy.setVisible(nv != null && HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro()));
+        btnHuy.setVisible(nv != null && nv.laVaiTro(HangSo.VAI_TRO_QUAN_LY));
         lblTong.setForeground(TienIch.MAU_DAM);
         TienIch.xepManHinh(this, TienIch.tieuDe("Thanh toán & in hóa đơn"),
                 TienIch.dong(TienIch.nhan("Hiện"), cmbLoc), TienIch.cuonBang(tblHoaDon, 200),
@@ -172,7 +172,7 @@ public class ThanhToan extends JPanel implements MainApp.LamMoiDuoc {
         }
     }
 
-    // Hủy hóa đơn chưa thanh toán, hỏi lý
+    // Hủy hóa đơn chưa thanh toán
     private void huy() {
         HoaDon hd = dangChon();
         if (hd == null) {

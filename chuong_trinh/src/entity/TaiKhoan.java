@@ -110,8 +110,4 @@ public class TaiKhoan {
 		  this.yeuCauDoiMatKhau = yeuCauDoiMatKhau;
 	  }
 	  
-	  
-	  
-	  
-	  
 }

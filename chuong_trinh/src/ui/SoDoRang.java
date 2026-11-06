@@ -1,5 +1,7 @@
 package ui;
 
+import ui.ThanhPhan.ChonGoiY;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -103,7 +105,7 @@ public class SoDoRang extends JPanel {
 
     private JLabel lblRang = TienIch.chuThuong("<html>Chưa chọn răng</html>", true);
     private JComboBox<String> cmbTrangThai = new JComboBox<>();
-    private JTextField txtVatLieu = TienIch.oNhap(26);
+    private ChonGoiY chonVatLieu = new ChonGoiY(entity.DanhMuc.VAT_LIEU); // Chỉ chọn được khi trạng thái cần vật liệu
     private JComboBox<DichVu> cmbDichVu; // Dịch vụ đã làm
     private JTextField txtGhiChu = TienIch.oNhap(26);
     private JComboBox<RangDieuTri> cmbBanGhi = new JComboBox<>(); // Các bản ghi của răng đang chọn
@@ -132,7 +134,7 @@ public class SoDoRang extends JPanel {
     // Dựng công tắc răng vĩnh viễn / răng sữa
     private void dung(List<Component> cacKhoi) {
         cacKhoi.add(TienIch.dongThongTinLuotKham(luotKham));
-        // Răng vĩnh viễn, hàm trên
+        // Răng vĩnh viễn
         khungVinhVien.setOpaque(false);
         TienIch.xep(khungVinhVien, 8, taoHang(new int[] {18, 17, 16, 15, 14, 13, 12, 11}, new int[] {21, 22, 23, 24, 25, 26, 27, 28}),
                 taoHang(new int[] {48, 47, 46, 45, 44, 43, 42, 41}, new int[] {31, 32, 33, 34, 35, 36, 37, 38}));
@@ -161,7 +163,8 @@ public class SoDoRang extends JPanel {
             cmbTrangThai.addItem(tt);
         }
         cmbTrangThai.setFont(TienIch.FONT);
-        // Chỉ dịch vụ tính theo răng; dịch vụ tính theo lần hoặc hàm thêm ở màn hình Khám
+        cmbTrangThai.addActionListener(e -> capNhatVatLieu());
+        // Chỉ dịch vụ tính theo răng
         List<DichVu> dichVuTheoRang = new ArrayList<>();
         for (DichVu dv : dichVuService.layDangHoatDong()) {
             if ("Răng".equals(dv.getDonViTinh())) {
@@ -190,7 +193,7 @@ public class SoDoRang extends JPanel {
         btnGo.addActionListener(e -> goBanGhi());
 
         JPanel form = TienIch.taoForm(new String[] {"Trạng thái", "Vật liệu", "Dịch vụ đã làm", "Ghi chú"},
-                new Component[] {cmbTrangThai, txtVatLieu, cmbDichVu, txtGhiChu});
+                new Component[] {cmbTrangThai, chonVatLieu, cmbDichVu, txtGhiChu});
         JButton btnGhi = TienIch.nutChinh("Ghi nhận răng");
         btnGhi.addActionListener(e -> ghiNhan());
         JPanel the = TienIch.the(lblRang, form, TienIch.dong(btnGhi), TienIch.nhan("Đã ghi trên răng này trong lượt khám (gỡ nếu ghi nhầm)"),
@@ -282,7 +285,8 @@ public class SoDoRang extends JPanel {
         }
         lblRang.setText("<html>" + nhan + "</html>");
         cmbTrangThai.setSelectedItem(r == null ? HangSo.RANG_BINH_THUONG : r.getTrangThai());
-        txtVatLieu.setText(r == null ? "" : TienIch.chu(r.getVatLieu()));
+        chonVatLieu.setGiaTri(r == null ? null : r.getVatLieu());
+        capNhatVatLieu();
         txtGhiChu.setText(r == null ? "" : TienIch.chu(r.getGhiChu()));
         cmbDichVu.setSelectedIndex(-1);
         List<RangDieuTri> banGhi = new ArrayList<>();
@@ -316,6 +320,31 @@ public class SoDoRang extends JPanel {
     }
 
     // Ghi nhận tình trạng răng
+    // Trạng thái có dùng vật liệu
+    private static boolean canVatLieu(String trangThai) {
+        return HangSo.RANG_DA_TRAM.equals(trangThai) || HangSo.RANG_BOC_SU.equals(trangThai) || HangSo.RANG_IMPLANT.equals(trangThai)
+                || HangSo.RANG_CAU_RANG.equals(trangThai);
+    }
+
+    private void capNhatVatLieu() {
+        if (cmbDichVu == null) {
+            return;
+        }
+        boolean can = canVatLieu((String) cmbTrangThai.getSelectedItem());
+        boolean binhThuong = HangSo.RANG_BINH_THUONG.equals(cmbTrangThai.getSelectedItem());
+        chonVatLieu.setEnabled(can);
+        if (!can) {
+            chonVatLieu.setGiaTri(null);
+        }
+        // Răng bình thường
+        cmbDichVu.setEnabled(!binhThuong);
+        txtGhiChu.setEnabled(!binhThuong);
+        if (binhThuong) {
+            cmbDichVu.setSelectedIndex(-1);
+            txtGhiChu.setText("");
+        }
+    }
+
     private void ghiNhan() {
         if (rangDangChon == 0) {
             TienIch.thongTin("Vui lòng bấm chọn một răng trên sơ đồ.");
@@ -326,7 +355,7 @@ public class SoDoRang extends JPanel {
             DichVu dichVu = (DichVu) cmbDichVu.getSelectedItem();
             r.setSoFDI(rangDangChon);
             r.setTrangThai((String) cmbTrangThai.getSelectedItem());
-            r.setVatLieu(txtVatLieu.getText().trim().isEmpty() ? null : txtVatLieu.getText().trim());
+            r.setVatLieu(canVatLieu((String) cmbTrangThai.getSelectedItem()) ? chonVatLieu.getGiaTri() : null);
             r.setMaDichVu(dichVu);
             r.setGhiChu(txtGhiChu.getText().trim().isEmpty() ? null : txtGhiChu.getText().trim());
 

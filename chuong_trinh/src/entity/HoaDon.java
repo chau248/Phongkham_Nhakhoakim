@@ -15,8 +15,6 @@ public class HoaDon {
     private LocalDateTime ngayThanhToan; // Ngày thanh toán
     private BigDecimal tienGiamGia; // Tiền giảm giá của cả hóa đơn
     private BigDecimal phanTramThue; // Phần trăm thuế VAT
-    private BigDecimal tongTienTruocThue; // Tổng tiền trước thuế
-    private BigDecimal tongTien; // Tổng tiền phải trả
     private String hinhThucThanhToan; // Tiền mặt, Chuyển khoản, Thẻ hoặc Ví điện tử
     private String trangThai; // Chưa thanh toán, Đã thanh toán hoặc Đã hủy
     private String ghiChu; // Ghi chú
@@ -78,20 +76,23 @@ public class HoaDon {
         this.phanTramThue = phanTramThue;
     }
 
+    // Tiền dịch vụ: cộng các dòng chi tiết
+    public BigDecimal getTongTienDichVu() {
+        BigDecimal tong = BigDecimal.ZERO;
+        for (ChiTietHoaDon ct : dsChiTiet) {
+            tong = tong.add(ct.tinhThanhTien());
+        }
+        return tong;
+    }
+
+    // Tổng tiền trước thuế = tiền dịch vụ - giảm giá
     public BigDecimal getTongTienTruocThue() {
-        return tongTienTruocThue;
+        return getTongTienDichVu().subtract(tienGiamGia);
     }
 
-    public void setTongTienTruocThue(BigDecimal tongTienTruocThue) {
-        this.tongTienTruocThue = tongTienTruocThue;
-    }
-
+    // Tổng tiền phải trả = trước thuế cộng VAT, làm tròn đến đồng
     public BigDecimal getTongTien() {
-        return tongTien;
-    }
-
-    public void setTongTien(BigDecimal tongTien) {
-        this.tongTien = tongTien;
+        return getTongTienTruocThue().multiply(BigDecimal.valueOf(100).add(phanTramThue)).divide(BigDecimal.valueOf(100), 0, java.math.RoundingMode.HALF_UP);
     }
 
     public String getHinhThucThanhToan() {

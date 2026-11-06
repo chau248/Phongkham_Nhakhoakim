@@ -1,6 +1,6 @@
 package entity;
 
-// Dịch vụ không gắn răng đã làm trong một lượt khám (khám tổng quát, lấy cao răng...)
+// Dịch vụ không gắn răng đã làm trong một lượt khám
 public class LuotKhamDichVu {
 
     private int maDong; // Số thứ tự dòng

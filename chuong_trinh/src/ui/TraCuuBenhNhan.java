@@ -94,7 +94,7 @@ public class TraCuuBenhNhan extends JPanel implements MainApp.LamMoiDuoc {
         } catch (RuntimeException e) {
             nv = null; // Không biết ai đăng nhập
         }
-        boolean khoa = nv != null && !HangSo.VAI_TRO_LE_TAN.equals(nv.getVaiTro()) && !HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro());
+        boolean khoa = nv != null && !nv.laVaiTro(HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         btnSua.setEnabled(!khoa);
         btnThem.setEnabled(!khoa);
         btnNgung.setEnabled(!khoa);

@@ -18,9 +18,7 @@ public class DichVuController {
     private DichVuDAO dao = new DichVuDAO();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // ----- Tìm -----
-
-    // Tất cả dịch vụ, kể cả đã ngừng
+    // Tất cả dịch vụ
     public List<DichVu> layTatCa() {
         return dao.layTatCa();
     }
@@ -38,10 +36,10 @@ public class DichVuController {
 
     // Danh mục dịch vụ theo vai trò
     public List<DichVu> layChoVaiTro(String vaiTro) {
-        return HangSo.VAI_TRO_QUAN_LY.equals(vaiTro) ? layTatCa() : layDangHoatDong();
+        return HangSo.VAI_TRO_QUAN_LY.equals(vaiTro) || HangSo.VAI_TRO_TOAN_QUYEN.equals(vaiTro) ? layTatCa() : layDangHoatDong();
     }
 
-    // Dịch vụ cùng một loại, kể cả đã ngừng
+    // Dịch vụ cùng một loại
     public List<DichVu> timTheoLoai(String loai) {
         List<DichVu> kq = new ArrayList<>();
         for (DichVu dv : dao.layTatCa()) {
@@ -57,18 +55,14 @@ public class DichVuController {
         return ma == null ? null : dao.timTheoMa(ma);
     }
 
-    // ----- Thêm, sửa -----
-
     // Thêm dịch vụ mới
     public DichVu them(DichVu dv) {
         NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", HangSo.VAI_TRO_QUAN_LY);
-    // ----- Hàm phụ -----
 
         chuanHoa(dv);
         kiemTra(dv, null);
         dv.setMaDichVu(TienIchDAO.taoMa("DV"));
         dao.them(dv);
-        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Thêm dịch vụ", "DichVu", dv.getMaDichVu(), dv.getTenDichVu() + ", giá " + dv.getGia());
         return dv;
     }
 
@@ -104,7 +98,6 @@ public class DichVuController {
         if (dv.getTenDichVu() == null || dv.getTenDichVu().isEmpty()) {
             throw new NghiepVuException("Tên dịch vụ không được để trống");
         }
-        TienIchController.doDai(dv.getTenDichVu(), 150, "Tên dịch vụ");
         DichVu trung = dao.timTheoTen(dv.getTenDichVu());
         if (trung != null && !trung.getMaDichVu().equals(maDangSua)) {
             throw new NghiepVuException("Đã có dịch vụ tên \"" + trung.getTenDichVu() + "\" (" + trung.getMaDichVu() + ")");
@@ -118,8 +111,9 @@ public class DichVuController {
         if (dv.getLoaiDichVu() == null) {
             throw new NghiepVuException("Phải chọn loại dịch vụ");
         }
-        TienIchController.doDai(dv.getLoaiDichVu(), 50, "Loại dịch vụ");
-        TienIchController.doDai(dv.getMoTa(), 500, "Mô tả");
+        if (dv.getLoaiDichVu() == null || !new dao.CauHinhDAO().daCo(entity.DanhMuc.LOAI_DICH_VU, dv.getLoaiDichVu())) {
+            throw new NghiepVuException("Loại dịch vụ phải chọn trong danh mục loại dịch vụ");
+        }
         if (dv.getDonViTinh() != null && !DON_VI_TINH.contains(dv.getDonViTinh())) {
             throw new NghiepVuException("Đơn vị tính chỉ có thể là Lần, Răng hoặc Hàm");
         }

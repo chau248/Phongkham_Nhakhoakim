@@ -78,8 +78,7 @@ public class ChiTietHoaDon {
         this.ghiChu = ghiChu;
     }
 
-
-    // Thành tiền của dòng = đơn giá x số lượng - giảm giá
+    // Thành tiền của dòng = đơn giá x số lượng
     public BigDecimal tinhThanhTien() {
         BigDecimal tien = donGia.multiply(BigDecimal.valueOf(soLuong));
         return giamGia == null ? tien : tien.subtract(giamGia);

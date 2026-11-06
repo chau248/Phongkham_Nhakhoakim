@@ -200,7 +200,7 @@ public class TienIch {
         return new Nut(chu, false, MAU_CHINH);
     }
 
-    // Nút phụ màu đỏ cho thao tác hủy, xóa
+    // Nút phụ màu đỏ cho thao tác hủy
     public static JButton nutDo(String chu) {
         return new Nut(chu, false, MAU_DO_CHU);
     }
@@ -218,7 +218,7 @@ public class TienIch {
         return b;
     }
 
-    // Khối chữ nhiều dòng, nền màu
+    // Khối chữ nhiều dòng
     public static JComponent thongBao(String chu, Color nen, Color mauChu, boolean dam) {
         JTextArea o = new JTextArea(chu);
         o.setEditable(false);
@@ -229,6 +229,7 @@ public class TienIch {
         o.setForeground(mauChu);
         o.setBackground(nen);
         o.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+        o.setColumns(60);
         return o;
     }
 
@@ -242,6 +243,7 @@ public class TienIch {
         o.setFont(FONT);
         o.setForeground(mauChu);
         o.setOpaque(false);
+        o.setColumns(60); // Giữ độ rộng ưa thích vừa phải để chữ dài xuống dòng, không kéo giãn cả màn hình
         return o;
     }
 
@@ -268,7 +270,7 @@ public class TienIch {
         return c;
     }
 
-    // Một dòng ngang các thành phần, căn trái
+    // Một dòng ngang các thành phần
     public static JPanel dong(Component... cacCon) {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         p.setOpaque(false);
@@ -385,7 +387,7 @@ public class TienIch {
         }
     }
 
-    // Khung cuộn bao một bảng, cao cho trước
+    // Khung cuộn bao một bảng
     public static JScrollPane cuonBang(JComponent bang, int cao) {
         JScrollPane c = new JScrollPane(bang);
         c.setPreferredSize(new Dimension(900, cao));
@@ -393,7 +395,7 @@ public class TienIch {
         return c;
     }
 
-    // Cột có chữ dài thì xuống dòng thay
+    // Cột có chữ dài
     public static void cotXuongDong(JTable bang, int chiSo) {
         bang.getColumnModel().getColumn(chiSo).setCellRenderer(new TableCellRenderer() {
             private JTextArea o = new JTextArea();
@@ -581,7 +583,7 @@ public class TienIch {
         JOptionPane.showMessageDialog(MainApp.cuaSo(), noiDungHop(noiDung), tieuDe, loai);
     }
 
-    // Nội dung dài thì cho xuống dòng
+    // Nội dung dài
     private static Object noiDungHop(String noiDung) {
         JTextArea o = new JTextArea(noiDung);
         o.setEditable(false);
@@ -594,7 +596,7 @@ public class TienIch {
         return o;
     }
 
-    // Dòng thông tin ở đầu các màn hình làm việc trên lượt khám: bệnh nhân, nha sĩ phụ trách, mã lượt khám, giờ bắt đầu
+    // Dòng thông tin ở đầu các màn hình làm việc trên lượt khám: bệnh nhân
     static JLabel dongThongTinLuotKham(entity.LuotKham luotKham) {
         JLabel lbl = chuThuong("Bệnh nhân: " + luotKham.getMaHoSo().getMaBN().getHoTen() + "   |   Nha sĩ phụ trách: "
                 + luotKham.getMaNhanVienPhuTrach().getHoTen() + "   |   Lượt khám " + luotKham.getMaLuotKham()

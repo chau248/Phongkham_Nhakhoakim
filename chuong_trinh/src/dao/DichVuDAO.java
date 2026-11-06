@@ -14,14 +14,12 @@ public class DichVuDAO {
     // Cột để nối vào câu SELECT của bảng khác (bí danh dv, tên cột có tiền tố dv_)
     static final String COT_NOI = TienIchDAO.cot(COT, "dv", "dv_");
 
-    // ----- Tìm -----
-
-    // Tất cả dịch vụ, theo mã
+    // Tất cả dịch vụ
     public List<DichVu> layTatCa() {
         return TienIchDAO.layDanhSach("SELECT " + CAC_COT + " FROM dbo.DichVu ORDER BY maDichVu", rs -> doc(rs, ""));
     }
 
-    // Tìm dịch vụ theo mã, không có thì null
+    // Tìm dịch vụ theo mã
     public DichVu timTheoMa(String maDichVu) {
         return TienIchDAO.layMot("SELECT " + CAC_COT + " FROM dbo.DichVu WHERE maDichVu = ?", rs -> doc(rs, ""), maDichVu);
     }
@@ -30,8 +28,6 @@ public class DichVuDAO {
     public DichVu timTheoTen(String ten) {
         return TienIchDAO.layMot("SELECT " + CAC_COT + " FROM dbo.DichVu WHERE tenDichVu = ?", rs -> doc(rs, ""), ten);
     }
-
-    // ----- Thêm, sửa -----
 
     // Thêm dịch vụ mới
     public void them(DichVu dv) {
@@ -48,9 +44,7 @@ public class DichVuDAO {
                 dv.isTrangThaiHoatDong(), dv.isYeuCauLieuTrinh(), dv.isLienQuanImplantCauRang(), dv.getMaDichVu());
     }
 
-    // ----- Đọc dòng kết quả -----
-
-    // Đọc dịch vụ với tiền tố cột ("" nếu đọc từ bảng DichVu, "dv_" nếu nối từ bảng khác)
+    // Đọc dịch vụ với tiền tố cột
     static DichVu doc(ResultSet rs, String tienTo) throws SQLException {
         DichVu dv = new DichVu();
         dv.setMaDichVu(rs.getString(tienTo + "maDichVu"));
@@ -66,7 +60,7 @@ public class DichVuDAO {
         return dv;
     }
 
-    // Đọc dịch vụ nối từ bảng khác; không có (khóa ngoại null) thì trả về null
+    // Đọc dịch vụ nối từ bảng khác
     static DichVu docNoi(ResultSet rs) throws SQLException {
         return rs.getString("dv_maDichVu") == null ? null : doc(rs, "dv_");
     }

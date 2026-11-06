@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 // MaBN : String
 
-
 public class BenhNhan {
 
     private String maBN; // Mã bệnh nhân, dạng BN000001
@@ -22,7 +21,6 @@ public class BenhNhan {
     private String trangThai; // Đang điều trị hoặc Ngừng
     private String ghiChu; // Ghi chú
     
-
     public BenhNhan() {
     }
 

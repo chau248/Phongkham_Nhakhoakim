@@ -18,19 +18,17 @@ public class NhanVienDAO {
     // Cột để nối vào câu SELECT của bảng khác (bí danh nv, tên cột có tiền tố nv_)
     static final String COT_NOI = TienIchDAO.cot(COT, "nv", "nv_");
 
-    // ----- Tìm -----
-
-    // Tất cả nhân viên, theo mã
+    // Tất cả nhân viên
     public List<NhanVien> layTatCa() {
         return TienIchDAO.layDanhSach("SELECT " + CAC_COT + " FROM dbo.NhanVien ORDER BY maNV", rs -> doc(rs, ""));
     }
 
-    // Tìm nhân viên theo mã, không có thì null
+    // Tìm nhân viên theo mã
     public NhanVien timTheoMa(String maNV) {
         return TienIchDAO.layMot("SELECT " + CAC_COT + " FROM dbo.NhanVien WHERE maNV = ?", rs -> doc(rs, ""), maNV);
     }
 
-    // Nha sĩ của lượt khám gần nhất (không tính lượt đã hủy) của từng bệnh nhân: mã bệnh nhân -> nha sĩ
+    // Nha sĩ của lượt khám gần nhất
     public Map<String, NhanVien> layNhaSiKhamGanNhat(Collection<String> dsMaBN) {
         Map<String, NhanVien> kq = new HashMap<>();
         if (dsMaBN.isEmpty()) {
@@ -44,8 +42,6 @@ public class NhanVienDAO {
         TienIchDAO.layDanhSach(sql, rs -> kq.put(rs.getString("maBN_khach"), doc(rs, "nv_")), dsMaBN.toArray());
         return kq;
     }
-
-    // ----- Thêm, sửa -----
 
     // Thêm nhân viên mới
     public void them(NhanVien nv) {
@@ -62,9 +58,7 @@ public class NhanVienDAO {
                 nv.getSdt(), nv.getChuyenKhoa(), nv.getNgayVaoLam(), nv.getTrangThai(), nv.getMaNV());
     }
 
-    // ----- Đọc dòng kết quả -----
-
-    // Đọc nhân viên với tiền tố cột ("" nếu đọc từ bảng NhanVien, "nv_" nếu nối từ bảng khác)
+    // Đọc nhân viên với tiền tố cột
     static NhanVien doc(ResultSet rs, String tienTo) throws SQLException {
         NhanVien nv = new NhanVien();
         nv.setMaNV(rs.getString(tienTo + "maNV"));
@@ -80,7 +74,7 @@ public class NhanVienDAO {
         return nv;
     }
 
-    // Đọc nhân viên nối từ bảng khác; không có (khóa ngoại null) thì trả về null
+    // Đọc nhân viên nối từ bảng khác
     static NhanVien docNoi(ResultSet rs) throws SQLException {
         return rs.getString("nv_maNV") == null ? null : doc(rs, "nv_");
     }

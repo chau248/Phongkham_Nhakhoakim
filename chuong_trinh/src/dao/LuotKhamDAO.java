@@ -11,7 +11,7 @@ import entity.LieuTrinh;
 import entity.LuotKham;
 import entity.LuotKhamDichVu;
 
-// Truy cập bảng LuotKham và bảng LuotKhamDichVu (dịch vụ không gắn răng của lượt khám)
+// Truy cập bảng LuotKham và bảng LuotKhamDichVu
 public class LuotKhamDAO {
 
     static final String SELECT = "SELECT k.maLuotKham, k.maLieuTrinh, k.maHoaDon, k.maLichHen, k.gioBatDau, k.gioKetThuc, k.lyDoKham,"
@@ -22,25 +22,33 @@ public class LuotKhamDAO {
     static final String SELECT_DICH_VU = "SELECT d.maDong, d.maLuotKham, d.soLuong, d.ghiChu, " + DichVuDAO.COT_NOI
             + " FROM dbo.LuotKhamDichVu d JOIN dbo.DichVu dv ON dv.maDichVu = d.maDichVu";
 
-    // ----- Tìm -----
-
-    // Tìm lượt khám theo mã, không có thì null
+    // Tìm lượt khám theo mã
     public LuotKham timTheoMa(String maLuotKham) {
         return TienIchDAO.layMot(SELECT + " WHERE k.maLuotKham = ?", this::doc, maLuotKham);
     }
 
-    // Các lượt khám của một hồ sơ, mới nhất trước
+    // Các lượt khám của một hồ sơ
     public List<LuotKham> layTheoHoSo(String maHoSo) {
         return TienIchDAO.layDanhSach(SELECT + " WHERE k.maHoSo = ? ORDER BY k.gioBatDau DESC", this::doc, maHoSo);
     }
 
-    // Lượt đang khám của một nha sĩ, không có thì null
+    // Các lượt khám thuộc một liệu trình
+    public List<LuotKham> layTheoLieuTrinh(String maLieuTrinh) {
+        return TienIchDAO.layDanhSach(SELECT + " WHERE k.maLieuTrinh = ? AND k.trangThai <> N'Đã hủy' ORDER BY k.gioBatDau", this::doc, maLieuTrinh);
+    }
+
+    // Các lượt khám của một bệnh nhân
+    public List<LuotKham> layTheoBenhNhan(String maBN) {
+        return TienIchDAO.layDanhSach(SELECT + " WHERE h.maBN = ? AND k.trangThai <> N'Đã hủy' ORDER BY k.gioBatDau DESC", this::doc, maBN);
+    }
+
+    // Lượt đang khám của một nha sĩ
     public LuotKham timDangKham(String maNhanVien) {
         return TienIchDAO.layMot(SELECT + " WHERE k.maNhanVienPhuTrach = ? AND k.trangThai = N'Đang khám' ORDER BY k.gioBatDau DESC",
                 this::doc, maNhanVien);
     }
 
-    // Lượt đang khám của một hồ sơ, không có thì null
+    // Lượt đang khám của một hồ sơ
     public LuotKham timDangKhamTheoHoSo(String maHoSo) {
         return TienIchDAO.layMot(SELECT + " WHERE k.maHoSo = ? AND k.trangThai = N'Đang khám'", this::doc, maHoSo);
     }
@@ -49,8 +57,6 @@ public class LuotKhamDAO {
     public List<LuotKham> layChoThanhToan() {
         return TienIchDAO.layDanhSach(SELECT + " WHERE k.trangThai = N'Hoàn thành' AND k.maHoaDon IS NULL ORDER BY k.gioKetThuc", this::doc);
     }
-
-    // ----- Thêm, sửa -----
 
     // Thêm lượt khám mới
     public void them(LuotKham lk) {
@@ -62,7 +68,7 @@ public class LuotKhamDAO {
                 lk.getChanDoan(), lk.getHuongDieuTri(), lk.getDonThuoc(), lk.getNgayTaiKham(), lk.getTrangThai(), lk.getGhiChu());
     }
 
-    // Cập nhật nội dung khám, trạng thái, giờ kết thúc
+    // Cập nhật nội dung khám
     public void capNhat(LuotKham lk) {
         TienIchDAO.thucThi("UPDATE dbo.LuotKham SET gioKetThuc = ?, lyDoKham = ?, chanDoan = ?, huongDieuTri = ?, donThuoc = ?,"
                 + " ngayTaiKham = ?, trangThai = ?, ghiChu = ?, maLieuTrinh = ? WHERE maLuotKham = ?",
@@ -70,12 +76,15 @@ public class LuotKhamDAO {
                 lk.getTrangThai(), lk.getGhiChu(), ma(lk.getMaLieuTrinh()), lk.getMaLuotKham());
     }
 
-    // Gắn hóa đơn vào lượt khám chưa có hóa đơn; trả về true nếu gắn được
+    // Gắn lượt khám vào liệu trình
+    public void ganLieuTrinh(String maLuotKham, String maLieuTrinh) {
+        TienIchDAO.thucThi("UPDATE dbo.LuotKham SET maLieuTrinh = ? WHERE maLuotKham = ?", maLieuTrinh, maLuotKham);
+    }
+
+    // Gắn hóa đơn vào lượt khám chưa có hóa đơn
     public boolean ganHoaDon(String maLuotKham, String maHoaDon) {
         return TienIchDAO.thucThi("UPDATE dbo.LuotKham SET maHoaDon = ? WHERE maLuotKham = ? AND maHoaDon IS NULL", maHoaDon, maLuotKham) > 0;
     }
-
-    // ----- Dịch vụ không gắn răng -----
 
     // Các dịch vụ không gắn răng của lượt khám
     public List<LuotKhamDichVu> layDichVu(String maLuotKham) {
@@ -98,12 +107,10 @@ public class LuotKhamDAO {
                 d.getMaLuotKham().getMaLuotKham(), d.getMaDichVu().getMaDichVu(), d.getSoLuong(), d.getGhiChu());
     }
 
-    // Xóa một dòng dịch vụ; trả về true nếu có xóa
+    // Xóa một dòng dịch vụ
     public boolean xoaDichVu(String maLuotKham, int maDong) {
         return TienIchDAO.thucThi("DELETE FROM dbo.LuotKhamDichVu WHERE maDong = ? AND maLuotKham = ?", maDong, maLuotKham) > 0;
     }
-
-    // ----- Đọc dòng kết quả -----
 
     private LuotKham doc(ResultSet rs) throws SQLException {
         LuotKham lk = new LuotKham();
@@ -125,7 +132,7 @@ public class LuotKhamDAO {
         return lk;
     }
 
-    // Mã của liệu trình, hóa đơn, lịch hẹn (null nếu chưa có); chỉ dùng khi ghi xuống CSDL
+    // Mã của liệu trình
     private static String ma(LieuTrinh lt) {
         return lt == null ? null : lt.getMaLieuTrinh();
     }
@@ -138,7 +145,7 @@ public class LuotKhamDAO {
         return lh == null ? null : lh.getMaLichHen();
     }
 
-    // Đối tượng chỉ có mã (liệu trình, hóa đơn, lịch hẹn): muốn đầy đủ thì tìm lại bằng DAO tương ứng
+    // Đối tượng chỉ có mã
     private static LieuTrinh lieuTrinh(String ma) {
         if (ma == null) {
             return null;

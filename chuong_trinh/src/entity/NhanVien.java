@@ -2,7 +2,6 @@ package entity;
 
 import java.time.LocalDate;
 
-
 // MaNV : String
 
 public class NhanVien {
@@ -17,10 +16,6 @@ public class NhanVien {
     private String sdt; // Số điện thoại
     private String gioiTinh; // Nam, Nữ hoặc Khác
     private LocalDate ngayVaoLam; // Ngày vào làm
-    
-    
-    
-    
     
     public NhanVien() {
     }
@@ -61,6 +56,19 @@ public class NhanVien {
         this.vaiTro = vaiTro;
     }
 
+    // Có thuộc một trong các vai trò này không
+    public boolean laVaiTro(String... cacVaiTro) {
+        if (HangSo.VAI_TRO_TOAN_QUYEN.equals(vaiTro)) {
+            return true;
+        }
+        for (String vt : cacVaiTro) {
+            if (vt.equals(vaiTro)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getSoChungChiHanhNghe() {
         return soChungChiHanhNghe;
     }
@@ -97,7 +105,6 @@ public class NhanVien {
     public boolean chungChiConHan() {
         return ngayHetHanChungChi != null && !ngayHetHanChungChi.isBefore(LocalDate.now());
     }
-
 
     public String getSdt() {
         return sdt;

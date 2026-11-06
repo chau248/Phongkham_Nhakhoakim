@@ -16,14 +16,12 @@ public class LichHenDAO {
             + " JOIN dbo.DichVu dv ON dv.maDichVu = l.maDichVu";
     static final String CON_HIEU_LUC = "l.trangThai IN (N'Chờ xác nhận', N'Đã xác nhận')";
 
-    // ----- Tìm -----
-
-    // Tìm lịch hẹn theo mã, không có thì null
+    // Tìm lịch hẹn theo mã
     public LichHen timTheoMa(String maLichHen) {
         return TienIchDAO.layMot(SELECT + " WHERE l.maLichHen = ?", this::doc, maLichHen);
     }
 
-    // Lịch hẹn của mọi nha sĩ trong khoảng ngày (gồm cả hai đầu)
+    // Lịch hẹn của mọi nha sĩ trong khoảng ngày
     public List<LichHen> layTheoKhoang(LocalDate tu, LocalDate den) {
         return TienIchDAO.layDanhSach(SELECT + " WHERE l.ngayHen BETWEEN ? AND ? ORDER BY l.ngayHen, l.gioHen, l.maLichHen", this::doc, tu, den);
     }
@@ -34,7 +32,7 @@ public class LichHenDAO {
                 this::doc, maNV, tu, den);
     }
 
-    // Lịch còn hiệu lực (chờ xác nhận hoặc đã xác nhận) của một nha sĩ trong một ngày
+    // Lịch còn hiệu lực
     public List<LichHen> layConHieuLucTheoNhaSiVaNgay(String maNV, LocalDate ngay) {
         return TienIchDAO.layDanhSach(SELECT + " WHERE l.maNhanVien = ? AND l.ngayHen = ? AND " + CON_HIEU_LUC + " ORDER BY l.gioHen",
                 this::doc, maNV, ngay);
@@ -59,8 +57,6 @@ public class LichHenDAO {
         return so != null && so > 0;
     }
 
-    // ----- Thêm, sửa -----
-
     // Thêm lịch hẹn mới
     public void them(LichHen lh) {
         TienIchDAO.thucThi("INSERT INTO dbo.LichHen (maLichHen, maBN, maNhanVien, maDichVu, ngayHen, gioHen, trangThai, thoiLuongDuKien,"
@@ -70,7 +66,7 @@ public class LichHenDAO {
                 lh.isDaNhacHen());
     }
 
-    // Đổi trạng thái (kèm lý do hủy nếu có)
+    // Đổi trạng thái
     public void doiTrangThai(String maLichHen, String trangThai, String lyDoHuy) {
         TienIchDAO.thucThi("UPDATE dbo.LichHen SET trangThai = ?, lyDoHuy = ? WHERE maLichHen = ?", trangThai, lyDoHuy, maLichHen);
     }
@@ -80,8 +76,6 @@ public class LichHenDAO {
         TienIchDAO.thucThi("UPDATE dbo.LichHen SET ngayHen = ?, gioHen = ?, phong = ?, thoiLuongDuKien = ? WHERE maLichHen = ?",
                 ngay, gio, phong, thoiLuongPhut, maLichHen);
     }
-
-    // ----- Đọc dòng kết quả -----
 
     private LichHen doc(ResultSet rs) throws SQLException {
         LichHen lh = new LichHen();

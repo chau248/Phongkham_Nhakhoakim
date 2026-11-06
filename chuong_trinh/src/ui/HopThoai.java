@@ -28,12 +28,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import nhakhoakim.MainApp;
 
-// Các hộp thoại của chương trình: đăng nhập, xem và in hóa đơn, chọn dịch vụ
+// Các hộp thoại của chương trình: đăng nhập
 public class HopThoai {
 
-    // ----- Đăng nhập -----
-
-    // Hiện hộp đăng nhập; trả về người đăng nhập thành công (bấm Thoát thì null)
+    // Hiện hộp đăng nhập
     public static NhanVien dangNhap() {
         HopDangNhap hop = new HopDangNhap();
         hop.setVisible(true);
@@ -96,31 +94,36 @@ public class HopThoai {
 
     }
 
-    // ----- Xem và in hóa đơn -----
-
-    // Hiện cửa sổ xem trước hóa đơn, có nút in
+    // Hiện cửa sổ xem trước hóa đơn
     static void inHoaDon(String chu) {
-        if (GraphicsEnvironment.isHeadless()) {
-            TienIch.hopCuoi = chu;
-            System.out.println("[Xem trước hóa đơn]\n" + chu);
-            return;
-        }
-        new HopXemHoaDon(chu).setVisible(true);
+        inVanBan("Hóa đơn", chu);
     }
 
-    // Cửa sổ xem trước hóa đơn
+    // Hiện cửa sổ xem trước một văn bản
+    static void inVanBan(String tieuDe, String chu) {
+        if (GraphicsEnvironment.isHeadless()) {
+            TienIch.hopCuoi = chu;
+            System.out.println("[Xem trước " + tieuDe + "]\n" + chu);
+            return;
+        }
+        new HopXemVanBan(tieuDe, chu).setVisible(true);
+    }
+
+    // Cửa sổ xem trước văn bản
     @SuppressWarnings("serial") // Lớp giao diện Swing
-    private static class HopXemHoaDon extends JDialog {
+    private static class HopXemVanBan extends JDialog {
 
         private JTextArea noiDung;
+        private String tieuDe;
 
-        private HopXemHoaDon(String chu) {
-            super(MainApp.cuaSo(), "Hóa đơn", true);
+        private HopXemVanBan(String tieuDe, String chu) {
+            super(MainApp.cuaSo(), "Xem trước " + tieuDe.toLowerCase(), true);
+            this.tieuDe = tieuDe;
             noiDung = new JTextArea(chu);
             noiDung.setEditable(false);
             noiDung.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
             noiDung.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
-            JButton btnIn = TienIch.nutChinh("In hóa đơn");
+            JButton btnIn = TienIch.nutChinh("In " + tieuDe.toLowerCase());
             btnIn.addActionListener(e -> in());
             JButton btnDong = TienIch.nutPhu("Đóng");
             btnDong.addActionListener(e -> dispose());
@@ -129,25 +132,21 @@ public class HopThoai {
             setLayout(new BorderLayout());
             add(new JScrollPane(noiDung), BorderLayout.CENTER);
             add(duoi, BorderLayout.SOUTH);
-            setSize(640, 560);
+            setSize(800, 640);
             setLocationRelativeTo(MainApp.cuaSo());
         }
 
-
-        // Gửi nội dung hóa đơn tới máy in
+        // Gửi nội dung tới máy in
         private void in() {
             try {
                 if (!noiDung.print()) {
                     TienIch.thongTin("Đã hủy lệnh in.");
                 }
             } catch (PrinterException ex) {
-                TienIch.loi("Không in được hóa đơn: " + ex.getMessage());
+                TienIch.loi("Không in được " + tieuDe.toLowerCase() + ": " + ex.getMessage());
             }
         }
     }
-
-    // ----- Chọn dịch vụ -----
-
 
         private static final String TAT_CA = "Tất cả loại";
 
@@ -157,7 +156,7 @@ public class HopThoai {
         private static DichVu daChon; // Dịch vụ người dùng chọn
         private static List<DichVu> dangHien; // Danh sách dịch vụ
 
-        // Mở hộp thoại chọn dịch vụ không gắn răng (dịch vụ tính theo răng phải ghi ở Sơ đồ răng)
+        // Mở hộp thoại chọn dịch vụ không gắn răng
         public static DichVu chonDichVu() {
             if (GraphicsEnvironment.isHeadless()) {
                 return traLoiTuDong;

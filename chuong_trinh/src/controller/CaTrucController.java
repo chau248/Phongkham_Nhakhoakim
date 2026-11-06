@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import dao.CaTrucDAO;
+import dao.CauHinhDAO;
 import dao.LichHenDAO;
 import dao.TienIchDAO;
 import dao.NghiepVuException;
 import entity.CaTruc;
+import entity.DanhMuc;
 import entity.LichHen;
 import entity.NhanVien;
 import entity.HangSo;
@@ -23,14 +25,12 @@ public class CaTrucController {
     public static final String VANG = "Vắng";
     public static final String DIEU_CHUYEN = "Điều chuyển";
     public static final String QUAY_LE_TAN = "Quầy lễ tân";
-    public static final List<String> PHONG_KHAM = List.of("Phòng 1", "Phòng 2", "Phòng 3");
 
     private CaTrucDAO caTrucDAO = new CaTrucDAO();
+    private CauHinhDAO cauHinhDAO = new CauHinhDAO();
     private LichHenDAO lichHenDAO = new LichHenDAO();
     private NhanVienController nhanVienController = new NhanVienController();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
-
-    // ----- Giờ của ca -----
 
     // Giờ bắt đầu của ca
     public static LocalTime gioBatDauCa(String caLam) {
@@ -41,8 +41,6 @@ public class CaTrucController {
     public static LocalTime gioKetThucCa(String caLam) {
         return SANG.equals(caLam) ? LocalTime.of(12, 0) : LocalTime.of(17, 0);
     }
-
-    // ----- Tìm -----
 
     // Các ca trực
     public List<CaTruc> layTheoKhoang(LocalDate tu, LocalDate den) {
@@ -75,8 +73,6 @@ public class CaTrucController {
         return caTrucDAO.timTheoMa(maCaTruc);
     }
 
-    // ----- Phân công, đổi trạng thái, xóa -----
-
     // Phân công một ca trực
     public CaTruc phanCong(String maNV, LocalDate ngay, String caLam, String phong) {
         NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "phân công ca trực", HangSo.VAI_TRO_QUAN_LY);
@@ -87,8 +83,8 @@ public class CaTrucController {
         if (!NhanVienController.DANG_LAM.equals(nv.getTrangThai())) {
             throw new NghiepVuException("Chỉ xếp ca cho nhân viên đang làm việc (" + nv.getHoTen() + " đã nghỉ việc)");
         }
-        if (HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro())) {
-            throw new NghiepVuException("Quản lý không có ca trực, chỉ xếp ca cho Nha sĩ, Y tá và Lễ tân");
+        if (HangSo.VAI_TRO_QUAN_LY.equals(nv.getVaiTro()) || HangSo.VAI_TRO_TOAN_QUYEN.equals(nv.getVaiTro())) {
+            throw new NghiepVuException("Quản lý và tài khoản Toàn quyền không có ca trực");
         }
         if (ngay == null) {
             throw new NghiepVuException("Chưa chọn ngày");
@@ -104,8 +100,12 @@ public class CaTrucController {
         }
         if (HangSo.VAI_TRO_LE_TAN.equals(nv.getVaiTro())) {
             phong = QUAY_LE_TAN;
-        } else if (phong == null || !PHONG_KHAM.contains(phong)) {
-            throw new NghiepVuException("Nha sĩ và Y tá phải xếp vào Phòng 1, Phòng 2 hoặc Phòng 3");
+        } else if (HangSo.VAI_TRO_NHA_SI.equals(nv.getVaiTro()) || HangSo.VAI_TRO_Y_TA.equals(nv.getVaiTro())) {
+            if (phong == null || !cauHinhDAO.laPhongKham(phong)) {
+                throw new NghiepVuException("Nha sĩ và Y tá phải xếp vào một phòng khám (xem Danh mục phòng)");
+            }
+        } else if (phong == null || !cauHinhDAO.daCo(DanhMuc.PHONG, phong)) {
+            throw new NghiepVuException("Phòng \"" + phong + "\" không có trong danh mục phòng");
         }
         for (CaTruc ca : caTrucDAO.layTheoNgayVaCa(ngay, caLam)) {
             if (ca.getMaNV().getMaNV().equals(maNV)) {
@@ -123,7 +123,6 @@ public class CaTrucController {
         ca.setPhong(phong);
         ca.setTrangThai(CO_MAT);
         caTrucDAO.them(ca);
-        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Phân công ca trực", "CaTruc", ca.getMaCaTruc(), nv.getHoTen() + ", " + ngay + ", " + caLam + ", " + phong);
         return ca;
     }
 
@@ -138,7 +137,6 @@ public class CaTrucController {
             kiemTraKhongCoLichHen(ca, "đổi trạng thái");
         }
         caTrucDAO.doiTrangThai(maCaTruc, trangThai);
-        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Đổi trạng thái ca trực", "CaTruc", maCaTruc, "Từ [" + ca.getTrangThai() + "] sang [" + trangThai + "]");
     }
 
     // Xóa ca đã xếp nhầm
@@ -150,11 +148,7 @@ public class CaTrucController {
         }
         kiemTraKhongCoLichHen(ca, "xóa");
         caTrucDAO.xoa(maCaTruc);
-        TienIchController.ghiNhatKy(nguoi.getMaNV(), "Xóa ca trực", "CaTruc", maCaTruc,
-                ca.getMaNV().getHoTen() + ", " + ca.getNgay() + ", " + ca.getCaLam() + ", " + ca.getPhong());
     }
-
-    // ----- Hàm phụ -----
 
     private CaTruc layCa(String maCaTruc) {
         CaTruc ca = caTrucDAO.timTheoMa(maCaTruc);

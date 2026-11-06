@@ -2,7 +2,7 @@ package entity;
 
 import java.time.LocalDate;
 
-// Liệu trình điều trị nhiều buổi (niềng răng, implant, nội nha...)
+// Liệu trình điều trị nhiều buổi
 public class LieuTrinh {
 
     private String maLieuTrinh; // Mã liệu trình, dạng LT000001

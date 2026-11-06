@@ -23,13 +23,13 @@ import entity.TaiKhoan;
 
 // Màn hình tạo tài khoản và gán vai trò
 @SuppressWarnings("serial") // Lớp giao diện Swing
-public class QuanLyTaiKhoan extends JPanel {
+public class QuanLyTaiKhoan extends JPanel implements MainApp.LamMoiDuoc {
 
     private TaiKhoanController taiKhoanController = new TaiKhoanController();
     private NhanVienController nhanVienController = new NhanVienController();
 
-    private JTable tblTaiKhoan = TienIch.taoBang(new String[] {"Mã", "Tên đăng nhập", "Nhân viên", "Vai trò", "Trạng thái", "Đăng nhập cuối", "Sai liên tiếp"},
-            new int[] {90, 130, 200, 90, 100, 140, 90}, "Chưa có tài khoản nào.");
+    private JTable tblTaiKhoan = TienIch.taoBang(new String[] {"Mã", "Tên đăng nhập", "Nhân viên", "Vai trò", "Trạng thái", "Đăng nhập cuối"},
+            new int[] {90, 130, 220, 100, 110, 150}, "Chưa có tài khoản nào.");
     private List<TaiKhoan> dsTaiKhoan = new ArrayList<>();
     private JLabel lblKetQua = new JLabel();
 
@@ -54,6 +54,9 @@ public class QuanLyTaiKhoan extends JPanel {
             NhanVien nv = (NhanVien) cmbNhanVien.getSelectedItem();
             lblVaiTro.setText(nv == null ? " " : "Vai trò tài khoản sẽ là " + nv.getVaiTro() + " (theo vai trò nhân viên).");
         });
+        JButton btnNhanVienMoi = TienIch.nutPhu("Thêm nhân viên mới");
+        btnNhanVienMoi.setToolTipText("Nhân viên nào cũng đã có tài khoản thì thêm nhân viên mới trước");
+        btnNhanVienMoi.addActionListener(e -> nhakhoakim.MainApp.doiNoiDung(new QuanLyNhanVien()));
         JButton btnTao = TienIch.nutChinh("Tạo tài khoản");
         btnTao.addActionListener(e -> tao());
         JButton btnKhoa = TienIch.nutDo("Khóa tài khoản");
@@ -70,7 +73,12 @@ public class QuanLyTaiKhoan extends JPanel {
                 new Component[] {cmbNhanVien, txtTen, txtMatKhau});
         TienIch.xepManHinh(this, TienIch.tieuDe("Tài khoản đăng nhập"), lblKetQua, TienIch.cuonBang(tblTaiKhoan, 240),
                 TienIch.dong(btnKhoa, btnMoKhoa, btnCapLai),
-                TienIch.the(TienIch.chuThuong("Tạo tài khoản mới", true), form, lblVaiTro, TienIch.dong(btnTao)));
+                TienIch.the(TienIch.chuThuong("Tạo tài khoản mới", true), form, lblVaiTro, TienIch.dong(btnTao, btnNhanVienMoi)));
+        tai();
+    }
+
+    @Override
+    public void lamMoi() {
         tai();
     }
 
@@ -83,7 +91,7 @@ public class QuanLyTaiKhoan extends JPanel {
             for (TaiKhoan tk : dsTaiKhoan) {
                 daCo.add(tk.getMaNV().getMaNV());
                 dong.add(new String[] {tk.getMaTaiKhoan(), tk.getTenDangNhap(), tk.getMaNV().getHoTen(), tk.getVaiTro(), tk.isTrangThaiKhoa() ? "Bị khóa" : "Hoạt động",
-                    TienIch.ngayGio(tk.getLanDangNhapCuoi()), String.valueOf(tk.getSoLanDangNhapSai())});
+                    TienIch.ngayGio(tk.getLanDangNhapCuoi())});
             }
             TienIch.napBang(tblTaiKhoan, dong);
             lblKetQua.setText(dong.size() + " tài khoản.");

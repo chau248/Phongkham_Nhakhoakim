@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import dao.CauHinhDAO;
 import dao.TienIchDAO;
 import dao.NghiepVuException;
 import dao.NhanVienDAO;
 import dao.TaiKhoanDAO;
+import entity.DanhMuc;
 import entity.NhanVien;
 import entity.TaiKhoan;
 import entity.HangSo;
@@ -21,16 +23,15 @@ public class NhanVienController {
 
     private NhanVienDAO nhanVienDAO = new NhanVienDAO();
     private TaiKhoanDAO taiKhoanDAO = new TaiKhoanDAO();
+    private CauHinhDAO cauHinhDAO = new CauHinhDAO();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
-
-    // ----- Tìm -----
 
     // Tìm nhân viên theo mã
     public NhanVien timTheoMa(String ma) {
         return ma == null ? null : nhanVienDAO.timTheoMa(ma);
     }
 
-    // Tất cả nhân viên, theo mã
+    // Tất cả nhân viên
     public List<NhanVien> layTatCa() {
         return nhanVienDAO.layTatCa();
     }
@@ -71,19 +72,15 @@ public class NhanVienController {
         return kq;
     }
 
-    // ----- Thêm, sửa -----
-
     // Thêm nhân viên mới
     public NhanVien them(NhanVien nv) {
         TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa hồ sơ nhân viên", HangSo.VAI_TRO_QUAN_LY);
-    // ----- Hàm phụ -----
 
         chuanHoa(nv);
         kiemTra(nv);
         nv.setMaNV(TienIchDAO.taoMa("NV"));
         nv.setTrangThai(DANG_LAM);
         nhanVienDAO.them(nv);
-        TienIchController.ghiNhatKy(nguoiDung.get().getMaNV(), "Thêm nhân viên", "NhanVien", nv.getMaNV(), nv.getHoTen() + " - " + nv.getVaiTro());
         return nv;
     }
 
@@ -99,11 +96,6 @@ public class NhanVienController {
         boolean doiVaiTro = !cu.getVaiTro().equals(nv.getVaiTro());
         boolean nghiViec = NGHI_VIEC.equals(nv.getTrangThai()) && !NGHI_VIEC.equals(cu.getTrangThai());
         TaiKhoan tk = taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
-        // Luôn còn ít nhất một Quản lý hoạt động
-        boolean laQuanLyHoatDong = tk != null && HangSo.VAI_TRO_QUAN_LY.equals(tk.getVaiTro()) && !tk.isTrangThaiKhoa();
-        if (laQuanLyHoatDong && (doiVaiTro || nghiViec) && taiKhoanDAO.demQuanLyHoatDong() <= 1) {
-            throw new NghiepVuException("Đây là Quản lý hoạt động cuối cùng, không thể đổi vai trò hoặc cho nghỉ việc (hệ thống phải luôn có một Quản lý)");
-        }
         nhanVienDAO.capNhat(nv);
         if (tk != null && doiVaiTro) {
             taiKhoanDAO.doiVaiTroTheoNhanVien(nv.getMaNV(), nv.getVaiTro());
@@ -141,8 +133,8 @@ public class NhanVienController {
         if (nv.getHoTen().length() < 2 || nv.getHoTen().length() > 100 || !nv.getHoTen().matches("[\\p{L} .'-]+")) {
             throw new NghiepVuException("Họ tên chỉ gồm chữ cái và khoảng trắng, dài từ 2 đến 100 ký tự");
         }
-        if (!List.of(HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY).contains(nv.getVaiTro())) {
-            throw new NghiepVuException("Vai trò phải là Nha sĩ, Y tá, Lễ tân hoặc Quản lý");
+        if (nv.getVaiTro() == null || !cauHinhDAO.coVaiTro(nv.getVaiTro())) {
+            throw new NghiepVuException("Vai trò \"" + nv.getVaiTro() + "\" không có trong danh mục vai trò");
         }
         if (nv.getGioiTinh() != null && !List.of("Nam", "Nữ", "Khác").contains(nv.getGioiTinh())) {
             throw new NghiepVuException("Giới tính chỉ có thể là Nam, Nữ hoặc Khác");
@@ -150,12 +142,13 @@ public class NhanVienController {
         if (nv.getSdt() != null && !nv.getSdt().matches("0[0-9]{9}")) {
             throw new NghiepVuException("Số điện thoại phải đủ 10 số và bắt đầu bằng 0");
         }
-        TienIchController.doDai(nv.getChuyenKhoa(), 100, "Chuyên khoa");
+        if (nv.getChuyenKhoa() != null && !cauHinhDAO.daCo(DanhMuc.CHUYEN_KHOA, nv.getChuyenKhoa())) {
+            throw new NghiepVuException("Chuyên khoa \"" + nv.getChuyenKhoa() + "\" không có trong danh mục chuyên khoa");
+        }
         if (HangSo.VAI_TRO_NHA_SI.equals(nv.getVaiTro())) {
             if (nv.getSoChungChiHanhNghe() == null) {
                 throw new NghiepVuException("Nha sĩ bắt buộc có số chứng chỉ hành nghề");
             }
-            TienIchController.doDai(nv.getSoChungChiHanhNghe(), 30, "Số chứng chỉ hành nghề");
             if (nv.getNgayHetHanChungChi() == null) {
                 throw new NghiepVuException("Nha sĩ bắt buộc có ngày hết hạn chứng chỉ hành nghề");
             }

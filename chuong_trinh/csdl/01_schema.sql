@@ -1,15 +1,30 @@
 USE master;
 GO
-IF DB_ID(N'NhaKhoaKim') IS NULL
-    CREATE DATABASE NhaKhoaKim COLLATE Vietnamese_CI_AS;
+IF DB_ID(N'NhaKhoaKim') IS NOT NULL
+BEGIN
+    ALTER DATABASE NhaKhoaKim SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE NhaKhoaKim;
+END
+GO
+
+CREATE DATABASE NhaKhoaKim COLLATE Vietnamese_CI_AS;
 GO
 USE NhaKhoaKim;
 GO
+
+-- Cấp quyền cho tài khoản SQL của chương trình (mất khi CSDL bị tạo lại)
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = N'nhakhoakim')
+BEGIN
+    CREATE USER nhakhoakim FOR LOGIN nhakhoakim;
+    ALTER ROLE db_owner ADD MEMBER nhakhoakim;
+END
+GO
+
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
 
-/* ---------- Bộ đếm sinh mã (BN000001, HD000123...) - dùng bởi MaGenerator ---------- */
+-- Bộ đếm sinh mã (BN000001, HD000123...) - dùng bởi MaGenerator
 IF OBJECT_ID(N'dbo.BoDemMa', N'U') IS NULL
 CREATE TABLE dbo.BoDemMa (
     tienTo        VARCHAR(5) NOT NULL PRIMARY KEY,
@@ -17,7 +32,7 @@ CREATE TABLE dbo.BoDemMa (
 );
 GO
 
-/* ---------- Danh mục dùng chung (tên làm khóa nên các bảng khác chỉ cần lưu tên) ---------- */
+-- Danh mục dùng chung (tên làm khóa nên các bảng khác chỉ cần lưu tên)
 IF OBJECT_ID(N'dbo.ChuyenKhoa', N'U') IS NULL
 CREATE TABLE dbo.ChuyenKhoa (
     tenChuyenKhoa NVARCHAR(100) NOT NULL PRIMARY KEY
@@ -61,6 +76,18 @@ CREATE TABLE dbo.Phong (
 );
 GO
 
+IF OBJECT_ID(N'dbo.VatLieu', N'U') IS NULL
+CREATE TABLE dbo.VatLieu (
+    tenVatLieu NVARCHAR(100) NOT NULL PRIMARY KEY
+);
+GO
+
+IF OBJECT_ID(N'dbo.Thuoc', N'U') IS NULL
+CREATE TABLE dbo.Thuoc (
+    tenThuoc NVARCHAR(100) NOT NULL PRIMARY KEY
+);
+GO
+
 IF OBJECT_ID(N'dbo.ThamSo', N'U') IS NULL
 CREATE TABLE dbo.ThamSo (
     tenThamSo NVARCHAR(40)  NOT NULL PRIMARY KEY,
@@ -69,7 +96,7 @@ CREATE TABLE dbo.ThamSo (
 );
 GO
 
-/* ---------- Dữ liệu nền: danh mục và quyền mặc định (chạy lại không bị trùng) ---------- */
+-- Dữ liệu nền: danh mục và quyền mặc định (chạy lại không bị trùng)
 INSERT INTO dbo.VaiTro (tenVaiTro, laVaiTroGoc, moTa)
 SELECT v.* FROM (VALUES
     (N'Quản lý',    1, N'Quản lý phòng khám'),
@@ -94,6 +121,15 @@ INSERT INTO dbo.Phong (tenPhong, laPhongKham)
 SELECT v.* FROM (VALUES (N'Phòng 1', 1), (N'Phòng 2', 1), (N'Phòng 3', 1), (N'Quầy lễ tân', 0)) AS v(tenPhong, laPhongKham)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Phong x WHERE x.tenPhong = v.tenPhong);
 
+INSERT INTO dbo.VatLieu (tenVatLieu)
+SELECT v.t FROM (VALUES (N'Composite'), (N'Sứ'), (N'Sứ Zirconia'), (N'Sứ kim loại'), (N'Titanium'), (N'Amalgam')) AS v(t)
+WHERE NOT EXISTS (SELECT 1 FROM dbo.VatLieu x WHERE x.tenVatLieu = v.t);
+
+INSERT INTO dbo.Thuoc (tenThuoc)
+SELECT v.t FROM (VALUES (N'Paracetamol 500mg'), (N'Ibuprofen 400mg'), (N'Amoxicillin 500mg'), (N'Metronidazol 250mg'),
+                        (N'Súc miệng Chlorhexidine 0,12%')) AS v(t)
+WHERE NOT EXISTS (SELECT 1 FROM dbo.Thuoc x WHERE x.tenThuoc = v.t);
+
 INSERT INTO dbo.ThamSo (tenThamSo, giaTri, moTa)
 SELECT v.* FROM (VALUES
     (N'tenPhongKham', N'Nha khoa Kim',                                   N'Tên in trên hóa đơn'),
@@ -113,7 +149,6 @@ SELECT v.* FROM (VALUES
     (N'Khám & ghi nhận điều trị',                    N'Lượt khám', 5),
     (N'Sơ đồ răng điều trị',                         N'Lượt khám', 6),
     (N'Chỉ định tái khám',                           N'Lượt khám', 7),
-    (N'Gợi ý điều trị & ước tính chi phí',           N'Lượt khám', 8),
     (N'In đơn thuốc',                                N'Lượt khám', 9),
     (N'Liệu trình điều trị',                         N'Lượt khám', 10),
     (N'Lịch hẹn theo tuần',                          N'Lịch hẹn', 11),
@@ -126,14 +161,20 @@ SELECT v.* FROM (VALUES
     (N'Thêm / sửa dịch vụ',                          N'Dịch vụ', 18),
     (N'Cập nhật hồ sơ nhân viên',                    N'Nhân viên', 19),
     (N'Thời khóa biểu ca trực',                      N'Nhân viên', 20),
-    (N'Tạo tài khoản & gán vai trò',                 N'Tài khoản', 21),
-    (N'Danh mục (chuyên khoa, loại dịch vụ, phòng)', N'Hệ thống', 22),
-    (N'Phân quyền vai trò',                          N'Hệ thống', 23),
-    (N'Thông tin phòng khám & thuế',                 N'Hệ thống', 24)
+    (N'Tài khoản của tôi',                           N'Tài khoản', 21),
+    (N'Tạo tài khoản & gán vai trò',                 N'Tài khoản', 22),
+    (N'Danh mục (chuyên khoa, loại dịch vụ, phòng)', N'Dịch vụ', 23),
+    (N'Thông tin phòng khám & thuế',                 N'Dịch vụ', 25)
 ) AS v(tenChucNang, nhom, thuTu)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.ChucNang x WHERE x.tenChucNang = v.tenChucNang);
 
-/* Quyền mặc định của 4 vai trò gốc (chỉ cấp khi vai trò đó chưa có quyền nào, để không đè lên phần đã chỉnh) */
+-- CSDL cũ đã có chức năng thì cập nhật nhóm và thứ tự cho khớp bản mới
+UPDATE c SET nhom = v.nhom, thuTu = v.thuTu FROM dbo.ChucNang c
+JOIN (VALUES (N'Tài khoản của tôi', N'Tài khoản', 21), (N'Tạo tài khoản & gán vai trò', N'Tài khoản', 22),
+             (N'Danh mục (chuyên khoa, loại dịch vụ, phòng)', N'Dịch vụ', 23), 
+             (N'Thông tin phòng khám & thuế', N'Dịch vụ', 25)) AS v(ten, nhom, thuTu) ON v.ten = c.tenChucNang;
+
+-- Quyền mặc định của 4 vai trò gốc (chỉ cấp khi vai trò đó chưa có quyền nào, để không đè lên phần đã chỉnh)
 INSERT INTO dbo.VaiTroChucNang (tenVaiTro, tenChucNang)
 SELECT q.vaiTro, q.chucNang FROM (VALUES
     (N'Quản lý', N'Tìm kiếm bệnh nhân'), (N'Quản lý', N'Thêm / cập nhật bệnh nhân'), (N'Quản lý', N'Xem hồ sơ bệnh án'),
@@ -142,11 +183,11 @@ SELECT q.vaiTro, q.chucNang FROM (VALUES
     (N'Quản lý', N'Thanh toán & in hóa đơn'), (N'Quản lý', N'Báo cáo doanh thu'), (N'Quản lý', N'Xem danh mục dịch vụ & giá'),
     (N'Quản lý', N'Thêm / sửa dịch vụ'), (N'Quản lý', N'Cập nhật hồ sơ nhân viên'), (N'Quản lý', N'Thời khóa biểu ca trực'),
     (N'Quản lý', N'Tạo tài khoản & gán vai trò'), (N'Quản lý', N'Danh mục (chuyên khoa, loại dịch vụ, phòng)'),
-    (N'Quản lý', N'Phân quyền vai trò'), (N'Quản lý', N'Thông tin phòng khám & thuế'),
+    (N'Quản lý', N'Thông tin phòng khám & thuế'),
 
     (N'Nha sĩ', N'Tìm kiếm bệnh nhân'), (N'Nha sĩ', N'Xem hồ sơ bệnh án'), (N'Nha sĩ', N'Dòng thời gian điều trị'),
     (N'Nha sĩ', N'Khám & ghi nhận điều trị'), (N'Nha sĩ', N'Sơ đồ răng điều trị'), (N'Nha sĩ', N'Chỉ định tái khám'),
-    (N'Nha sĩ', N'Gợi ý điều trị & ước tính chi phí'), (N'Nha sĩ', N'In đơn thuốc'), (N'Nha sĩ', N'Liệu trình điều trị'),
+    (N'Nha sĩ', N'In đơn thuốc'), (N'Nha sĩ', N'Liệu trình điều trị'),
     (N'Nha sĩ', N'Lịch hẹn theo tuần'), (N'Nha sĩ', N'Xem danh mục dịch vụ & giá'), (N'Nha sĩ', N'Thời khóa biểu ca trực'),
 
     (N'Y tá', N'Tìm kiếm bệnh nhân'), (N'Y tá', N'Xem hồ sơ bệnh án'), (N'Y tá', N'Dòng thời gian điều trị'),
@@ -159,13 +200,18 @@ SELECT q.vaiTro, q.chucNang FROM (VALUES
 ) AS q(vaiTro, chucNang)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.VaiTroChucNang x WHERE x.tenVaiTro = q.vaiTro);
 
-/* Toàn quyền luôn có mọi chức năng (kể cả chức năng thêm về sau) */
+-- Ai cũng dùng được màn hình tài khoản của mình (đổi mật khẩu)
+INSERT INTO dbo.VaiTroChucNang (tenVaiTro, tenChucNang)
+SELECT v.tenVaiTro, N'Tài khoản của tôi' FROM dbo.VaiTro v
+WHERE NOT EXISTS (SELECT 1 FROM dbo.VaiTroChucNang x WHERE x.tenVaiTro = v.tenVaiTro AND x.tenChucNang = N'Tài khoản của tôi');
+
+-- Toàn quyền luôn có mọi chức năng (kể cả chức năng thêm về sau)
 INSERT INTO dbo.VaiTroChucNang (tenVaiTro, tenChucNang)
 SELECT N'Toàn quyền', c.tenChucNang FROM dbo.ChucNang c
 WHERE NOT EXISTS (SELECT 1 FROM dbo.VaiTroChucNang x WHERE x.tenVaiTro = N'Toàn quyền' AND x.tenChucNang = c.tenChucNang);
 GO
 
-/* ---------- Tâm: NhanVien, TaiKhoan, DichVu, CaTruc, NhatKyHeThong ---------- */
+-- Tâm: NhanVien, TaiKhoan, DichVu, CaTruc, NhatKyHeThong
 IF OBJECT_ID(N'dbo.NhanVien', N'U') IS NULL
 CREATE TABLE dbo.NhanVien (
     maNV               NVARCHAR(10)  NOT NULL PRIMARY KEY,
@@ -240,7 +286,7 @@ CREATE TABLE dbo.NhatKyHeThong (
 );
 GO
 
-/* ---------- Trường: BenhNhan, LichHen, HoaDon, ChiTietHoaDon ---------- */
+-- Trường: BenhNhan, LichHen, HoaDon, ChiTietHoaDon
 IF OBJECT_ID(N'dbo.BenhNhan', N'U') IS NULL
 CREATE TABLE dbo.BenhNhan (
     maBN               NVARCHAR(10)  NOT NULL PRIMARY KEY,
@@ -270,8 +316,6 @@ CREATE TABLE dbo.HoaDon (
     ngayLap            DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
     tienGiamGia        DECIMAL(18,0) NOT NULL DEFAULT 0 CHECK (tienGiamGia >= 0),
     phanTramThue       DECIMAL(5,2)  NOT NULL DEFAULT 8 CHECK (phanTramThue BETWEEN 0 AND 100),
-    tongTienTruocThue  DECIMAL(18,0) NOT NULL DEFAULT 0 CHECK (tongTienTruocThue >= 0),
-    tongTien           DECIMAL(18,0) NOT NULL DEFAULT 0 CHECK (tongTien >= 0),
     hinhThucThanhToan  NVARCHAR(20)  NOT NULL DEFAULT N'Tiền mặt'
         CHECK (hinhThucThanhToan IN (N'Tiền mặt', N'Chuyển khoản', N'Thẻ', N'Ví điện tử')),
     trangThaiThanhToan NVARCHAR(20)  NOT NULL DEFAULT N'Chưa thanh toán'
@@ -319,7 +363,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_LichHen_BenhNhan')
     CREATE INDEX IX_LichHen_BenhNhan ON dbo.LichHen(maBN);
 GO
 
-/* ---------- Hậu: HoSoBenhAn, LieuTrinh, LuotKham, RangDieuTri, LuotKhamDichVu ---------- */
+-- Hậu: HoSoBenhAn, LieuTrinh, LuotKham, RangDieuTri, LuotKhamDichVu
 IF OBJECT_ID(N'dbo.HoSoBenhAn', N'U') IS NULL
 CREATE TABLE dbo.HoSoBenhAn (
     maHoSo          NVARCHAR(10)  NOT NULL PRIMARY KEY,
@@ -393,8 +437,7 @@ CREATE TABLE dbo.RangDieuTri (
     ghiChu      NVARCHAR(255) NULL
 );
 GO
-/* Dịch vụ không gắn với răng cụ thể trong một lượt khám (khám tổng quát, lấy cao răng...).
-   Dịch vụ gắn răng được ghi ở RangDieuTri.maDichVu; LuotKhamController gộp cả hai khi lập hóa đơn. */
+-- Dịch vụ không gắn với răng cụ thể trong một lượt khám (khám tổng quát, lấy cao răng...)
 IF OBJECT_ID(N'dbo.LuotKhamDichVu', N'U') IS NULL
 CREATE TABLE dbo.LuotKhamDichVu (
     maDong     INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -405,7 +448,14 @@ CREATE TABLE dbo.LuotKhamDichVu (
 );
 GO
 
-/* ---------- Nâng cấp CSDL đã có từ bản cũ (CSDL mới tạo thì các bước dưới không làm gì) ---------- */
+-- Nâng cấp CSDL đã có từ bản cũ (CSDL mới tạo thì các bước dưới không làm gì)
+
+-- Bỏ hai chức năng không còn dùng: gợi ý điều trị và phân quyền vai trò
+DELETE FROM dbo.ChucNang WHERE tenChucNang IN (N'Gợi ý điều trị & ước tính chi phí', N'Phân quyền vai trò');
+INSERT INTO dbo.VatLieu (tenVatLieu)
+SELECT DISTINCT r.vatLieu FROM dbo.RangDieuTri r
+WHERE r.vatLieu IS NOT NULL AND NOT EXISTS (SELECT 1 FROM dbo.VatLieu v WHERE v.tenVatLieu = r.vatLieu);
+GO
 
 -- Giá trị cũ chưa có trong danh mục thì thêm vào danh mục, để tạo khóa ngoại không lỗi
 INSERT INTO dbo.ChuyenKhoa (tenChuyenKhoa)
@@ -474,4 +524,14 @@ WHERE r.maBanGhi <> (SELECT TOP 1 x.maBanGhi FROM dbo.RangDieuTri x
 GO
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UX_RangDieuTri_Luot_Rang_DichVu' AND object_id = OBJECT_ID(N'dbo.RangDieuTri'))
     CREATE UNIQUE INDEX UX_RangDieuTri_Luot_Rang_DichVu ON dbo.RangDieuTri(maLuotKham, soFDI, maDichVu);
+GO
+
+-- Tổng tiền hóa đơn tính từ chi tiết nên bỏ hai cột lưu sẵn
+DECLARE @sql NVARCHAR(MAX) = N'';
+SELECT @sql += N'ALTER TABLE dbo.HoaDon DROP CONSTRAINT ' + QUOTENAME(cc.name) + N';' + CHAR(10)
+FROM sys.check_constraints cc JOIN sys.columns col ON col.object_id = cc.parent_object_id AND col.column_id = cc.parent_column_id
+WHERE cc.parent_object_id = OBJECT_ID(N'dbo.HoaDon') AND col.name IN (N'tongTienTruocThue', N'tongTien');
+EXEC (@sql);
+IF COL_LENGTH(N'dbo.HoaDon', N'tongTienTruocThue') IS NOT NULL ALTER TABLE dbo.HoaDon DROP COLUMN tongTienTruocThue;
+IF COL_LENGTH(N'dbo.HoaDon', N'tongTien') IS NOT NULL ALTER TABLE dbo.HoaDon DROP COLUMN tongTien;
 GO

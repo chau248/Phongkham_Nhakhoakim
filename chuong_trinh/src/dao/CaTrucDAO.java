@@ -12,9 +12,7 @@ public class CaTrucDAO {
     static final String SELECT = "SELECT c.maCaTruc, c.ngay, c.caLam, c.phong, c.trangThai, " + NhanVienDAO.COT_NOI
             + " FROM dbo.CaTruc c JOIN dbo.NhanVien nv ON nv.maNV = c.maNV";
 
-    // ----- Tìm -----
-
-    // Các ca trực của mọi nhân viên trong khoảng ngày (gồm cả hai đầu)
+    // Các ca trực của mọi nhân viên trong khoảng ngày
     public List<CaTruc> layTheoKhoang(LocalDate tu, LocalDate den) {
         return TienIchDAO.layDanhSach(SELECT + " WHERE c.ngay BETWEEN ? AND ? ORDER BY c.ngay, c.caLam, c.phong, c.maNV", this::doc, tu, den);
     }
@@ -24,17 +22,15 @@ public class CaTrucDAO {
         return TienIchDAO.layDanhSach(SELECT + " WHERE c.maNV = ? AND c.ngay BETWEEN ? AND ? ORDER BY c.ngay, c.caLam", this::doc, maNV, tu, den);
     }
 
-    // Tất cả ca trực của một ngày và một ca (Sáng hoặc Chiều)
+    // Tất cả ca trực của một ngày và một ca
     public List<CaTruc> layTheoNgayVaCa(LocalDate ngay, String caLam) {
         return TienIchDAO.layDanhSach(SELECT + " WHERE c.ngay = ? AND c.caLam = ? ORDER BY c.maNV", this::doc, ngay, caLam);
     }
 
-    // Tìm ca trực theo mã, không có thì null
+    // Tìm ca trực theo mã
     public CaTruc timTheoMa(String maCaTruc) {
         return TienIchDAO.layMot(SELECT + " WHERE c.maCaTruc = ?", this::doc, maCaTruc);
     }
-
-    // ----- Thêm, sửa, xóa -----
 
     // Thêm một ca trực
     public void them(CaTruc ca) {
@@ -42,7 +38,7 @@ public class CaTrucDAO {
                 ca.getMaCaTruc(), ca.getMaNV().getMaNV(), ca.getNgay(), ca.getCaLam(), ca.getPhong(), ca.getTrangThai());
     }
 
-    // Đổi trạng thái ca trực (Có mặt, Vắng, Điều chuyển)
+    // Đổi trạng thái ca trực
     public void doiTrangThai(String maCaTruc, String trangThai) {
         TienIchDAO.thucThi("UPDATE dbo.CaTruc SET trangThai = ? WHERE maCaTruc = ?", trangThai, maCaTruc);
     }
@@ -51,8 +47,6 @@ public class CaTrucDAO {
     public void xoa(String maCaTruc) {
         TienIchDAO.thucThi("DELETE FROM dbo.CaTruc WHERE maCaTruc = ?", maCaTruc);
     }
-
-    // ----- Đọc dòng kết quả -----
 
     private CaTruc doc(ResultSet rs) throws SQLException {
         CaTruc ca = new CaTruc();
