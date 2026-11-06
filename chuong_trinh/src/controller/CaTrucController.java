@@ -25,23 +25,12 @@ public class CaTrucController {
     public static final String QUAY_LE_TAN = "Quầy lễ tân";
     public static final List<String> PHONG_KHAM = List.of("Phòng 1", "Phòng 2", "Phòng 3");
 
-    private CaTrucDAO caTrucDAO;
-    private LichHenDAO lichHenDAO;
-    private NhanVienController nhanVienController;
-    private Supplier<NhanVien> nguoiDung;
+    private CaTrucDAO caTrucDAO = new CaTrucDAO();
+    private LichHenDAO lichHenDAO = new LichHenDAO();
+    private NhanVienController nhanVienController = new NhanVienController();
+    private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // Dùng DAO thật
-    public CaTrucController() {
-        this(new CaTrucDAO(), new LichHenDAO(), new NhanVienController(), PhienLamViec::getNhanVienHienTai);
-    }
-
-    // Dùng DAO và người dùng truyền vào
-    public CaTrucController(CaTrucDAO caTrucDAO, LichHenDAO lichHenDAO, NhanVienController nhanVienController, Supplier<NhanVien> nguoiDung) {
-        this.caTrucDAO = caTrucDAO;
-        this.lichHenDAO = lichHenDAO;
-        this.nhanVienController = nhanVienController;
-        this.nguoiDung = nguoiDung;
-    }
+    // ----- Giờ của ca -----
 
     // Giờ bắt đầu của ca
     public static LocalTime gioBatDauCa(String caLam) {
@@ -52,6 +41,8 @@ public class CaTrucController {
     public static LocalTime gioKetThucCa(String caLam) {
         return SANG.equals(caLam) ? LocalTime.of(12, 0) : LocalTime.of(17, 0);
     }
+
+    // ----- Tìm -----
 
     // Các ca trực
     public List<CaTruc> layTheoKhoang(LocalDate tu, LocalDate den) {
@@ -83,6 +74,8 @@ public class CaTrucController {
     public CaTruc timTheoMa(String maCaTruc) {
         return caTrucDAO.timTheoMa(maCaTruc);
     }
+
+    // ----- Phân công, đổi trạng thái, xóa -----
 
     // Phân công một ca trực
     public CaTruc phanCong(String maNV, LocalDate ngay, String caLam, String phong) {
@@ -160,6 +153,8 @@ public class CaTrucController {
         TienIchController.ghiNhatKy(nguoi.getMaNV(), "Xóa ca trực", "CaTruc", maCaTruc,
                 ca.getMaNV().getHoTen() + ", " + ca.getNgay() + ", " + ca.getCaLam() + ", " + ca.getPhong());
     }
+
+    // ----- Hàm phụ -----
 
     private CaTruc layCa(String maCaTruc) {
         CaTruc ca = caTrucDAO.timTheoMa(maCaTruc);

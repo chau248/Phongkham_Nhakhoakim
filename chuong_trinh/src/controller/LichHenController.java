@@ -87,7 +87,7 @@ public class LichHenController {
                 + "\" (" + dv.getThoiGianDuKien() + " phút). Hãy chọn ngày khác.");
     }
 
-    // Xem lịch hẹn
+    // ----- Xem lịch hẹn -----
 
     // Lịch hẹn của mọi nha sĩ
     public List<LichHen> layTheoKhoang(LocalDate tu, LocalDate den) {
@@ -129,7 +129,7 @@ public class LichHenController {
         return kq;
     }
 
-    // Đặt, dời, hủy, xác nhận
+    // ----- Đặt, dời, hủy, xác nhận -----
 
     // Đặt lịch hẹn
     public LichHen datLich(String maBN, String maNhaSi, String maDichVu, LocalDate ngay, LocalTime gio, String hinhThucDat) {
@@ -196,7 +196,7 @@ public class LichHenController {
         TienIchController.ghiNhatKy(nguoi.getMaNV(), "Đánh dấu không đến", "LichHen", maLichHen, null);
     }
 
-    // Xem lịch làm việc
+    // ----- Xem lịch làm việc -----
 
     // Lịch làm việc của người đang đăng nhập
     public List<DongLichLamViec> layLichLamViec(LocalDate tu, LocalDate den) {
@@ -267,7 +267,7 @@ public class LichHenController {
         return bang.get(maBN);
     }
 
-    // Kiểm tra dùng chung
+    // ----- Kiểm tra dùng chung -----
 
     // Kiểm tra một lịch có xếp được không
     private String kiemTraXepLich(String maBN, String maNhaSi, DichVu dv, LocalDate ngay, LocalTime gio, String boQuaMa) {

@@ -21,6 +21,8 @@ public class BenhNhanController {
     private HoSoBenhAnController hoSoService = new HoSoBenhAnController();
     private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
+    // ----- Tìm -----
+
     // Tìm bệnh nhân theo mã
     public BenhNhan timTheoMa(String maBN) {
         return benhNhanDAO.timTheoMa(maBN);
@@ -36,6 +38,8 @@ public class BenhNhanController {
         return benhNhanDAO.timKiem(tuKhoa == null ? "" : tuKhoa.trim(), TOI_DA_KET_QUA, gomNgung);
     }
 
+    // ----- Kiểm tra dữ liệu -----
+
     // Kiểm tra thông tin nhập vào
     public void kiemTra(BenhNhan bn) {
         if (bn.getHoTen() == null || bn.getHoTen().trim().isEmpty()) {
@@ -47,10 +51,10 @@ public class BenhNhanController {
         if (bn.getHoTen().length() < 2 || bn.getHoTen().length() > 100 || !bn.getHoTen().matches("[\\p{L} .'-]+")) {
             throw new NghiepVuException("Họ tên chỉ gồm chữ cái và khoảng trắng, dài từ 2 đến 100 ký tự");
         }
-        doDai(bn.getDiaChi(), 255, "Địa chỉ");
-        doDai(bn.getEmail(), 100, "Email");
-        doDai(bn.getNguoiLienHeKhanCap(), 100, "Người liên hệ khẩn cấp");
-        doDai(bn.getGhiChu(), 255, "Ghi chú");
+        TienIchController.doDai(bn.getDiaChi(), 255, "Địa chỉ");
+        TienIchController.doDai(bn.getEmail(), 100, "Email");
+        TienIchController.doDai(bn.getNguoiLienHeKhanCap(), 100, "Người liên hệ khẩn cấp");
+        TienIchController.doDai(bn.getGhiChu(), 255, "Ghi chú");
         if (bn.getGioiTinh() != null && !List.of("Nam", "Nữ", "Khác").contains(bn.getGioiTinh())) {
             throw new NghiepVuException("Giới tính chỉ có thể là Nam, Nữ hoặc Khác");
         }
@@ -83,8 +87,12 @@ public class BenhNhanController {
         }
     }
 
+    // ----- Thêm, sửa, đổi trạng thái -----
+
     // Thêm bệnh nhân mới
     public BenhNhan them(BenhNhan bn) {
+    // ----- Hàm phụ -----
+
         kiemTraQuyenSua();
         chuanHoa(bn);
         kiemTra(bn);
@@ -184,14 +192,14 @@ public class BenhNhanController {
     // Cắt khoảng thừa
     private void chuanHoa(BenhNhan bn) {
         bn.setHoTen(bn.getHoTen() == null ? null : bn.getHoTen().trim().replaceAll("\\s+", " "));
-        bn.setSdt(rongThanhNull(bn.getSdt()));
-        bn.setDiaChi(rongThanhNull(bn.getDiaChi()));
-        bn.setEmail(rongThanhNull(bn.getEmail()));
-        bn.setSoCCCD(rongThanhNull(bn.getSoCCCD()));
-        bn.setNguoiLienHeKhanCap(rongThanhNull(bn.getNguoiLienHeKhanCap()));
-        bn.setSdtNguoiLienHe(rongThanhNull(bn.getSdtNguoiLienHe()));
-        bn.setGhiChu(rongThanhNull(bn.getGhiChu()));
-        bn.setGioiTinh(rongThanhNull(bn.getGioiTinh()));
+        bn.setSdt(TienIchController.rongThanhNull(bn.getSdt()));
+        bn.setDiaChi(TienIchController.rongThanhNull(bn.getDiaChi()));
+        bn.setEmail(TienIchController.rongThanhNull(bn.getEmail()));
+        bn.setSoCCCD(TienIchController.rongThanhNull(bn.getSoCCCD()));
+        bn.setNguoiLienHeKhanCap(TienIchController.rongThanhNull(bn.getNguoiLienHeKhanCap()));
+        bn.setSdtNguoiLienHe(TienIchController.rongThanhNull(bn.getSdtNguoiLienHe()));
+        bn.setGhiChu(TienIchController.rongThanhNull(bn.getGhiChu()));
+        bn.setGioiTinh(TienIchController.rongThanhNull(bn.getGioiTinh()));
     }
 
     // Số điện thoại hợp lệ
@@ -199,16 +207,4 @@ public class BenhNhanController {
         return s.matches("0[0-9]{9}");
     }
 
-    // Chuỗi không được dài hơn độ dài cột
-    private static void doDai(String giaTri, int toiDa, String tenTruong) {
-        if (giaTri != null && giaTri.length() > toiDa) {
-            throw new NghiepVuException(tenTruong + " dài tối đa " + toiDa + " ký tự (hiện đang " + giaTri.length() + " ký tự)");
-        }
-    }
-
-
-    // Chuỗi rỗng hoặc toàn khoảng trắng
-    private static String rongThanhNull(String s) {
-        return s == null || s.trim().isEmpty() ? null : s.trim();
-    }
 }

@@ -17,21 +17,11 @@ public class TaiKhoanController {
     public static final int DO_DAI_TEN_TOI_THIEU = 4;
     public static final int DO_DAI_MAT_KHAU_TOI_THIEU = 6;
 
-    private TaiKhoanDAO taiKhoanDAO;
-    private NhanVienDAO nhanVienDAO;
-    private Supplier<NhanVien> nguoiDung;
+    private TaiKhoanDAO taiKhoanDAO = new TaiKhoanDAO();
+    private NhanVienDAO nhanVienDAO = new NhanVienDAO();
+    private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // Dùng DAO thật
-    public TaiKhoanController() {
-        this(new TaiKhoanDAO(), new NhanVienDAO(), PhienLamViec::getNhanVienHienTai);
-    }
-
-    // Dùng DAO và người dùng truyền vào
-    public TaiKhoanController(TaiKhoanDAO taiKhoanDAO, NhanVienDAO nhanVienDAO, Supplier<NhanVien> nguoiDung) {
-        this.taiKhoanDAO = taiKhoanDAO;
-        this.nhanVienDAO = nhanVienDAO;
-        this.nguoiDung = nguoiDung;
-    }
+    // ----- Đăng nhập, đăng xuất -----
 
     // Đăng nhập: trả về nhân viên đăng nhập
     public NhanVien dangNhap(String tenDangNhap, String matKhau) {
@@ -82,6 +72,8 @@ public class TaiKhoanController {
         PhienLamViec.dangXuat();
     }
 
+    // ----- Tìm -----
+
     // Tất cả tài khoản
     public List<TaiKhoan> layTatCa() {
         TienIchController.yeuCau(nguoiDung, "xem danh sách tài khoản", HangSo.VAI_TRO_QUAN_LY);
@@ -93,6 +85,8 @@ public class TaiKhoanController {
         NhanVien nv = TienIchController.yeuCau(nguoiDung, "xem tài khoản của mình", HangSo.VAI_TRO_NHA_SI, HangSo.VAI_TRO_Y_TA, HangSo.VAI_TRO_LE_TAN, HangSo.VAI_TRO_QUAN_LY);
         return taiKhoanDAO.timTheoNhanVien(nv.getMaNV());
     }
+
+    // ----- Tạo tài khoản, mật khẩu, khóa -----
 
     // Tạo tài khoản cho một nhân viên
     public TaiKhoan taoTaiKhoan(String maNV, String tenDangNhap, String matKhau) {
@@ -183,6 +177,8 @@ public class TaiKhoanController {
         taiKhoanDAO.datKhoa(maTaiKhoan, false);
         TienIchController.ghiNhatKy(nguoi.getMaNV(), "Mở khóa tài khoản", "TaiKhoan", maTaiKhoan, tk.getTenDangNhap());
     }
+
+    // ----- Hàm phụ -----
 
     private TaiKhoan layTaiKhoan(String maTaiKhoan) {
         TaiKhoan tk = maTaiKhoan == null ? null : taiKhoanDAO.timTheoMa(maTaiKhoan);

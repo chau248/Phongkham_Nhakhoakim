@@ -19,21 +19,11 @@ public class NhanVienController {
     public static final String NGHI_VIEC = "Nghỉ việc";
     public static final int SO_NGAY_CANH_BAO_CHUNG_CHI = 30; // Báo trước khi chứng chỉ hành
 
-    private NhanVienDAO nhanVienDAO;
-    private TaiKhoanDAO taiKhoanDAO;
-    private Supplier<NhanVien> nguoiDung;
+    private NhanVienDAO nhanVienDAO = new NhanVienDAO();
+    private TaiKhoanDAO taiKhoanDAO = new TaiKhoanDAO();
+    private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // Dùng DAO thật
-    public NhanVienController() {
-        this(new NhanVienDAO(), new TaiKhoanDAO(), PhienLamViec::getNhanVienHienTai);
-    }
-
-    // Dùng DAO và người dùng truyền vào
-    public NhanVienController(NhanVienDAO nhanVienDAO, TaiKhoanDAO taiKhoanDAO, Supplier<NhanVien> nguoiDung) {
-        this.nhanVienDAO = nhanVienDAO;
-        this.taiKhoanDAO = taiKhoanDAO;
-        this.nguoiDung = nguoiDung;
-    }
+    // ----- Tìm -----
 
     // Tìm nhân viên theo mã
     public NhanVien timTheoMa(String ma) {
@@ -81,9 +71,13 @@ public class NhanVienController {
         return kq;
     }
 
+    // ----- Thêm, sửa -----
+
     // Thêm nhân viên mới
     public NhanVien them(NhanVien nv) {
         TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa hồ sơ nhân viên", HangSo.VAI_TRO_QUAN_LY);
+    // ----- Hàm phụ -----
+
         chuanHoa(nv);
         kiemTra(nv);
         nv.setMaNV(TienIchDAO.taoMa("NV"));

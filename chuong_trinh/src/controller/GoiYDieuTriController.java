@@ -62,6 +62,8 @@ public class GoiYDieuTriController {
         this.nguoiDung = nguoiDung;
     }
 
+    // ----- Gợi ý và ước tính chi phí -----
+
     // Danh sách gợi ý cho một lượt khám
     public List<GoiYDieuTri> goiY(String maLuotKham) {
         LuotKham lk = luotKhamService.timTheoMa(maLuotKham);
@@ -123,6 +125,8 @@ public class GoiYDieuTriController {
         return tong + Math.round(tong * PHAN_TRAM_VAT / 100.0);
     }
 
+    // ----- Thêm gợi ý vào lượt khám -----
+
     // Thêm dịch vụ của một gợi
     public void themVaoLuotKham(String maLuotKham, GoiYDieuTri goiY) {
         List<GoiYDieuTri> mot = new ArrayList<>();
@@ -175,6 +179,8 @@ public class GoiYDieuTriController {
     public int getPhanTramThue() {
         return PHAN_TRAM_VAT;
     }
+
+    // ----- Hàm phụ -----
 
     // Có được gợi ý Implant / cầu răng
     private boolean duocGoiYCayGhep(int soFDI, boolean duoi18Tuoi) {

@@ -29,6 +29,8 @@ public class DongThoiGianController {
     private RangDieuTriController rangService = new RangDieuTriController();
     private DichVuController dichVuService = new DichVuController();
 
+    // ----- Dựng dòng thời gian -----
+
     // Dựng dòng thời gian của một bệnh nhân
     public DongThoiGian xayDung(String maBN) {
         BenhNhan bn = benhNhanService.timTheoMa(maBN);
@@ -92,6 +94,8 @@ public class DongThoiGianController {
         ketQua.setSoLieuTrinhDangLam(hoSoService.layLieuTrinhDangThucHien(maBN).size());
         return ketQua;
     }
+
+    // ----- Hàm phụ -----
 
     // Danh mục dịch vụ dưới dạng bảng tra
     private Map<String, DichVu> layBangDichVu() {

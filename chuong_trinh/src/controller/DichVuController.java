@@ -15,19 +15,10 @@ public class DichVuController {
 
     public static final List<String> DON_VI_TINH = List.of("Lần", "Răng", "Hàm");
 
-    private DichVuDAO dao;
-    private Supplier<NhanVien> nguoiDung;
+    private DichVuDAO dao = new DichVuDAO();
+    private Supplier<NhanVien> nguoiDung = PhienLamViec::getNhanVienHienTai;
 
-    // Dùng DAO thật
-    public DichVuController() {
-        this(new DichVuDAO(), PhienLamViec::getNhanVienHienTai);
-    }
-
-    // Dùng DAO và người dùng truyền vào
-    public DichVuController(DichVuDAO dao, Supplier<NhanVien> nguoiDung) {
-        this.dao = dao;
-        this.nguoiDung = nguoiDung;
-    }
+    // ----- Tìm -----
 
     // Tất cả dịch vụ, kể cả đã ngừng
     public List<DichVu> layTatCa() {
@@ -66,9 +57,13 @@ public class DichVuController {
         return ma == null ? null : dao.timTheoMa(ma);
     }
 
+    // ----- Thêm, sửa -----
+
     // Thêm dịch vụ mới
     public DichVu them(DichVu dv) {
         NhanVien nguoi = TienIchController.yeuCau(nguoiDung, "thêm hoặc sửa dịch vụ", HangSo.VAI_TRO_QUAN_LY);
+    // ----- Hàm phụ -----
+
         chuanHoa(dv);
         kiemTra(dv, null);
         dv.setMaDichVu(TienIchDAO.taoMa("DV"));
